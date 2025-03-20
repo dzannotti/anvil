@@ -1,0 +1,15 @@
+bin/
+tmp/
+*.exe
+*.out
+*.test
+*.so
+*.dll
+*.coverprofile
+*.test
+*.prof
+.vscode/
+*.swp
+*.swo
+.DS_Store
+.Thumbs.db
