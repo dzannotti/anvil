@@ -1,0 +1,12 @@
+{
+  "words": ["dzannotti"],
+  "ignorePaths": [
+    ".gitignore",
+    ".github/**/*",
+    "go.mod",
+    "makefile",
+    "make.bat",
+    "cspell.json",
+    ".golangci.yml",
+  ]
+}
