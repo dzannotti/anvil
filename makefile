@@ -1,5 +1,3 @@
-SHELL := /bin/bash
-
 # Detect OS for cross platform compatibility
 ifeq ($(OS),Windows_NT)
 	DETECTED_OS := Windows
@@ -19,7 +17,7 @@ endif
 # Go related variables
 GOBASE := $(shell go list -m)
 GOBIN := ./bin
-GOSRC := ./cmd/hello
+GOSRC := ./cmd/cli/
 
 # Simplified run that doesn't rebuild unless needed
 .PHONY: run-fast
