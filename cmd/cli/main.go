@@ -1,14 +1,14 @@
 package main
 
 import (
-	"anvil/internal/core"
+	"anvil/internal/creature"
 	"anvil/internal/team"
 	"fmt"
 	"sync"
 	"time"
 )
 
-func BestCombatAction(c *core.Creature, creatures []*core.Creature) (CombatAction, error) {
+func BestCombatAction(c *creature.Creature, creatures []*creature.Creature) (CombatAction, error) {
 	enemies := findEnemies(c, creatures)
 	target := findTarget(enemies)
 	if target == nil {
@@ -22,8 +22,8 @@ func BestCombatAction(c *core.Creature, creatures []*core.Creature) (CombatActio
 }
 
 type CombatAction struct {
-	action core.Action
-	target *core.Creature
+	action creature.Action
+	target *creature.Creature
 }
 
 type AttackAction struct{}
@@ -32,13 +32,13 @@ func (a AttackAction) Cost() int {
 	return 1
 }
 
-func (a AttackAction) Perform(source *core.Creature, target *core.Creature, wg *sync.WaitGroup) {
+func (a AttackAction) Perform(source *creature.Creature, target *creature.Creature, wg *sync.WaitGroup) {
 	defer wg.Done()
 	source.Consume(a.Cost())
 	source.Attack(target)
 }
 
-func IsOver(creatures []*core.Creature) bool {
+func IsOver(creatures []*creature.Creature) bool {
 	playersAlive := false
 	enemiesAlive := false
 	for _, c := range creatures {
@@ -54,7 +54,7 @@ func IsOver(creatures []*core.Creature) bool {
 	return !playersAlive || !enemiesAlive
 }
 
-func winner(creatures []*core.Creature) string {
+func winner(creatures []*creature.Creature) string {
 	for i := range creatures {
 		if !creatures[i].IsDead() {
 			if creatures[i].FactionID() == team.Player {
@@ -68,10 +68,10 @@ func winner(creatures []*core.Creature) string {
 	return "all alive?"
 }
 
-func findEnemies(creature *core.Creature, allCreatures []*core.Creature) []*core.Creature {
-	var enemies = make([]*core.Creature, 0)
+func findEnemies(activeCreature *creature.Creature, allCreatures []*creature.Creature) []*creature.Creature {
+	var enemies = make([]*creature.Creature, 0)
 	for i := range allCreatures {
-		if allCreatures[i].FactionID() == creature.FactionID() {
+		if allCreatures[i].FactionID() == activeCreature.FactionID() {
 			continue
 		}
 		enemies = append(enemies, allCreatures[i])
@@ -79,7 +79,7 @@ func findEnemies(creature *core.Creature, allCreatures []*core.Creature) []*core
 	return enemies
 }
 
-func findTarget(enemies []*core.Creature) *core.Creature {
+func findTarget(enemies []*creature.Creature) *creature.Creature {
 	for j := range enemies {
 		if !enemies[j].IsDead() {
 			return enemies[j]
@@ -88,7 +88,7 @@ func findTarget(enemies []*core.Creature) *core.Creature {
 	return nil
 }
 
-func Act(activeCreature *core.Creature, allCreatures []*core.Creature, actWG *sync.WaitGroup) {
+func Act(activeCreature *creature.Creature, allCreatures []*creature.Creature, actWG *sync.WaitGroup) {
 	defer actWG.Done()
 	if activeCreature.IsDead() {
 		fmt.Println(activeCreature.Name(), "cannot act because dead")
@@ -107,7 +107,7 @@ func Act(activeCreature *core.Creature, allCreatures []*core.Creature, actWG *sy
 	}
 }
 
-func Encounter(allCreatures []*core.Creature) {
+func Encounter(allCreatures []*creature.Creature) {
 	turn := 0
 	round := 0
 	for !IsOver(allCreatures) {
@@ -132,11 +132,11 @@ func Encounter(allCreatures []*core.Creature) {
 }
 
 func main() {
-	wizard := core.NewCreature("Wizard", team.Player, 22, []core.Action{AttackAction{}})
-	elf := core.NewCreature("Elf", team.Player, 22, []core.Action{AttackAction{}})
-	orc := core.NewCreature("Orc", team.Enemy, 22, []core.Action{AttackAction{}})
-	goblin := core.NewCreature("Goblin", team.Enemy, 22, []core.Action{AttackAction{}})
+	wizard := creature.New("Wizard", team.Player, 22, []creature.Action{AttackAction{}})
+	elf := creature.New("Elf", team.Player, 22, []creature.Action{AttackAction{}})
+	orc := creature.New("Orc", team.Enemy, 22, []creature.Action{AttackAction{}})
+	goblin := creature.New("Goblin", team.Enemy, 22, []creature.Action{AttackAction{}})
 	start := time.Now()
-	Encounter([]*core.Creature{wizard, elf, orc, goblin})
+	Encounter([]*creature.Creature{wizard, elf, orc, goblin})
 	fmt.Printf("%v elapsed\n", time.Since(start))
 }

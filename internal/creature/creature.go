@@ -1,4 +1,4 @@
-package core
+package creature
 
 import (
 	"anvil/internal/team"
@@ -34,7 +34,7 @@ func RollDice(sides int) int {
 	return rand.Intn(sides) + 1
 }
 
-func NewCreature(name string, factionID team.Team, hitPoints int, actions []Action) *Creature {
+func New(name string, factionID team.Team, hitPoints int, actions []Action) *Creature {
 	return &Creature{name: name, factionID: factionID, hitPoints: hitPoints, actionPoints: 0, actions: actions}
 }
 
