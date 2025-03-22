@@ -20,14 +20,14 @@ func RollDice(sides int) int {
 
 type Creature struct {
 	name         string
-	factionId    Team
+	factionID    Team
 	hitPoints    int
 	actionPoints int
 	actions      []Action
 }
 
-func NewCreature(name string, factionId Team, hitPoints int) *Creature {
-	return &Creature{name: name, factionId: factionId, hitPoints: hitPoints, actionPoints: 0, actions: []Action{AttackAction{}}}
+func NewCreature(name string, factionID Team, hitPoints int) *Creature {
+	return &Creature{name: name, factionID: factionID, hitPoints: hitPoints, actionPoints: 0, actions: []Action{AttackAction{}}}
 }
 
 func (c *Creature) takeDamage(damage int) {
@@ -96,10 +96,10 @@ func IsOver(creatures []*Creature) bool {
 	enemiesAlive := false
 	for _, c := range creatures {
 		if !c.isDead() {
-			if c.factionId == Player {
+			if c.factionID == Player {
 				playersAlive = true
 			}
-			if c.factionId == Enemy {
+			if c.factionID == Enemy {
 				enemiesAlive = true
 			}
 		}
@@ -110,10 +110,10 @@ func IsOver(creatures []*Creature) bool {
 func winner(creatures []*Creature) string {
 	for i := range creatures {
 		if !creatures[i].isDead() {
-			if creatures[i].factionId == Player {
+			if creatures[i].factionID == Player {
 				return "Player"
 			}
-			if creatures[i].factionId == Enemy {
+			if creatures[i].factionID == Enemy {
 				return "Enemy"
 			}
 		}
@@ -124,7 +124,7 @@ func winner(creatures []*Creature) string {
 func findEnemies(creature *Creature, allCreatures []*Creature) []*Creature {
 	var enemies = make([]*Creature, 0)
 	for i := range allCreatures {
-		if allCreatures[i].factionId == creature.factionId {
+		if allCreatures[i].factionID == creature.factionID {
 			continue
 		}
 		enemies = append(enemies, allCreatures[i])

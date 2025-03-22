@@ -30,11 +30,11 @@ run-fast:
 all: clean lint test build
 
 build:
-	@echo "Building for $(DETECTED_OS)..."
+	@echo Building for $(DETECTED_OS)...
 	@go build -o $(GOBIN)/$(BINARY_NAME) $(GOSRC)/main.go
 
 clean:
-	@echo "Cleaning..."
+	@echo Cleaning...
 ifeq ($(DETECTED_OS),Windows)
 	@if exist $(GOBIN) rmdir /s /q $(GOBIN)
 	@mkdir $(GOBIN)
@@ -44,36 +44,36 @@ else
 endif
 
 release:
-	@echo "Building for $(DETECTED_OS)..."
+	@echo Building for $(DETECTED_OS)...
 	@go build -trimpath -ldflags="-w -s" -o $(GOBIN)/$(BINARY_NAME) $(GOSRC)/main.go
 
 
 test:
-	@echo "Running tests..."
+	@echo Running tests...
 	@go test -v ./...
 
 lint:
-	@echo "Running linter..."
+	@echo Running linter...
 	@golangci-lint run ./...
 
 run:
-	@echo "Running application..."
+	@echo Running application...
 	@go run $(GOSRC)/main.go
 
 deps:
-	@echo "Installing dependencies..."
+	@echo Installing dependencies...
 	@go mod tidy
 	@go mod download
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 help:
-	@echo "Make targets:"
-	@echo "  all    - Clean, lint, test, and build"
-	@echo "  build  - Build the application"
-	@echo "  clean  - Clean build artifacts"
-	@echo "  test   - Run tests"
-	@echo "  lint   - Run linter"
-	@echo "  run    - Run the application"
-	@echo "  run-fast - Run without full make overhead"
-	@echo "  deps   - Install dependencies"
-	@echo "  help   - Show this help message"
+	@echo Make targets:"
+	@echo   all    - Clean, lint, test, and build
+	@echo   build  - Build the application
+	@echo   clean  - Clean build artifacts
+	@echo   test   - Run tests
+	@echo   lint   - Run linter
+	@echo   run    - Run the application
+	@echo   run-fast - Run without full make overhead
+	@echo   deps   - Install dependencies
+	@echo   help   - Show this help message
