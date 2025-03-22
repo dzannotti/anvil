@@ -43,6 +43,11 @@ else
 	@mkdir -p $(GOBIN)
 endif
 
+release:
+	@echo "Building for $(DETECTED_OS)..."
+	@go build -trimpath -ldflags="-w -s" -o $(GOBIN)/$(BINARY_NAME) $(GOSRC)/main.go
+
+
 test:
 	@echo "Running tests..."
 	@go test -v ./...

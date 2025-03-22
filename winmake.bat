@@ -16,6 +16,11 @@ if "%1"=="build" (
     exit /b
 )
 
+if "%1"=="release" (
+    go build -trimpath, -ldflags="-w -s" -o bin/anvil.exe cmd/hello/main.go
+    exit /b
+)
+
 if "%1"=="test" (
     go test -json ./...
     exit /b

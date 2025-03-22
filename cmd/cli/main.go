@@ -2,151 +2,194 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"sync"
+	"time"
 )
 
+type Team int
+
+const (
+	Player Team = iota + 1
+	Enemy
+)
+
+func RollDice(sides int) int {
+	return rand.Intn(sides) + 1
+}
+
 type Creature struct {
-	Name      string
-	HitPoints int
+	name         string
+	factionId    Team
+	hitPoints    int
+	actionPoints int
+	actions      []Action
 }
 
-func (c *Creature) TakeDamage(damage int) {
-	c.HitPoints -= damage
-	fmt.Println(c.Name, "took", damage, "damage", c.HitPoints, "remaining")
+func NewCreature(name string, factionId Team, hitPoints int) *Creature {
+	return &Creature{name: name, factionId: factionId, hitPoints: hitPoints, actionPoints: 0, actions: []Action{AttackAction{}}}
 }
 
-func (c *Creature) IsDead() bool {
-	return c.HitPoints == 0
+func (c *Creature) takeDamage(damage int) {
+	c.hitPoints = max(0, c.hitPoints-damage)
+	fmt.Println(c.name, "took", damage, "damage", c.hitPoints, "remaining")
 }
 
-type Faction struct {
-	Name    string
-	Members []*Creature
+func (c *Creature) Attack(target *Creature) {
+	fmt.Println(c.name, "attacks", target.name)
+	damage := RollDice(20)
+	target.takeDamage(damage)
+	if target.isDead() {
+		fmt.Println(target.name, "is dead")
+	}
 }
 
-func (f *Faction) Add(creature *Creature) {
-	f.Members = append(f.Members, creature)
+func (c *Creature) isDead() bool {
+	return c.hitPoints == 0
 }
 
-func (f *Faction) IsDead() bool {
-	for _, creature := range f.Members {
-		if !creature.IsDead() {
-			return false
+func (c *Creature) StartTurn() {
+	c.actionPoints = 2
+}
+
+func (c *Creature) Consume(cost int) {
+	c.actionPoints = max(0, c.actionPoints-cost)
+}
+
+func (c *Creature) BestCombatAction(creatures []*Creature) (CombatAction, error) {
+	enemies := findEnemies(c, creatures)
+	target := findTarget(enemies)
+	if target == nil {
+		return CombatAction{}, fmt.Errorf("no target")
+	}
+	action := c.actions[0]
+	if c.actionPoints < action.Cost() {
+		return CombatAction{}, fmt.Errorf("not enough action points")
+	}
+	return CombatAction{action: action, target: target}, nil
+}
+
+type CombatAction struct {
+	action Action
+	target *Creature
+}
+
+type Action interface {
+	Perform(source *Creature, target *Creature, wg *sync.WaitGroup)
+	Cost() int
+}
+
+type AttackAction struct{}
+
+func (a AttackAction) Cost() int {
+	return 1
+}
+
+func (a AttackAction) Perform(source *Creature, target *Creature, wg *sync.WaitGroup) {
+	defer wg.Done()
+	source.Consume(a.Cost())
+	source.Attack(target)
+}
+
+func IsOver(creatures []*Creature) bool {
+	playersAlive := false
+	enemiesAlive := false
+	for _, c := range creatures {
+		if !c.isDead() {
+			if c.factionId == Player {
+				playersAlive = true
+			}
+			if c.factionId == Enemy {
+				enemiesAlive = true
+			}
 		}
 	}
-	return true
+	return !playersAlive || !enemiesAlive
 }
 
-func (f *Faction) Contains(creature *Creature) bool {
-	for _, c := range f.Members {
-		if c.Name == creature.Name {
-			return true
-		}
-	}
-	return false
-}
-
-func IsOver(factions []Faction) bool {
-	remainingFactions := 0
-	for i := range factions {
-		if !factions[i].IsDead() {
-			remainingFactions++
-		}
-	}
-	return remainingFactions <= 1
-}
-
-func AllCreatures(factions []Faction) []*Creature {
-	var allCreatures = []*Creature{}
-	for _, faction := range factions {
-		allCreatures = append(allCreatures, faction.Members...)
-	}
-	return allCreatures
-}
-
-func Winner(factions []Faction) string {
-	for _, faction := range factions {
-		if !faction.IsDead() {
-			return faction.Name
+func winner(creatures []*Creature) string {
+	for i := range creatures {
+		if !creatures[i].isDead() {
+			if creatures[i].factionId == Player {
+				return "Player"
+			}
+			if creatures[i].factionId == Enemy {
+				return "Enemy"
+			}
 		}
 	}
 	return "all alive?"
 }
 
-func FindEnemies(creature *Creature, factions []Faction) []*Creature {
-	var enemies = []*Creature{}
-	for i := range factions {
-		if factions[i].Contains(creature) {
+func findEnemies(creature *Creature, allCreatures []*Creature) []*Creature {
+	var enemies = make([]*Creature, 0)
+	for i := range allCreatures {
+		if allCreatures[i].factionId == creature.factionId {
 			continue
 		}
-		enemies = append(enemies, factions[i].Members...)
+		enemies = append(enemies, allCreatures[i])
 	}
 	return enemies
 }
 
-func FindTarget(enemies []*Creature) *Creature {
+func findTarget(enemies []*Creature) *Creature {
 	for j := range enemies {
-		if !enemies[j].IsDead() {
+		if !enemies[j].isDead() {
 			return enemies[j]
 		}
 	}
 	return nil
 }
 
-func Encounter(factions []Faction) {
-	var allCreatures = AllCreatures(factions)
-	for !IsOver(factions) {
+func Act(activeCreature *Creature, allCreatures []*Creature, actWG *sync.WaitGroup) {
+	defer actWG.Done()
+	if activeCreature.isDead() {
+		fmt.Println(activeCreature.name, "cannot act because dead")
+		return
+	}
+	for {
+		action, err := activeCreature.BestCombatAction(allCreatures)
+		if err != nil {
+			fmt.Println(activeCreature.name, "cannot act: no action")
+			break
+		}
+		wg := sync.WaitGroup{}
+		wg.Add(1)
+		go action.action.Perform(activeCreature, action.target, &wg)
+		wg.Wait()
+	}
+}
+
+func Encounter(allCreatures []*Creature) {
+	turn := 0
+	round := 0
+	for !IsOver(allCreatures) {
+		fmt.Println("Round", round+1)
 		for i := range allCreatures {
 			var activeCreature = allCreatures[i]
-			fmt.Println(activeCreature.Name, "turn")
-			if activeCreature.IsDead() {
-				fmt.Println(activeCreature.Name, "Skipping dead")
-				continue
-			}
-			enemies := FindEnemies(activeCreature, factions)
-			target := FindTarget(enemies)
-			if target == nil {
-				fmt.Println(activeCreature.Name, "Skipping no target")
-				continue
-			}
-			fmt.Println(activeCreature.Name, "attacks", target.Name)
-			target.TakeDamage(5)
-			if target.IsDead() {
-				fmt.Println(target.Name, "is dead")
-			}
-			if IsOver(factions) {
+			fmt.Println("Turn", turn+1, activeCreature.name, "turn")
+			wg := sync.WaitGroup{}
+			wg.Add(1)
+			activeCreature.StartTurn()
+			go Act(activeCreature, allCreatures, &wg)
+			wg.Wait()
+			turn = turn + 1
+			if IsOver(allCreatures) {
 				break
 			}
 		}
+		round = round + 1
+		turn = 0
 	}
-	fmt.Println("Winner", Winner(factions))
+	fmt.Println("Winner", winner(allCreatures))
 }
 
 func main() {
-	f1 := Faction{
-		Name: "Players",
-		Members: []*Creature{
-			{
-				Name:      "Wizard",
-				HitPoints: 10,
-			},
-			{
-				Name:      "Elf",
-				HitPoints: 10,
-			},
-		},
-	}
-	f2 := Faction{
-		Name: "Enemies",
-		Members: []*Creature{
-			{
-				Name:      "Orc",
-				HitPoints: 10,
-			},
-			{
-				Name:      "Goblin",
-				HitPoints: 10,
-			},
-		},
-	}
-	Encounter([]Faction{f1, f2})
+	wizard := NewCreature("Wizard", Player, 22)
+	elf := NewCreature("Elf", Player, 22)
+	orc := NewCreature("Orc", Enemy, 22)
+	goblin := NewCreature("Goblin", Enemy, 22)
+	start := time.Now()
+	Encounter([]*Creature{wizard, elf, orc, goblin})
+	fmt.Printf("%v elapsed\n", time.Since(start))
 }
