@@ -1,3 +1,3 @@
-module github.com/dzannotti/anvil
+module anvil
 
 go 1.22
