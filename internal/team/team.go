@@ -3,6 +3,7 @@ package team
 type Team int
 
 const (
-	Player Team = iota + 1
+	None Team = iota
+	Player
 	Enemy
 )

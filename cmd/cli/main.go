@@ -2,6 +2,7 @@ package main
 
 import (
 	"anvil/internal/creature"
+	"anvil/internal/encounter"
 	"anvil/internal/team"
 	"fmt"
 	"sync"
@@ -36,36 +37,6 @@ func (a AttackAction) Perform(source *creature.Creature, target *creature.Creatu
 	defer wg.Done()
 	source.Consume(a.Cost())
 	source.Attack(target)
-}
-
-func IsOver(creatures []*creature.Creature) bool {
-	playersAlive := false
-	enemiesAlive := false
-	for _, c := range creatures {
-		if !c.IsDead() {
-			if c.FactionID() == team.Player {
-				playersAlive = true
-			}
-			if c.FactionID() == team.Enemy {
-				enemiesAlive = true
-			}
-		}
-	}
-	return !playersAlive || !enemiesAlive
-}
-
-func winner(creatures []*creature.Creature) string {
-	for i := range creatures {
-		if !creatures[i].IsDead() {
-			if creatures[i].FactionID() == team.Player {
-				return "Player"
-			}
-			if creatures[i].FactionID() == team.Enemy {
-				return "Enemy"
-			}
-		}
-	}
-	return "all alive?"
 }
 
 func findEnemies(activeCreature *creature.Creature, allCreatures []*creature.Creature) []*creature.Creature {
@@ -107,36 +78,15 @@ func Act(activeCreature *creature.Creature, allCreatures []*creature.Creature, a
 	}
 }
 
-func Encounter(allCreatures []*creature.Creature) {
-	turn := 0
-	round := 0
-	for !IsOver(allCreatures) {
-		fmt.Println("Round", round+1)
-		for i := range allCreatures {
-			var activeCreature = allCreatures[i]
-			fmt.Println("Turn", turn+1, activeCreature.Name(), "turn")
-			wg := sync.WaitGroup{}
-			wg.Add(1)
-			activeCreature.StartTurn()
-			go Act(activeCreature, allCreatures, &wg)
-			wg.Wait()
-			turn = turn + 1
-			if IsOver(allCreatures) {
-				break
-			}
-		}
-		round = round + 1
-		turn = 0
-	}
-	fmt.Println("Winner", winner(allCreatures))
-}
-
 func main() {
 	wizard := creature.New("Wizard", team.Player, 22, []creature.Action{AttackAction{}})
 	elf := creature.New("Elf", team.Player, 22, []creature.Action{AttackAction{}})
 	orc := creature.New("Orc", team.Enemy, 22, []creature.Action{AttackAction{}})
 	goblin := creature.New("Goblin", team.Enemy, 22, []creature.Action{AttackAction{}})
 	start := time.Now()
-	Encounter([]*creature.Creature{wizard, elf, orc, goblin})
+	resultCh := make(chan team.Team)
+	go encounter.Play([]*creature.Creature{wizard, elf, orc, goblin}, Act, resultCh)
+	winner := <-resultCh
+	fmt.Println("Winner:", winner)
 	fmt.Printf("%v elapsed\n", time.Since(start))
 }
