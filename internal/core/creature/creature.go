@@ -8,8 +8,9 @@ import (
 
 type Creature struct {
 	name         string
-	factionID    team.Team
+	team         team.Team
 	hitPoints    int
+	maxHitPoints int
 	actionPoints int
 	actions      []Action
 	log          *log.EventLog
@@ -19,12 +20,16 @@ func (c Creature) Name() string {
 	return c.name
 }
 
-func (c Creature) FactionID() team.Team {
-	return c.factionID
-}
-
 func (c Creature) HitPoints() int {
 	return c.hitPoints
+}
+
+func (c Creature) MaxHitPoints() int {
+	return c.maxHitPoints
+}
+
+func (c Creature) Team() team.Team {
+	return c.team
 }
 
 func (c Creature) ActionPoints() int {
@@ -35,8 +40,8 @@ func RollDice(sides int) int {
 	return rand.Intn(sides) + 1
 }
 
-func New(log *log.EventLog, name string, factionID team.Team, hitPoints int, actions []Action) *Creature {
-	return &Creature{log: log, name: name, factionID: factionID, hitPoints: hitPoints, actionPoints: 0, actions: actions}
+func New(log *log.EventLog, name string, t team.Team, hp int, actions []Action) *Creature {
+	return &Creature{log: log, name: name, team: t, hitPoints: hp, actionPoints: 0, actions: actions, maxHitPoints: hp}
 }
 
 func (c *Creature) TakeDamage(damage int) {

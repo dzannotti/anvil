@@ -27,7 +27,7 @@ type CombatAction struct {
 func findEnemies(activeCreature *creature.Creature, allCreatures []*creature.Creature) []*creature.Creature {
 	var enemies = make([]*creature.Creature, 0)
 	for i := range allCreatures {
-		if allCreatures[i].FactionID() == activeCreature.FactionID() {
+		if allCreatures[i].Team() == activeCreature.Team() {
 			continue
 		}
 		enemies = append(enemies, allCreatures[i])

@@ -4,9 +4,10 @@ import "anvil/internal/core/event"
 
 func ToEvent(c *Creature) event.Creature {
 	return event.Creature{
-		Name:      c.Name(),
-		FactionID: c.FactionID(),
-		HitPoints: c.HitPoints(),
+		Name:         c.Name(),
+		Team:         c.team,
+		HitPoints:    c.HitPoints(),
+		MaxHitPoints: c.MaxHitPoints(),
 	}
 }
 

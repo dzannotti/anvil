@@ -2,18 +2,11 @@ package event
 
 import "anvil/internal/core/team"
 
-func ByFaction(creatures []Creature) map[team.Team][]Creature {
-	factions := make(map[team.Team][]Creature)
-	for _, creature := range creatures {
-		factions[creature.FactionID] = append(factions[creature.FactionID], creature)
-	}
-	return factions
-}
-
 type Creature struct {
-	Name      string
-	FactionID team.Team
-	HitPoints int
+	Name         string
+	Team         team.Team
+	HitPoints    int
+	MaxHitPoints int
 }
 
 type Action struct {
