@@ -24,6 +24,6 @@ func (c Creature) ActionPoints() int {
 	return c.actionPoints
 }
 
-func (c *Creature) IsDead() bool {
+func (c Creature) IsDead() bool {
 	return c.hitPoints == 0
 }

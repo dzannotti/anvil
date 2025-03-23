@@ -30,5 +30,6 @@ func NewUseActionEvent(a string, source *Creature, target *Creature) *event.UseA
 			Name: a,
 		},
 		Source: ToEvent(source),
+		Target: ToEvent(target),
 	}
 }

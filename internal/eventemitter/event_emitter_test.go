@@ -63,7 +63,7 @@ func TestEventEmitter_MultipleHandlers(t *testing.T) {
 	event := TestEvent{Message: "test"}
 	callCount := 0
 
-	handler := func(e any) { callCount++ }
+	handler := func(_ any) { callCount++ }
 	emitter.On(event, handler)
 	emitter.On(event, handler)
 	emitter.Emit(event)
@@ -80,7 +80,7 @@ func TestEventEmitter_ConcurrentEmit(t *testing.T) {
 	var counter int
 	var mu sync.Mutex
 
-	emitter.On(event, func(e any) {
+	emitter.On(event, func(_ any) {
 		mu.Lock()
 		counter++
 		mu.Unlock()
@@ -107,8 +107,8 @@ func TestEventEmitter_DifferentEventTypes(t *testing.T) {
 	callCount1 := 0
 	callCount2 := 0
 
-	emitter.On(event1, func(e any) { callCount1++ })
-	emitter.On(event2, func(e any) { callCount2++ })
+	emitter.On(event1, func(_ any) { callCount1++ })
+	emitter.On(event2, func(_ any) { callCount2++ })
 
 	emitter.Emit(event1)
 	emitter.Emit(event2)
