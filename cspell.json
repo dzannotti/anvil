@@ -1,5 +1,5 @@
 {
-  "words": ["dzannotti"],
+  "words": ["dzannotti", "eventemitter"],
   "ignorePaths": [
     ".gitignore",
     ".github/**/*",
