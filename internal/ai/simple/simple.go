@@ -1,7 +1,7 @@
 package simple
 
 import (
-	"anvil/internal/creature"
+	"anvil/internal/core/creature"
 	"fmt"
 	"sync"
 )
@@ -47,13 +47,11 @@ func findTarget(enemies []*creature.Creature) *creature.Creature {
 func Simple(activeCreature *creature.Creature, allCreatures []*creature.Creature, actWG *sync.WaitGroup) {
 	defer actWG.Done()
 	if activeCreature.IsDead() {
-		fmt.Println(activeCreature.Name(), "cannot act because dead")
 		return
 	}
 	for {
 		action, err := bestCombatAction(activeCreature, allCreatures)
 		if err != nil {
-			fmt.Println(activeCreature.Name(), "cannot act: no action")
 			break
 		}
 		wg := sync.WaitGroup{}

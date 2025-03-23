@@ -1,9 +1,9 @@
 package encounter
 
 import (
-	"anvil/internal/creature"
-	"anvil/internal/team"
-	"fmt"
+	"anvil/internal/core/creature"
+	"anvil/internal/core/team"
+	"anvil/internal/log"
 	"sync"
 )
 
@@ -34,26 +34,30 @@ func winner(creatures []*creature.Creature) team.Team {
 	return team.None
 }
 
-func Play(allCreatures []*creature.Creature, act Act, result chan team.Team) {
+func Play(log *log.EventLog, creatures []*creature.Creature, act Act, result chan team.Team) {
 	turn := 0
 	round := 0
-	for !IsOver(allCreatures) {
-		fmt.Println("Round", round+1)
-		for i := range allCreatures {
-			var activeCreature = allCreatures[i]
-			fmt.Println("Turn", turn+1, activeCreature.Name(), "turn")
+	log.Start(NewEncounterEvent(creatures))
+	defer log.End()
+	for !IsOver(creatures) {
+		log.Start(NewRoundEvent(round+1, creatures))
+		for i := range creatures {
+			var active = creatures[i]
+			log.Start(NewTurnEvent(turn+1, active))
 			turnWG := sync.WaitGroup{}
 			turnWG.Add(1)
-			activeCreature.StartTurn()
-			go act(activeCreature, allCreatures, &turnWG)
+			active.StartTurn()
+			go act(active, creatures, &turnWG)
 			turnWG.Wait()
+			log.End() // turn
 			turn = turn + 1
-			if IsOver(allCreatures) {
+			if IsOver(creatures) {
 				break
 			}
 		}
 		round = round + 1
 		turn = 0
+		log.End() // round
 	}
-	result <- winner(allCreatures)
+	result <- winner(creatures)
 }

@@ -1,8 +1,8 @@
 package creature
 
 import (
-	"anvil/internal/team"
-	"fmt"
+	"anvil/internal/core/team"
+	"anvil/internal/log"
 	"math/rand"
 )
 
@@ -12,6 +12,7 @@ type Creature struct {
 	hitPoints    int
 	actionPoints int
 	actions      []Action
+	log          *log.EventLog
 }
 
 func (c Creature) Name() string {
@@ -34,22 +35,24 @@ func RollDice(sides int) int {
 	return rand.Intn(sides) + 1
 }
 
-func New(name string, factionID team.Team, hitPoints int, actions []Action) *Creature {
-	return &Creature{name: name, factionID: factionID, hitPoints: hitPoints, actionPoints: 0, actions: actions}
+func New(log *log.EventLog, name string, factionID team.Team, hitPoints int, actions []Action) *Creature {
+	return &Creature{log: log, name: name, factionID: factionID, hitPoints: hitPoints, actionPoints: 0, actions: actions}
 }
 
 func (c *Creature) TakeDamage(damage int) {
 	c.hitPoints = max(0, c.hitPoints-damage)
-	fmt.Println(c.name, "took", damage, "damage", c.hitPoints, "remaining")
+	c.log.Start(NewTakeDamageEvent(c, damage))
+	c.log.End()
 }
 
 func (c *Creature) Attack(target *Creature) {
-	fmt.Println(c.name, "attacks", target.name)
+	c.log.Start(NewUseActionEvent("Attack", c, target))
 	damage := RollDice(20)
 	target.TakeDamage(damage)
 	if target.IsDead() {
-		fmt.Println(target.name, "is dead")
+		target.Die()
 	}
+	c.log.End()
 }
 
 func (c *Creature) IsDead() bool {
@@ -66,4 +69,9 @@ func (c *Creature) Consume(cost int) {
 
 func (c *Creature) Actions() []Action {
 	return c.actions
+}
+
+func (c *Creature) Die() {
+	c.log.Start(NewDeathEvent(c))
+	c.log.End()
 }
