@@ -7,25 +7,25 @@ import (
 	"anvil/internal/core/definition"
 )
 
-type SimpleAI struct {
+type AI struct {
 	encounter *core.Encounter
 	owner     *core.Creature
 }
 
-func New(encounter *core.Encounter, owner *core.Creature) *SimpleAI {
-	return &SimpleAI{
+func New(encounter *core.Encounter, owner *core.Creature) *AI {
+	return &AI{
 		encounter: encounter,
 		owner:     owner,
 	}
 }
 
-func (ai *SimpleAI) Play() {
+func (ai *AI) Play() {
 	if target, err := ai.ChooseTarget(); err == nil {
 		ai.owner.Attack(target)
 	}
 }
 
-func (ai SimpleAI) ChooseTarget() (definition.Creature, error) {
+func (ai AI) ChooseTarget() (definition.Creature, error) {
 	enemies := ai.Enemies()
 	for i := range enemies {
 		if !enemies[i].IsDead() {
@@ -35,12 +35,12 @@ func (ai SimpleAI) ChooseTarget() (definition.Creature, error) {
 	return nil, errors.New("no target found")
 }
 
-func (ai SimpleAI) Enemies() []definition.Creature {
+func (ai AI) Enemies() []definition.Creature {
 	_, enemies := ai.Teams()
 	return enemies.Members()
 }
 
-func (ai SimpleAI) Teams() (definition.Team, definition.Team) {
+func (ai AI) Teams() (definition.Team, definition.Team) {
 	teams := ai.encounter.Teams()
 	if teams[0].Contains(ai.owner) {
 		return teams[0], teams[1]
