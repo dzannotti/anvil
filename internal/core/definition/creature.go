@@ -5,4 +5,7 @@ type Creature interface {
 	IsDead() bool
 	HitPoints() int
 	MaxHitPoints() int
+	StartTurn()
+	Attack(Creature)
+	TakeDamage(damage int)
 }

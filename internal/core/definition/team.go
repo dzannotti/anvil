@@ -5,4 +5,5 @@ type Team interface {
 	AddMember(c Creature)
 	IsDead() bool
 	Members() []Creature
+	Contains(c Creature) bool
 }

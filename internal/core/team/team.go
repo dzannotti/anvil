@@ -1,15 +1,17 @@
 package team
 
-import "anvil/internal/core/creature"
+import (
+	"anvil/internal/core/definition"
+)
 
 type Team struct {
 	name    string
-	members []*creature.Creature
+	members []definition.Creature
 }
 
 func New(name string) *Team {
 	return &Team{
 		name:    name,
-		members: []*creature.Creature{},
+		members: []definition.Creature{},
 	}
 }

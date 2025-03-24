@@ -10,8 +10,8 @@ import (
 type Act = func(active definition.Creature, wg *sync.WaitGroup)
 
 func (e *Encounter) playTurn(act Act) {
-	//log.Start(NewTurnEvent(turn+1, active))
-	//defer log.End()
+	e.log.Start(event.NewTurn(e.turn, e.ActiveCreature()))
+	defer e.log.End()
 	turnWG := sync.WaitGroup{}
 	turnWG.Add(1)
 	e.ActiveCreature().StartTurn()
@@ -20,8 +20,8 @@ func (e *Encounter) playTurn(act Act) {
 }
 
 func (e *Encounter) playRound(act Act) {
-	//log.Start(NewRoundEvent(round+1, creatures))
-	//defer log.End()
+	e.log.Start(event.NewRound(e.round, e.AllCreatures()))
+	defer e.log.End()
 	e.turn = 0
 	for i := range e.initiativeOrder {
 		e.turn = i
@@ -40,6 +40,5 @@ func (e *Encounter) Play(act Act, wg *sync.WaitGroup) {
 	for !e.IsOver() {
 		e.playRound(act)
 		e.round = e.round + 1
-		//log.End() // round
 	}
 }

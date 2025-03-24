@@ -1,11 +1,13 @@
 package team
 
-import "anvil/internal/core/creature"
+import (
+	"anvil/internal/core/definition"
+)
 
-func (t *Team) AddMember(creature *creature.Creature) {
+func (t *Team) AddMember(creature definition.Creature) {
 	t.members = append(t.members, creature)
 }
 
-func (t *Team) Members() []*creature.Creature {
+func (t *Team) Members() []definition.Creature {
 	return t.members
 }

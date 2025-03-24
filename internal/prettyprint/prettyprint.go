@@ -26,18 +26,18 @@ func Print(out io.Writer, ev log.Event) {
 
 func eventToString(ev log.Event) string {
 	switch e := ev.Data.(type) {
-	case *event.Encounter:
-		return printEncounter(*e)
-		/*case *event.Round:
-			return printRound(*e)
-		case *event.Turn:
-			return printTurn(*e)
-		case *event.Death:
-			return printDeath(*e)
-		case *event.UseAction:
-			return printUseAction(*e)
-		case *event.TakeDamage:
-			return printTakeDamage(*e)*/
+	case event.Encounter:
+		return printEncounter(e)
+	case event.Round:
+		return printRound(e)
+	case event.Turn:
+		return printTurn(e)
+	case event.Died:
+		return printDeath(e)
+	case event.UseAction:
+		return printUseAction(e)
+	case event.TakeDamage:
+		return printTakeDamage(e)
 	}
 	return "unknown event" + reflect.TypeOf(ev.Data).Name()
 }
@@ -75,24 +75,23 @@ func printEncounter(e event.Encounter) string {
 	return sb.String()
 }
 
-/*
 func printRound(r event.Round) string {
 	sb := strings.Builder{}
 	sb.WriteString("🔄 Round ")
-	sb.WriteString(fmt.Sprint(r.Round))
+	sb.WriteString(fmt.Sprint(r.Round + 1))
 	return sb.String()
 }
 
 func printTurn(t event.Turn) string {
 	sb := strings.Builder{}
 	sb.WriteString("🔃 Turn ")
-	sb.WriteString(fmt.Sprint(t.Turn))
+	sb.WriteString(fmt.Sprint(t.Turn + 1))
 	sb.WriteString(": ")
 	sb.WriteString(fmt.Sprint(t.Creature.Name))
 	return sb.String()
 }
 
-func printDeath(d event.Death) string {
+func printDeath(d event.Died) string {
 	sb := strings.Builder{}
 	sb.WriteString("☠️ ")
 	sb.WriteString(fmt.Sprint(d.Creature.Name))
@@ -114,9 +113,9 @@ func printUseAction(u event.UseAction) string {
 func printTakeDamage(d event.TakeDamage) string {
 	sb := strings.Builder{}
 	sb.WriteString("🩸 ")
-	sb.WriteString(fmt.Sprint(d.Creature.Name))
+	sb.WriteString(fmt.Sprint(d.Target.Name))
 	sb.WriteString(" takes ")
 	sb.WriteString(fmt.Sprint(d.Damage))
 	sb.WriteString(" damage")
 	return sb.String()
-}*/
+}

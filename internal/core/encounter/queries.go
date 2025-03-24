@@ -1,7 +1,6 @@
 package encounter
 
 import (
-	"anvil/internal/core/creature"
 	"anvil/internal/core/definition"
 	"anvil/internal/core/team"
 )
@@ -20,8 +19,8 @@ func (e Encounter) ActiveCreature() definition.Creature {
 	return e.initiativeOrder[e.turn]
 }
 
-func (e Encounter) AllCreatures() []creature.Creature {
-	var allCreatures = []creature.Creature{}
+func (e Encounter) AllCreatures() []definition.Creature {
+	var allCreatures = []definition.Creature{}
 	for _, t := range e.teams {
 		allCreatures = append(allCreatures, t.Members()...)
 	}

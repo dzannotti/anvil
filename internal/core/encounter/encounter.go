@@ -10,10 +10,10 @@ type Encounter struct {
 	turn            int
 	initiativeOrder []definition.Creature
 	teams           []definition.Team
-	log             log.EventLog
+	log             *log.EventLog
 }
 
-func New(log log.EventLog, teams []definition.Team) *Encounter {
+func New(log *log.EventLog, teams []definition.Team) *Encounter {
 	encounter := &Encounter{
 		teams:           teams,
 		initiativeOrder: []definition.Creature{},
