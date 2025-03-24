@@ -1,29 +1,13 @@
 package main
 
 import (
-	"anvil/internal/ai"
-	"anvil/internal/core/creature"
-	"anvil/internal/core/encounter"
-	"anvil/internal/core/team"
+	"anvil/internal/core"
 	"anvil/internal/log"
 	"anvil/internal/prettyprint"
 	"fmt"
 	"os"
-	"sync"
 	"time"
 )
-
-type AttackAction struct{}
-
-func (a AttackAction) Cost() int {
-	return 1
-}
-
-func (a AttackAction) Perform(source *creature.Creature, target *creature.Creature, wg *sync.WaitGroup) {
-	defer wg.Done()
-	source.Consume(a.Cost())
-	source.Attack(target)
-}
 
 func printLog(event log.Event) {
 	prettyprint.Print(os.Stdout, event)
@@ -32,14 +16,21 @@ func printLog(event log.Event) {
 func main() {
 	log := log.New()
 	log.AddCapturer(printLog)
-	wizard := creature.New(log, "Wizard", team.Player, 22, []creature.Action{AttackAction{}})
-	elf := creature.New(log, "Elf", team.Player, 22, []creature.Action{AttackAction{}})
-	orc := creature.New(log, "Orc", team.Enemy, 22, []creature.Action{AttackAction{}})
-	goblin := creature.New(log, "Goblin", team.Enemy, 22, []creature.Action{AttackAction{}})
+	players := core.NewTeam("Players")
+	enemies := core.NewTeam("Enemies")
+	wizard := core.NewCreature("Wizard", 22)
+	fighter := core.NewCreature("Fighter", 22)
+	orc := core.NewCreature("Orc", 22)
+	goblin := core.NewCreature("Goblin", 22)
+	players.AddMember(wizard)
+	players.AddMember(fighter)
+	enemies.AddMember(orc)
+	enemies.AddMember(goblin)
+	encounter := core.NewEncounter([]*core.Team{players, enemies})
 	start := time.Now()
-	resultCh := make(chan team.Team)
-	go encounter.Play(log, []*creature.Creature{wizard, elf, orc, goblin}, ai.Simple, resultCh)
-	winner := <-resultCh
-	fmt.Println("Winner:", winner)
+	winnerCh := make(chan core.Team)
+	go encounter.Play(winnerCh)
+	winner := <-winnerCh
+	fmt.Println("Winner:", winner.Name())
 	fmt.Printf("%v elapsed\n", time.Since(start))
 }
