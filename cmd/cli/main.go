@@ -1,29 +1,17 @@
 package main
 
 import (
-	"anvil/internal/ai"
-	"anvil/internal/core/creature"
-	"anvil/internal/core/encounter"
-	"anvil/internal/core/team"
-	"anvil/internal/log"
-	"anvil/internal/prettyprint"
 	"fmt"
 	"os"
 	"sync"
 	"time"
+
+	"anvil/internal/core"
+	"anvil/internal/core/ai"
+	"anvil/internal/core/definition"
+	"anvil/internal/log"
+	"anvil/internal/prettyprint"
 )
-
-type AttackAction struct{}
-
-func (a AttackAction) Cost() int {
-	return 1
-}
-
-func (a AttackAction) Perform(source *creature.Creature, target *creature.Creature, wg *sync.WaitGroup) {
-	defer wg.Done()
-	source.Consume(a.Cost())
-	source.Attack(target)
-}
 
 func printLog(event log.Event) {
 	prettyprint.Print(os.Stdout, event)
@@ -32,14 +20,31 @@ func printLog(event log.Event) {
 func main() {
 	log := log.New()
 	log.AddCapturer(printLog)
-	wizard := creature.New(log, "Wizard", team.Player, 22, []creature.Action{AttackAction{}})
-	elf := creature.New(log, "Elf", team.Player, 22, []creature.Action{AttackAction{}})
-	orc := creature.New(log, "Orc", team.Enemy, 22, []creature.Action{AttackAction{}})
-	goblin := creature.New(log, "Goblin", team.Enemy, 22, []creature.Action{AttackAction{}})
+	players := core.NewTeam("Players")
+	enemies := core.NewTeam("Enemies")
+	wizard := core.NewCreature(log, "Wizard", 22)
+	fighter := core.NewCreature(log, "Fighter", 22)
+	orc := core.NewCreature(log, "Orc", 22)
+	goblin := core.NewCreature(log, "Goblin", 22)
+	players.AddMember(wizard)
+	players.AddMember(fighter)
+	enemies.AddMember(orc)
+	enemies.AddMember(goblin)
+	encounter := core.NewEncounter(log, []definition.Team{players, enemies})
+	gameAI := map[definition.Creature]ai.AI{
+		wizard:  ai.NewSimple(encounter, wizard),
+		fighter: ai.NewSimple(encounter, fighter),
+		orc:     ai.NewSimple(encounter, orc),
+		goblin:  ai.NewSimple(encounter, goblin),
+	}
+	wg := sync.WaitGroup{}
 	start := time.Now()
-	resultCh := make(chan team.Team)
-	go encounter.Play(log, []*creature.Creature{wizard, elf, orc, goblin}, ai.Simple, resultCh)
-	winner := <-resultCh
-	fmt.Println("Winner:", winner)
+	wg.Add(1)
+	go encounter.Play(func(active definition.Creature, wg *sync.WaitGroup) {
+		defer wg.Done()
+		gameAI[active].Play()
+	}, &wg)
+	wg.Wait()
+	fmt.Println("Winner:", encounter.Winner().Name())
 	fmt.Printf("%v elapsed\n", time.Since(start))
 }

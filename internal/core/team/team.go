@@ -1,22 +1,17 @@
 package team
 
-type Team int
-
-const (
-	None Team = iota
-	Player
-	Enemy
+import (
+	"anvil/internal/core/definition"
 )
 
-func (t Team) String() string {
-	switch t {
-	case None:
-		return "None"
-	case Player:
-		return "Player"
-	case Enemy:
-		return "Enemy"
-	default:
-		return "Unknown"
+type Team struct {
+	name    string
+	members []definition.Creature
+}
+
+func New(name string) *Team {
+	return &Team{
+		name:    name,
+		members: []definition.Creature{},
 	}
 }

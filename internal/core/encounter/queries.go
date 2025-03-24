@@ -1,31 +1,40 @@
 package encounter
 
 import (
-	"anvil/internal/core/creature"
-	"anvil/internal/core/team"
+	"anvil/internal/core/definition"
 )
 
-func IsOver(creatures []*creature.Creature) bool {
-	playersAlive := false
-	enemiesAlive := false
-	for _, c := range creatures {
-		if !c.IsDead() {
-			if c.Team() == team.Player {
-				playersAlive = true
-			}
-			if c.Team() == team.Enemy {
-				enemiesAlive = true
-			}
+func (e Encounter) IsOver() bool {
+	alive := 0
+	for _, t := range e.teams {
+		if !t.IsDead() {
+			alive++
 		}
 	}
-	return !playersAlive || !enemiesAlive
+	return alive <= 1
 }
 
-func winner(creatures []*creature.Creature) team.Team {
-	for i := range creatures {
-		if !creatures[i].IsDead() {
-			return creatures[i].Team()
+func (e Encounter) ActiveCreature() definition.Creature {
+	return e.initiativeOrder[e.turn]
+}
+
+func (e Encounter) AllCreatures() []definition.Creature {
+	var allCreatures = []definition.Creature{}
+	for _, t := range e.teams {
+		allCreatures = append(allCreatures, t.Members()...)
+	}
+	return allCreatures
+}
+
+func (e Encounter) Winner() definition.Team {
+	for _, t := range e.teams {
+		if !t.IsDead() {
+			return t
 		}
 	}
-	return team.None
+	return nil
+}
+
+func (e Encounter) Teams() []definition.Team {
+	return e.teams
 }
