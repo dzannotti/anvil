@@ -2,7 +2,6 @@ package encounter
 
 import (
 	"anvil/internal/core/definition"
-	"anvil/internal/core/team"
 )
 
 func (e Encounter) IsOver() bool {
