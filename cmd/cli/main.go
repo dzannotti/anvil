@@ -11,10 +11,17 @@ import (
 	"anvil/internal/core/definition"
 	"anvil/internal/log"
 	"anvil/internal/prettyprint"
+	"anvil/internal/ruleset/base"
 )
 
 func printLog(event log.Event) {
 	prettyprint.Print(os.Stdout, event)
+}
+
+func creature(log *log.EventLog, name string, hitPoints int) *core.Creature {
+	c := core.NewCreature(log, name, hitPoints)
+	c.AddAction(base.NewAttackAction(c))
+	return c
 }
 
 func main() {
@@ -22,10 +29,10 @@ func main() {
 	log.AddCapturer(printLog)
 	players := core.NewTeam("Players")
 	enemies := core.NewTeam("Enemies")
-	wizard := core.NewCreature(log, "Wizard", 22)
-	fighter := core.NewCreature(log, "Fighter", 22)
-	orc := core.NewCreature(log, "Orc", 22)
-	goblin := core.NewCreature(log, "Goblin", 22)
+	wizard := creature(log, "Wizard", 22)
+	fighter := creature(log, "Fighter", 22)
+	orc := creature(log, "Orc", 22)
+	goblin := creature(log, "Goblin", 22)
 	players.AddMember(wizard)
 	players.AddMember(fighter)
 	enemies.AddMember(orc)
