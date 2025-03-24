@@ -1,12 +1,16 @@
 package main
 
 import (
-	"anvil/internal/core"
-	"anvil/internal/log"
-	"anvil/internal/prettyprint"
 	"fmt"
 	"os"
+	"sync"
 	"time"
+
+	"anvil/internal/core"
+	"anvil/internal/core/ai"
+	"anvil/internal/core/creature"
+	"anvil/internal/log"
+	"anvil/internal/prettyprint"
 )
 
 func printLog(event log.Event) {
@@ -27,10 +31,20 @@ func main() {
 	enemies.AddMember(orc)
 	enemies.AddMember(goblin)
 	encounter := core.NewEncounter([]*core.Team{players, enemies})
+	gameAI := map[*core.Creature]ai.AI{
+		wizard:  ai.NewSimple(encounter, wizard),
+		fighter: ai.NewSimple(encounter, fighter),
+		orc:     ai.NewSimple(encounter, orc),
+		goblin:  ai.NewSimple(encounter, goblin),
+	}
+	wg := sync.WaitGroup{}
 	start := time.Now()
-	winnerCh := make(chan core.Team)
-	go encounter.Play(winnerCh)
-	winner := <-winnerCh
-	fmt.Println("Winner:", winner.Name())
+	wg.Add(1)
+	go encounter.Play(func(active *creature.Creature, wg *sync.WaitGroup) {
+		defer wg.Done()
+		gameAI[active].Play()
+	}, &wg)
+	wg.Wait()
+	fmt.Println("Winner:", encounter.Winner().Name())
 	fmt.Printf("%v elapsed\n", time.Since(start))
 }

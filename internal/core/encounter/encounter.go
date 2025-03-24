@@ -1,15 +1,24 @@
 package encounter
 
 import (
-	"anvil/internal/core/team"
+	"anvil/internal/core/definition"
+	"anvil/internal/log"
 )
 
 type Encounter struct {
-	teams []*team.Team
+	round           int
+	turn            int
+	initiativeOrder []definition.Creature
+	teams           []definition.Team
+	log             log.EventLog
 }
 
-func New(teams []*team.Team) *Encounter {
-	return &Encounter{
-		teams: teams,
+func New(log log.EventLog, teams []definition.Team) *Encounter {
+	encounter := &Encounter{
+		teams:           teams,
+		initiativeOrder: []definition.Creature{},
+		log:             log,
 	}
+	encounter.initiativeOrder = encounter.AllCreatures()
+	return encounter
 }

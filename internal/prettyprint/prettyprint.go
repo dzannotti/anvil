@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"anvil/internal/core/event"
+	"anvil/internal/core/event/parts"
 	"anvil/internal/log"
 )
 
@@ -27,40 +28,54 @@ func eventToString(ev log.Event) string {
 	switch e := ev.Data.(type) {
 	case *event.Encounter:
 		return printEncounter(*e)
-	case *event.Round:
-		return printRound(*e)
-	case *event.Turn:
-		return printTurn(*e)
-	case *event.Death:
-		return printDeath(*e)
-	case *event.UseAction:
-		return printUseAction(*e)
-	case *event.TakeDamage:
-		return printTakeDamage(*e)
+		/*case *event.Round:
+			return printRound(*e)
+		case *event.Turn:
+			return printTurn(*e)
+		case *event.Death:
+			return printDeath(*e)
+		case *event.UseAction:
+			return printUseAction(*e)
+		case *event.TakeDamage:
+			return printTakeDamage(*e)*/
 	}
 	return "unknown event" + reflect.TypeOf(ev.Data).Name()
 }
 
-func printCreature(c event.Creature) string {
+func printCreature(c parts.Creature) string {
 	sb := strings.Builder{}
-	hp := fmt.Sprintf("%3d", c.HitPoints)
-	maxHp := fmt.Sprintf("%d", c.MaxHitPoints)
-	sb.WriteString(fmt.Sprintf("👹 %-20.20s | HP: %s/%s | Team: %s", c.Name, hp, maxHp, c.Team.String()))
+	stats := []string{
+		fmt.Sprintf("HP: %3d/%3d", c.HitPoints, c.MaxHitPoints),
+	}
+	sb.WriteString(fmt.Sprintf("🧝 %-20s %s", c.Name, strings.Join(stats, " ")))
+	return sb.String()
+}
+
+func printTeam(f parts.Team) string {
+	sb := strings.Builder{}
+	sb.WriteString("🎴 " + f.Name)
+	creatures := []string{}
+	for _, c := range f.Members {
+		creatures = append(creatures, indent(printCreature(c)))
+	}
+	sb.WriteString("\n" + strings.Join(creatures, "\n"))
 	return sb.String()
 }
 
 func printEncounter(e event.Encounter) string {
 	sb := strings.Builder{}
 	sb.WriteString("🏰 Encounter Start")
-	sb.WriteString("\n")
-	creatures := make([]string, 0, len(e.Creatures))
-	for _, c := range e.Creatures {
-		creatures = append(creatures, indent(printCreature(c)))
+	teams := []string{}
+	for _, f := range e.Teams {
+		teams = append(teams, indent(printTeam(f)))
+		teams = append(teams, "│ └─○")
 	}
-	sb.WriteString(strings.Join(creatures, "\n"))
+	sb.WriteString("\n" + strings.Join(teams, "\n"))
+
 	return sb.String()
 }
 
+/*
 func printRound(r event.Round) string {
 	sb := strings.Builder{}
 	sb.WriteString("🔄 Round ")
@@ -104,4 +119,4 @@ func printTakeDamage(d event.TakeDamage) string {
 	sb.WriteString(fmt.Sprint(d.Damage))
 	sb.WriteString(" damage")
 	return sb.String()
-}
+}*/

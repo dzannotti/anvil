@@ -7,3 +7,7 @@ func (c Creature) Attack(other *Creature) {
 func (c *Creature) TakeDamage(damage int) {
 	c.hitPoints = max(c.hitPoints-damage, 0)
 }
+
+func (c *Creature) StartTurn() {
+
+}
