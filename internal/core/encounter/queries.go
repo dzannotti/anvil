@@ -33,7 +33,7 @@ func (e Encounter) Winner() definition.Team {
 			return t
 		}
 	}
-	return &team.Team{}
+	return nil
 }
 
 func (e Encounter) Teams() []definition.Team {
