@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"anvil/internal/core/event"
-	"anvil/internal/core/event/parts"
+	"anvil/internal/core/event/snapshot"
 	"anvil/internal/log"
 )
 
@@ -42,7 +42,7 @@ func eventToString(ev log.Event) string {
 	return "unknown event" + reflect.TypeOf(ev.Data).Name()
 }
 
-func printCreature(c parts.Creature) string {
+func printCreature(c snapshot.Creature) string {
 	sb := strings.Builder{}
 	stats := []string{
 		fmt.Sprintf("HP: %3d/%3d", c.HitPoints, c.MaxHitPoints),
@@ -51,7 +51,7 @@ func printCreature(c parts.Creature) string {
 	return sb.String()
 }
 
-func printTeam(f parts.Team) string {
+func printTeam(f snapshot.Team) string {
 	sb := strings.Builder{}
 	sb.WriteString("🎴 " + f.Name)
 	creatures := []string{}

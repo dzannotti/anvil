@@ -2,17 +2,17 @@ package event
 
 import (
 	"anvil/internal/core/definition"
-	"anvil/internal/core/event/parts"
+	"anvil/internal/core/event/snapshot"
 )
 
 type Encounter struct {
-	Teams []parts.Team
+	Teams []snapshot.Team
 }
 
 func NewEncounter(f []definition.Team) Encounter {
-	factions := make([]parts.Team, 0, len(f))
+	factions := make([]snapshot.Team, 0, len(f))
 	for i := range f {
-		factions = append(factions, parts.NewFaction(f[i]))
+		factions = append(factions, snapshot.CaptureTeam(f[i]))
 	}
 	return Encounter{Teams: factions}
 }

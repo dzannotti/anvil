@@ -1,4 +1,4 @@
-package parts
+package snapshot
 
 import "anvil/internal/core/definition"
 
@@ -8,6 +8,6 @@ type Creature struct {
 	MaxHitPoints int
 }
 
-func NewCreature(src definition.Creature) Creature {
+func CaptureCreature(src definition.Creature) Creature {
 	return Creature{Name: src.Name(), HitPoints: src.HitPoints(), MaxHitPoints: src.MaxHitPoints()}
 }
