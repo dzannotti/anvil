@@ -21,7 +21,7 @@ func New(encounter *core.Encounter, owner *core.Creature) *AI {
 
 func (ai *AI) Play() {
 	if target, err := ai.ChooseTarget(); err == nil {
-		ai.owner.Attack(target)
+		ai.owner.Actions()[0].Perform(target)
 	}
 }
 

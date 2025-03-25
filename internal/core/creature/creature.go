@@ -1,12 +1,16 @@
 package creature
 
-import "anvil/internal/log"
+import (
+	"anvil/internal/core/definition"
+	"anvil/internal/log"
+)
 
 type Creature struct {
 	log          *log.EventLog
 	name         string
 	hitPoints    int
 	maxHitPoints int
+	actions      []definition.Action
 }
 
 func New(log *log.EventLog, name string, hitPoints int) *Creature {
