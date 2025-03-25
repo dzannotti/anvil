@@ -2,18 +2,18 @@ package event
 
 import (
 	"anvil/internal/core/definition"
-	"anvil/internal/core/event/parts"
+	"anvil/internal/core/event/snapshot"
 )
 
 type Round struct {
 	Round     int
-	Creatures []parts.Creature
+	Creatures []snapshot.Creature
 }
 
 func NewRound(round int, c []definition.Creature) Round {
-	creatures := make([]parts.Creature, 0, len(c))
+	creatures := make([]snapshot.Creature, 0, len(c))
 	for i := range c {
-		creatures = append(creatures, parts.NewCreature(c[i]))
+		creatures = append(creatures, snapshot.CaptureCreature(c[i]))
 	}
 	return Round{Round: round, Creatures: creatures}
 }

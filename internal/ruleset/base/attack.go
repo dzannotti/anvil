@@ -15,11 +15,15 @@ func NewAttackAction(owner definition.Creature) AttackAction {
 	}
 }
 
+func (a AttackAction) Name() string {
+	return "Attack"
+}
+
 func (a AttackAction) Perform(target definition.Creature) {
 	if target == nil {
 		return
 	}
-	a.owner.Log().Start(event.NewUseAction("attack", a.owner, target))
+	a.owner.Log().Start(event.NewUseAction(a, a.owner, target))
 	target.TakeDamage(5)
 	a.owner.Log().End()
 }
