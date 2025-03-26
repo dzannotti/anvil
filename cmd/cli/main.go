@@ -9,6 +9,8 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/core/ai"
 	"anvil/internal/core/definition"
+	"anvil/internal/core/world"
+	"anvil/internal/grid"
 	"anvil/internal/log"
 	"anvil/internal/prettyprint"
 	"anvil/internal/ruleset/base"
@@ -18,8 +20,8 @@ func printLog(event log.Event) {
 	prettyprint.Print(os.Stdout, event)
 }
 
-func creature(log *log.EventLog, name string, hitPoints int) *core.Creature {
-	c := core.NewCreature(log, name, hitPoints)
+func creature(log *log.EventLog, world *world.World, pos grid.Position, name string, hitPoints int) *core.Creature {
+	c := core.NewCreature(log, world, pos, name, hitPoints)
 	c.AddAction(base.NewAttackAction(c))
 	return c
 }
@@ -27,12 +29,13 @@ func creature(log *log.EventLog, name string, hitPoints int) *core.Creature {
 func main() {
 	log := log.New()
 	log.AddCapturer(printLog)
+	world := core.NewWorld(10, 10)
 	players := core.NewTeam("Players")
 	enemies := core.NewTeam("Enemies")
-	wizard := creature(log, "Wizard", 22)
-	fighter := creature(log, "Fighter", 22)
-	orc := creature(log, "Orc", 22)
-	goblin := creature(log, "Goblin", 22)
+	wizard := creature(log, world, grid.NewPosition(1, 1), "Wizard", 22)
+	fighter := creature(log, world, grid.NewPosition(1, 2), "Fighter", 22)
+	orc := creature(log, world, grid.NewPosition(4, 3), "Orc", 22)
+	goblin := creature(log, world, grid.NewPosition(4, 4), "Goblin", 22)
 	players.AddMember(wizard)
 	players.AddMember(fighter)
 	enemies.AddMember(orc)
