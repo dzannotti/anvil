@@ -4,6 +4,7 @@ import (
 	"anvil/internal/core/creature"
 	"anvil/internal/core/encounter"
 	"anvil/internal/core/team"
+	"anvil/internal/core/world"
 )
 
 type Creature = creature.Creature
@@ -17,3 +18,7 @@ var NewTeam = team.New
 type Encounter = encounter.Encounter
 
 var NewEncounter = encounter.New
+
+type World = world.World
+
+var NewWorld = world.New

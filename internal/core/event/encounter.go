@@ -7,12 +7,13 @@ import (
 
 type Encounter struct {
 	Teams []snapshot.Team
+	World snapshot.World
 }
 
-func NewEncounter(f []definition.Team) Encounter {
+func NewEncounter(f []definition.Team, world definition.World) Encounter {
 	factions := make([]snapshot.Team, 0, len(f))
 	for i := range f {
 		factions = append(factions, snapshot.CaptureTeam(f[i]))
 	}
-	return Encounter{Teams: factions}
+	return Encounter{Teams: factions, World: snapshot.CaptureWorld(world)}
 }

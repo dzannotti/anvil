@@ -42,6 +42,26 @@ func eventToString(ev log.Event) string {
 	return "unknown event" + reflect.TypeOf(ev.Data).Name()
 }
 
+func printWorld(w snapshot.World) string {
+	sb := strings.Builder{}
+	sb.WriteString("🌍 World\n")
+	for x := range len(w.Cells) {
+		for y := range len(w.Cells[x]) {
+			if !w.Cells[x][y].Walkable {
+				sb.WriteString("#")
+				continue
+			}
+			if w.Cells[x][y].Occupant.Name != "" {
+				sb.WriteString(w.Cells[x][y].Occupant.Name[0:1])
+				continue
+			}
+			sb.WriteString(".")
+		}
+		sb.WriteString("\n")
+	}
+	return sb.String()
+}
+
 func printCreature(c snapshot.Creature) string {
 	sb := strings.Builder{}
 	stats := []string{
@@ -66,6 +86,7 @@ func printEncounter(e event.Encounter) string {
 	sb := strings.Builder{}
 	sb.WriteString("🏰 Encounter Start")
 	teams := []string{}
+	sb.WriteString("\n" + indent(printWorld(e.World)))
 	for _, f := range e.Teams {
 		teams = append(teams, indent(printTeam(f)))
 		teams = append(teams, "│ └─○")

@@ -1,0 +1,256 @@
+package pathfinding
+
+import (
+	"anvil/internal/grid"
+	"testing"
+)
+
+func TestBasicPathFinding(t *testing.T) {
+	tests := []struct {
+		name     string
+		start    grid.Position
+		end      grid.Position
+		expected []grid.Position
+	}{
+		{
+			name:  "straight horizontal path",
+			start: grid.NewPosition(0, 2),
+			end:   grid.NewPosition(4, 2),
+			expected: []grid.Position{
+				grid.NewPosition(0, 2),
+				grid.NewPosition(1, 2),
+				grid.NewPosition(2, 2),
+				grid.NewPosition(3, 2),
+				grid.NewPosition(4, 2),
+			},
+		},
+		{
+			name:  "straight vertical path",
+			start: grid.NewPosition(2, 0),
+			end:   grid.NewPosition(2, 4),
+			expected: []grid.Position{
+				grid.NewPosition(2, 0),
+				grid.NewPosition(2, 1),
+				grid.NewPosition(2, 2),
+				grid.NewPosition(2, 3),
+				grid.NewPosition(2, 4),
+			},
+		},
+		{
+			name:  "diagonal path",
+			start: grid.NewPosition(0, 0),
+			end:   grid.NewPosition(2, 2),
+			expected: []grid.Position{
+				grid.NewPosition(0, 0),
+				grid.NewPosition(1, 1),
+				grid.NewPosition(2, 2),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pathFinding := New(5, 5)
+			result := pathFinding.FindPath(tt.start, tt.end)
+
+			if len(result) != len(tt.expected) {
+				t.Errorf("path length = %v, want %v", len(result), len(tt.expected))
+			}
+
+			for i := range result {
+				if result[i] != tt.expected[i] {
+					t.Errorf("path[%d] = %v, want %v", i, result[i], tt.expected[i])
+				}
+			}
+		})
+	}
+}
+
+func TestObstacleAvoidance(t *testing.T) {
+	t.Run("should navigate around obstacles", func(t *testing.T) {
+		pathFinding := New(5, 5)
+		obstacles := make([][]bool, 5)
+		for i := range obstacles {
+			obstacles[i] = make([]bool, 5)
+		}
+		obstacles[2][1] = true
+		obstacles[2][2] = true
+		obstacles[2][3] = true
+		pathFinding.Setup(obstacles)
+
+		start := grid.NewPosition(1, 2)
+		end := grid.NewPosition(3, 2)
+		result := pathFinding.FindPath(start, end)
+
+		if len(result) <= 2 {
+			t.Error("path should be longer than direct route")
+		}
+
+		if !containsPosition(result, start) {
+			t.Error("path should contain start position")
+		}
+		if !containsPosition(result, end) {
+			t.Error("path should contain end position")
+		}
+
+		for _, pos := range result {
+			if obstacles[pos.X][pos.Y] {
+				t.Errorf("path contains obstacle at position %v", pos)
+			}
+		}
+	})
+
+	t.Run("should return empty path when destination is unreachable", func(t *testing.T) {
+		pathFinding := New(5, 5)
+		obstacles := make([][]bool, 5)
+		for i := range obstacles {
+			obstacles[i] = make([]bool, 5)
+		}
+		for y := 0; y < 5; y++ {
+			obstacles[2][y] = true
+		}
+		pathFinding.Setup(obstacles)
+
+		start := grid.NewPosition(1, 2)
+		end := grid.NewPosition(3, 2)
+		result := pathFinding.FindPath(start, end)
+
+		if len(result) != 0 {
+			t.Error("path should be empty when destination is unreachable")
+		}
+	})
+}
+
+func TestPathOptimality(t *testing.T) {
+	t.Run("should prefer diagonal movement when it's shorter", func(t *testing.T) {
+		pathFinding := New(5, 5)
+		start := grid.NewPosition(0, 0)
+		end := grid.NewPosition(2, 2)
+		result := pathFinding.FindPath(start, end)
+
+		if len(result) != 3 {
+			t.Error("path should be diagonal with length 3")
+		}
+	})
+
+	t.Run("should find optimal path around obstacles", func(t *testing.T) {
+		pathFinding := New(5, 5)
+		obstacles := make([][]bool, 5)
+		for i := range obstacles {
+			obstacles[i] = make([]bool, 5)
+		}
+		obstacles[1][1] = true
+		pathFinding.Setup(obstacles)
+
+		start := grid.NewPosition(0, 0)
+		end := grid.NewPosition(2, 2)
+		result := pathFinding.FindPath(start, end)
+
+		if len(result) <= 3 {
+			t.Error("path should be longer than diagonal")
+		}
+		if containsPosition(result, grid.NewPosition(1, 1)) {
+			t.Error("path should not contain obstacle position")
+		}
+	})
+
+	t.Run("cannot find diagonal path around walls", func(t *testing.T) {
+		pathFinding := New(5, 5)
+		obstacles := make([][]bool, 5)
+		for i := range obstacles {
+			obstacles[i] = make([]bool, 5)
+		}
+		obstacles[1][0] = true
+		pathFinding.Setup(obstacles)
+
+		start := grid.NewPosition(0, 0)
+		end := grid.NewPosition(2, 0)
+		result := pathFinding.FindPath(start, end)
+
+		if len(result) <= 3 {
+			t.Error("path should be longer than diagonal")
+		}
+	})
+}
+
+func TestHelperFunctions(t *testing.T) {
+	t.Run("should calculate correct distance", func(t *testing.T) {
+		pathFinding := New(5, 5)
+		start := grid.NewPosition(0, 0)
+		end := grid.NewPosition(3, 3)
+		distance := pathFinding.distance(start, end)
+
+		if distance != 30 {
+			t.Errorf("distance = %v, want %v", distance, 30)
+		}
+	})
+
+	t.Run("should generate valid neighbor nodes", func(t *testing.T) {
+		pathFinding := New(5, 5)
+		center := grid.NewPosition(2, 2)
+		node, _ := pathFinding.grid.At(center)
+		neighbors := pathFinding.neighbours(node)
+
+		if len(neighbors) != 8 {
+			t.Errorf("number of neighbors = %v, want 8", len(neighbors))
+		}
+
+		for _, node := range neighbors {
+			pos := node.Position()
+			if pos.X < 0 || pos.X >= 5 || pos.Y < 0 || pos.Y >= 5 {
+				t.Errorf("neighbor position %v is out of bounds", pos)
+			}
+		}
+	})
+
+	t.Run("should generate fewer neighbors at edges", func(t *testing.T) {
+		pathFinding := New(5, 5)
+		corner := grid.NewPosition(0, 0)
+		node, _ := pathFinding.grid.At(corner)
+		neighbors := pathFinding.neighbours(node)
+
+		if len(neighbors) != 3 {
+			t.Errorf("number of neighbors = %v, want 3", len(neighbors))
+		}
+	})
+
+	t.Run("should get lowest fCost node", func(t *testing.T) {
+		pathFinding := New(5, 5)
+		nodes := []*Node{
+			{
+				position: grid.NewPosition(0, 0),
+				gCost:    20,
+				hCost:    30,
+			},
+			{
+				position: grid.NewPosition(1, 1),
+				gCost:    10,
+				hCost:    10,
+			},
+			{
+				position: grid.NewPosition(2, 2),
+				gCost:    30,
+				hCost:    20,
+			},
+		}
+
+		lowestNode := pathFinding.lowestFCost(nodes)
+		expectedPos := grid.NewPosition(1, 1)
+
+		if lowestNode.Position() != expectedPos {
+			t.Errorf("lowest fCost node position = %v, want %v", lowestNode.Position(), expectedPos)
+		}
+		if lowestNode.FCost() != 20 {
+			t.Errorf("lowest fCost = %v, want 20", lowestNode.FCost())
+		}
+	})
+}
+
+func containsPosition(positions []grid.Position, target grid.Position) bool {
+	for _, pos := range positions {
+		if pos == target {
+			return true
+		}
+	}
+	return false
+}
