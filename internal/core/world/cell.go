@@ -1,9 +1,9 @@
 package world
 
 import (
+	"anvil/internal/core/creature"
 	"anvil/internal/core/definition"
 	"anvil/internal/grid"
-	"errors"
 	"slices"
 )
 
@@ -33,11 +33,11 @@ func (c *WorldCell) RemoveOccupant(creature definition.Creature) {
 	})
 }
 
-func (c *WorldCell) Occupant() (definition.Creature, error) {
+func (c *WorldCell) Occupant() (definition.Creature, bool) {
 	if len(c.occupants) == 0 {
-		return nil, errors.New("no occupants")
+		return &creature.Creature{}, false
 	}
-	return c.occupants[0], nil
+	return c.occupants[0], true
 }
 
 func (c *WorldCell) IsOccupied() bool {

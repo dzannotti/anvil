@@ -38,3 +38,7 @@ func (w World) CreaturesInRange(pos grid.Position, radius int) []definition.Crea
 	}
 	return creatures
 }
+
+func (w World) Navigation() definition.Pathfinding {
+	return w.navigation
+}

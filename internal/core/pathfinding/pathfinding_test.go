@@ -50,7 +50,7 @@ func TestBasicPathFinding(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			pathFinding := NewPathfinding(5, 5)
+			pathFinding := New(5, 5)
 			result := pathFinding.FindPath(tt.start, tt.end)
 
 			if len(result) != len(tt.expected) {
@@ -68,7 +68,7 @@ func TestBasicPathFinding(t *testing.T) {
 
 func TestObstacleAvoidance(t *testing.T) {
 	t.Run("should navigate around obstacles", func(t *testing.T) {
-		pathFinding := NewPathfinding(5, 5)
+		pathFinding := New(5, 5)
 		obstacles := make([][]bool, 5)
 		for i := range obstacles {
 			obstacles[i] = make([]bool, 5)
@@ -101,7 +101,7 @@ func TestObstacleAvoidance(t *testing.T) {
 	})
 
 	t.Run("should return empty path when destination is unreachable", func(t *testing.T) {
-		pathFinding := NewPathfinding(5, 5)
+		pathFinding := New(5, 5)
 		obstacles := make([][]bool, 5)
 		for i := range obstacles {
 			obstacles[i] = make([]bool, 5)
@@ -123,7 +123,7 @@ func TestObstacleAvoidance(t *testing.T) {
 
 func TestPathOptimality(t *testing.T) {
 	t.Run("should prefer diagonal movement when it's shorter", func(t *testing.T) {
-		pathFinding := NewPathfinding(5, 5)
+		pathFinding := New(5, 5)
 		start := grid.NewPosition(0, 0)
 		end := grid.NewPosition(2, 2)
 		result := pathFinding.FindPath(start, end)
@@ -134,7 +134,7 @@ func TestPathOptimality(t *testing.T) {
 	})
 
 	t.Run("should find optimal path around obstacles", func(t *testing.T) {
-		pathFinding := NewPathfinding(5, 5)
+		pathFinding := New(5, 5)
 		obstacles := make([][]bool, 5)
 		for i := range obstacles {
 			obstacles[i] = make([]bool, 5)
@@ -155,7 +155,7 @@ func TestPathOptimality(t *testing.T) {
 	})
 
 	t.Run("cannot find diagonal path around walls", func(t *testing.T) {
-		pathFinding := NewPathfinding(5, 5)
+		pathFinding := New(5, 5)
 		obstacles := make([][]bool, 5)
 		for i := range obstacles {
 			obstacles[i] = make([]bool, 5)
@@ -175,7 +175,7 @@ func TestPathOptimality(t *testing.T) {
 
 func TestHelperFunctions(t *testing.T) {
 	t.Run("should calculate correct distance", func(t *testing.T) {
-		pathFinding := NewPathfinding(5, 5)
+		pathFinding := New(5, 5)
 		start := grid.NewPosition(0, 0)
 		end := grid.NewPosition(3, 3)
 		distance := pathFinding.distance(start, end)
@@ -186,7 +186,7 @@ func TestHelperFunctions(t *testing.T) {
 	})
 
 	t.Run("should generate valid neighbor nodes", func(t *testing.T) {
-		pathFinding := NewPathfinding(5, 5)
+		pathFinding := New(5, 5)
 		center := grid.NewPosition(2, 2)
 		node, _ := pathFinding.grid.At(center)
 		neighbors := pathFinding.neighbours(node)
@@ -204,7 +204,7 @@ func TestHelperFunctions(t *testing.T) {
 	})
 
 	t.Run("should generate fewer neighbors at edges", func(t *testing.T) {
-		pathFinding := NewPathfinding(5, 5)
+		pathFinding := New(5, 5)
 		corner := grid.NewPosition(0, 0)
 		node, _ := pathFinding.grid.At(corner)
 		neighbors := pathFinding.neighbours(node)
@@ -215,7 +215,7 @@ func TestHelperFunctions(t *testing.T) {
 	})
 
 	t.Run("should get lowest fCost node", func(t *testing.T) {
-		pathFinding := NewPathfinding(5, 5)
+		pathFinding := New(5, 5)
 		nodes := []*Node{
 			{
 				position: grid.NewPosition(0, 0),

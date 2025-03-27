@@ -17,7 +17,7 @@ type Creature struct {
 }
 
 func New(log *log.EventLog, world definition.World, pos grid.Position, name string, hitPoints int) *Creature {
-	return &Creature{
+	creature := &Creature{
 		log:          log,
 		position:     pos,
 		world:        world,
@@ -25,4 +25,7 @@ func New(log *log.EventLog, world definition.World, pos grid.Position, name stri
 		hitPoints:    hitPoints,
 		maxHitPoints: hitPoints,
 	}
+	cell, _ := world.At(pos)
+	cell.AddOccupant(creature)
+	return creature
 }

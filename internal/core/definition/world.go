@@ -4,7 +4,7 @@ import "anvil/internal/grid"
 
 type WorldCell interface {
 	Position() grid.Position
-	Occupant() (Creature, error)
+	Occupant() (Creature, bool)
 	AddOccupant(Creature)
 	RemoveOccupant(Creature)
 	IsOccupied() bool
@@ -12,5 +12,8 @@ type WorldCell interface {
 
 type World interface {
 	At(grid.Position) (WorldCell, bool)
+	Navigation() Pathfinding
 	CreaturesInRange(grid.Position, int) []Creature
+	Width() int
+	Height() int
 }

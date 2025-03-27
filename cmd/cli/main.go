@@ -26,10 +26,30 @@ func creature(log *log.EventLog, world *world.World, pos grid.Position, name str
 	return c
 }
 
+func setupWorld(world *world.World) {
+	for x := 0; x < world.Width(); x++ {
+		cell, _ := world.Navigation().At(grid.NewPosition(x, 0))
+		cell.SetWalkable(false)
+	}
+	for x := 0; x < world.Width(); x++ {
+		cell, _ := world.Navigation().At(grid.NewPosition(x, world.Height()-1))
+		cell.SetWalkable(false)
+	}
+	for y := 0; y < world.Height(); y++ {
+		cell, _ := world.Navigation().At(grid.NewPosition(0, y))
+		cell.SetWalkable(false)
+	}
+	for y := 0; y < world.Height(); y++ {
+		cell, _ := world.Navigation().At(grid.NewPosition(world.Width()-1, y))
+		cell.SetWalkable(false)
+	}
+}
+
 func main() {
 	log := log.New()
 	log.AddCapturer(printLog)
 	world := core.NewWorld(10, 10)
+	setupWorld(world)
 	players := core.NewTeam("Players")
 	enemies := core.NewTeam("Enemies")
 	wizard := creature(log, world, grid.NewPosition(1, 1), "Wizard", 22)
@@ -40,7 +60,7 @@ func main() {
 	players.AddMember(fighter)
 	enemies.AddMember(orc)
 	enemies.AddMember(goblin)
-	encounter := core.NewEncounter(log, []definition.Team{players, enemies})
+	encounter := core.NewEncounter(log, world, []definition.Team{players, enemies})
 	gameAI := map[definition.Creature]ai.AI{
 		wizard:  ai.NewSimple(encounter, wizard),
 		fighter: ai.NewSimple(encounter, fighter),
