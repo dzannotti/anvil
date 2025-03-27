@@ -7,39 +7,39 @@ import (
 	"slices"
 )
 
-type WorldCell struct {
+type Cell struct {
 	position  grid.Position
 	occupants []definition.Creature
 }
 
-func NewWorldCell(position grid.Position) WorldCell {
-	return WorldCell{
+func NewCell(position grid.Position) Cell {
+	return Cell{
 		position:  position,
 		occupants: make([]definition.Creature, 0),
 	}
 }
 
-func (c *WorldCell) Position() grid.Position {
+func (c *Cell) Position() grid.Position {
 	return c.position
 }
 
-func (c *WorldCell) AddOccupant(creature definition.Creature) {
+func (c *Cell) AddOccupant(creature definition.Creature) {
 	c.occupants = append(c.occupants, creature)
 }
 
-func (c *WorldCell) RemoveOccupant(creature definition.Creature) {
-	slices.DeleteFunc(c.occupants, func(o definition.Creature) bool {
+func (c *Cell) RemoveOccupant(creature definition.Creature) {
+	c.occupants = slices.DeleteFunc(c.occupants, func(o definition.Creature) bool {
 		return o == creature
 	})
 }
 
-func (c *WorldCell) Occupant() (definition.Creature, bool) {
+func (c *Cell) Occupant() (definition.Creature, bool) {
 	if len(c.occupants) == 0 {
 		return &creature.Creature{}, false
 	}
 	return c.occupants[0], true
 }
 
-func (c *WorldCell) IsOccupied() bool {
+func (c *Cell) IsOccupied() bool {
 	return len(c.occupants) > 0
 }

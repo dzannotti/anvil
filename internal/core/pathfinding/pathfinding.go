@@ -5,11 +5,6 @@ import (
 	"anvil/internal/grid"
 )
 
-const (
-	MOVE_DIAGONAL_COST = 10
-	MOVE_STRAIGHT_COST = 10
-)
-
 type Pathfinding struct {
 	width  int
 	height int

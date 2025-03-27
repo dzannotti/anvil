@@ -7,6 +7,11 @@ import (
 	"github.com/adam-lavrik/go-imath/ix"
 )
 
+const (
+	MoveDiagonalCost = 10
+	MoveStraightCost = 10
+)
+
 func (pf *Pathfinding) FindPath(start grid.Position, end grid.Position) []grid.Position {
 	pf.reset()
 	open := []*Node{}
@@ -56,7 +61,7 @@ func (pf *Pathfinding) distance(a grid.Position, b grid.Position) int {
 	xd := ix.Abs(a.X - b.X)
 	yd := ix.Abs(a.Y - b.Y)
 	remaining := ix.Abs(xd - yd)
-	return MOVE_DIAGONAL_COST*ix.Min(xd, yd) + MOVE_STRAIGHT_COST*remaining
+	return MoveDiagonalCost*ix.Min(xd, yd) + MoveStraightCost*remaining
 }
 
 func (pf *Pathfinding) neighbours(node *Node) []*Node {

@@ -6,13 +6,13 @@ import (
 )
 
 type World struct {
-	grid       *grid.Grid[WorldCell]
+	grid       *grid.Grid[Cell]
 	navigation *pathfinding.Pathfinding
 }
 
 func New(width int, height int) *World {
 	return &World{
-		grid:       grid.New(width, height, NewWorldCell),
+		grid:       grid.New(width, height, NewCell),
 		navigation: pathfinding.New(width, height),
 	}
 }
