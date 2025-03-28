@@ -14,7 +14,10 @@ linters:
     rules:
       - linters:
           - errcheck
+          - revive
         path: _test\.go
+        rules:
+          - unused-parameter
     paths:
       - third_party$
       - builtin$

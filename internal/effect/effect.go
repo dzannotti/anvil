@@ -5,16 +5,16 @@ import (
 	"sync"
 )
 
-type EffectOption func(Effect)
+type Option func(Effect)
 
 type Effect struct {
-	Id       string
+	Name     string
 	handlers map[state.Type]func(*Effect, state.State, *sync.WaitGroup)
 }
 
-func New(id string, opts ...EffectOption) Effect {
+func New(name string, opts ...Option) Effect {
 	e := Effect{
-		Id:       id,
+		Name:     name,
 		handlers: make(map[state.Type]func(*Effect, state.State, *sync.WaitGroup)),
 	}
 	for _, opt := range opts {
@@ -26,12 +26,15 @@ func New(id string, opts ...EffectOption) Effect {
 func (e *Effect) Evaluate(state state.State, wg *sync.WaitGroup) {
 	handler, exists := e.handlers[state.Type()]
 	if exists {
-		wg.Add(1)
-		go handler(e, state, wg)
+		ewg := &sync.WaitGroup{}
+		ewg.Add(1)
+		go handler(e, state, ewg)
+		ewg.Wait()
 	}
+	wg.Done()
 }
 
-func WithAttributeCalculation(handler func(*Effect, *state.AttributeCalculation, *sync.WaitGroup)) EffectOption {
+func WithAttributeCalculation(handler func(*Effect, *state.AttributeCalculation, *sync.WaitGroup)) Option {
 	return func(e Effect) {
 		e.handlers[state.AttributeCalculationType] = func(e *Effect, s state.State, wg *sync.WaitGroup) {
 			if attributeState, ok := s.(*state.AttributeCalculation); ok {

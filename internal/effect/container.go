@@ -19,7 +19,7 @@ func (c *Container) Add(effect Effect) {
 
 func (c *Container) Remove(effect Effect) {
 	for i, e := range c.effects {
-		if e.Id == effect.Id {
+		if e.Name == effect.Name {
 			c.effects = append(c.effects[:i], c.effects[i+1:]...)
 			return
 		}
@@ -28,7 +28,10 @@ func (c *Container) Remove(effect Effect) {
 
 func (c *Container) Evaluate(state state.State, wg *sync.WaitGroup) {
 	for _, effect := range c.effects {
-		effect.Evaluate(state, wg)
-		wg.Wait()
+		lwg := &sync.WaitGroup{}
+		lwg.Add(1)
+		effect.Evaluate(state, lwg)
+		lwg.Wait()
 	}
+	wg.Done()
 }

@@ -29,7 +29,7 @@ func TestTagContainer_Id(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			container := FromString(tt.initialTag)
 			container.AddTag(tag.FromString(tt.additionalTag))
-			assert.Equal(t, tt.expectedId, container.Id())
+			assert.Equal(t, tt.expectedId, container.ID())
 		})
 	}
 }

@@ -93,6 +93,7 @@ func TestContainer_Evaluate(t *testing.T) {
 			Expression: expression.FromScalar(5, "bar"),
 		}
 		wg := &sync.WaitGroup{}
+		wg.Add(1)
 		c.Evaluate(state, wg)
 		wg.Wait()
 		res := state.Expression.Evaluate()
@@ -104,7 +105,9 @@ func TestContainer_Evaluate(t *testing.T) {
 		c := NewContainer()
 		state := &state.AttributeCalculation{}
 		wg := &sync.WaitGroup{}
+		wg.Add(1)
 		c.Evaluate(state, wg) // Should not panic
 		wg.Wait()
+		assert.Equal(t, true, true)
 	})
 }

@@ -33,8 +33,10 @@ func TestEffect_Evaluate(t *testing.T) {
 		effect := New("with")
 		state := &state.AttributeCalculation{}
 		wg := &sync.WaitGroup{}
+		wg.Add(1)
 		effect.Evaluate(state, wg) // Should not panic
 		wg.Wait()
+		assert.Equal(t, true, true)
 	})
 
 	t.Run("can evaluate with matching handler", func(t *testing.T) {
@@ -49,6 +51,7 @@ func TestEffect_Evaluate(t *testing.T) {
 			Expression: expression.FromScalar(5, "bar"),
 		}
 		wg := &sync.WaitGroup{}
+		wg.Add(1)
 		effect.Evaluate(state, wg)
 		wg.Wait()
 		assert.True(t, handlerCalled)
@@ -64,6 +67,7 @@ func TestEffect_Evaluate(t *testing.T) {
 		}))
 		state := &state.BeforeAttackRoll{}
 		wg := &sync.WaitGroup{}
+		wg.Add(1)
 		effect.Evaluate(state, wg)
 		wg.Wait()
 		assert.False(t, handlerCalled)

@@ -18,7 +18,7 @@ func (tc TagContainer) Strings() []string {
 	return tags
 }
 
-func (tc TagContainer) Id() string {
+func (tc TagContainer) ID() string {
 	return strings.Join(tc.Strings(), "-")
 }
 
