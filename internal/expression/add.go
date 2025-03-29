@@ -40,11 +40,11 @@ func (e *Expression) AddDamageDice(times int, sides int, source string, tags tag
 	e.Terms = append(e.Terms, term)
 }
 
-func (e Expression) primaryTags(tags tagcontainer.TagContainer) *tagcontainer.TagContainer {
+func (e Expression) primaryTags(tags tagcontainer.TagContainer) tagcontainer.TagContainer {
 	if len(e.Terms) > 0 {
 		if e.Terms[0].Tags.HasTag(tag.FromString("primary")) {
 			return e.Terms[0].Tags
 		}
 	}
-	return &tags
+	return tags
 }

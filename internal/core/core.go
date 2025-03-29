@@ -22,3 +22,12 @@ var NewEncounter = encounter.New
 type World = world.World
 
 var NewWorld = world.New
+
+var NewAttributes = creature.NewAttributes
+
+type Attributes = creature.Attributes
+type AttributeValues = creature.AttributeValues
+
+var NewProficiencies = creature.NewProficiencies
+
+type Proficiencies = creature.Proficiencies

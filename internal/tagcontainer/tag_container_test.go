@@ -41,29 +41,21 @@ func TestTagContainer_Clone(t *testing.T) {
 		name          string
 		initialTag    string
 		additionalTag string
-		isEmpty       bool
 	}{
 		{
 			name:          "should clone a tag container",
 			initialTag:    "ability.damage.fire",
 			additionalTag: "foo.bar",
-			isEmpty:       false,
 		},
 		{
 			name:          "should clone an empty container",
-			isEmpty:       true,
 			additionalTag: "foo.bar",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var container *TagContainer
-			if tt.isEmpty {
-				container = New()
-			} else {
-				container = FromString(tt.initialTag)
-			}
+			container := FromString(tt.initialTag)
 
 			container2 := container.Clone()
 			assert.Equal(t, container, container2)

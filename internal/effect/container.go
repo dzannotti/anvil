@@ -2,7 +2,6 @@ package effect
 
 import (
 	"anvil/internal/effect/state"
-	"sync"
 )
 
 type Container struct {
@@ -26,12 +25,8 @@ func (c *Container) Remove(effect Effect) {
 	}
 }
 
-func (c *Container) Evaluate(state state.State, wg *sync.WaitGroup) {
+func (c *Container) Evaluate(state state.State) {
 	for _, effect := range c.effects {
-		lwg := &sync.WaitGroup{}
-		lwg.Add(1)
-		effect.Evaluate(state, lwg)
-		lwg.Wait()
+		effect.Evaluate(state)
 	}
-	wg.Done()
 }

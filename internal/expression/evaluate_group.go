@@ -12,7 +12,7 @@ func (e *Expression) EvaluateGroup() *Expression {
 		for _, term := range group {
 			value += term.Value
 		}
-		out.AddDamageScalar(value, group[0].Source, *group[0].Tags, groups[i]...)
+		out.AddDamageScalar(value, group[0].Source, group[0].Tags, groups[i]...)
 	}
 	return out.Evaluate()
 }

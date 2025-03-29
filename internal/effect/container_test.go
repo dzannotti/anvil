@@ -92,10 +92,7 @@ func TestContainer_Evaluate(t *testing.T) {
 		state := &state.AttributeCalculation{
 			Expression: expression.FromScalar(5, "bar"),
 		}
-		wg := &sync.WaitGroup{}
-		wg.Add(1)
-		c.Evaluate(state, wg)
-		wg.Wait()
+		c.Evaluate(state)
 		res := state.Expression.Evaluate()
 		assert.Equal(t, 2, evaluationCount)
 		assert.Equal(t, 7, res.Value)
@@ -104,10 +101,7 @@ func TestContainer_Evaluate(t *testing.T) {
 	t.Run("handles empty container", func(t *testing.T) {
 		c := NewContainer()
 		state := &state.AttributeCalculation{}
-		wg := &sync.WaitGroup{}
-		wg.Add(1)
-		c.Evaluate(state, wg) // Should not panic
-		wg.Wait()
+		c.Evaluate(state) // Should not panic
 		assert.Equal(t, true, true)
 	})
 }

@@ -23,23 +23,34 @@ func New(name string, opts ...Option) Effect {
 	return e
 }
 
-func (e *Effect) Evaluate(state state.State, wg *sync.WaitGroup) {
+func (e *Effect) Evaluate(state state.State) {
 	handler, exists := e.handlers[state.Type()]
 	if exists {
-		ewg := &sync.WaitGroup{}
-		ewg.Add(1)
-		go handler(e, state, ewg)
-		ewg.Wait()
+		wg := &sync.WaitGroup{}
+		wg.Add(1)
+		go handler(e, state, wg)
+		wg.Wait()
 	}
-	wg.Done()
 }
 
-func WithAttributeCalculation(handler func(*Effect, *state.AttributeCalculation, *sync.WaitGroup)) Option {
+func withHandler[S state.State](stateType state.Type, handler func(*Effect, S, *sync.WaitGroup)) Option {
 	return func(e Effect) {
-		e.handlers[state.AttributeCalculationType] = func(e *Effect, s state.State, wg *sync.WaitGroup) {
-			if attributeState, ok := s.(*state.AttributeCalculation); ok {
-				handler(e, attributeState, wg)
+		e.handlers[stateType] = func(e *Effect, s state.State, wg *sync.WaitGroup) {
+			if state, ok := s.(S); ok {
+				handler(e, state, wg)
 			}
 		}
 	}
+}
+
+func WithAttributeCalculation(handler func(*Effect, *state.AttributeCalculation, *sync.WaitGroup)) Option {
+	return withHandler(state.AttributeCalculationType, handler)
+}
+
+func WithBeforeAttackRoll(handler func(*Effect, *state.BeforeAttackRoll, *sync.WaitGroup)) Option {
+	return withHandler(state.BeforeAttackRollType, handler)
+}
+
+func WithAfterAttackRoll(handler func(*Effect, *state.AfterAttackRoll, *sync.WaitGroup)) Option {
+	return withHandler(state.AfterAttackRollType, handler)
 }

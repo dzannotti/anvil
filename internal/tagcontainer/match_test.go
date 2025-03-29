@@ -72,7 +72,7 @@ func TestTagContainer_MatchAnyTag(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			container1 := FromString(tt.container1)
 			container2 := FromString(tt.container2)
-			assert.Equal(t, tt.want, container1.MatchAnyTag(*container2))
+			assert.Equal(t, tt.want, container1.MatchAnyTag(container2))
 		})
 	}
 }
@@ -109,14 +109,14 @@ func TestTagContainer_MatchAllTag(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			container1 := FromString(tt.container1)
-			var container2 *TagContainer
+			var container2 TagContainer
 			switch v := tt.container2.(type) {
 			case string:
 				container2 = FromString(v)
 			case []string:
 				container2 = FromStrings(v)
 			}
-			assert.Equal(t, tt.want, container1.MatchAllTag(*container2))
+			assert.Equal(t, tt.want, container1.MatchAllTag(container2))
 		})
 	}
 }

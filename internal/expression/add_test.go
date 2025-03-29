@@ -79,7 +79,7 @@ func TestExpression_Add(t *testing.T) {
 			name: "can add a damage scalar",
 			setup: func() Expression {
 				exp := Expression{}
-				exp.AddDamageScalar(2, "Damage", *tagcontainer.FromString("slashing"))
+				exp.AddDamageScalar(2, "Damage", tagcontainer.FromString("slashing"))
 				return exp
 			},
 			expected: struct {
@@ -98,7 +98,7 @@ func TestExpression_Add(t *testing.T) {
 			name: "can add a damage dice",
 			setup: func() Expression {
 				exp := Expression{}
-				exp.AddDamageDice(2, 6, "Damage", *tagcontainer.FromString("slashing"))
+				exp.AddDamageDice(2, 6, "Damage", tagcontainer.FromString("slashing"))
 				return exp
 			},
 			expected: struct {
@@ -193,7 +193,7 @@ func TestExpression_Add(t *testing.T) {
 				if tt.expected.term.Sides > 0 {
 					assert.Equal(t, tt.expected.term.Sides, expression.Terms[0].Sides)
 				}
-				if tt.expected.term.Tags != nil {
+				if !tt.expected.term.Tags.IsEmpty() {
 					assert.Equal(t, tt.expected.term.Tags, expression.Terms[0].Tags)
 				}
 			}

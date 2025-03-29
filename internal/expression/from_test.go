@@ -53,7 +53,7 @@ func TestExpression_New(t *testing.T) {
 		{
 			name: "can create from damage scalar",
 			setup: func() Expression {
-				return FromDamageScalar(2, "Damage", *tagcontainer.FromString("slashing"))
+				return FromDamageScalar(2, "Damage", tagcontainer.FromString("slashing"))
 			},
 			expected: Term{
 				Type:   TypeDamageScalar,
@@ -65,7 +65,7 @@ func TestExpression_New(t *testing.T) {
 		{
 			name: "can create from damage dice",
 			setup: func() Expression {
-				return FromDamageDice(2, 6, "Damage", *tagcontainer.FromString("slashing"))
+				return FromDamageDice(2, 6, "Damage", tagcontainer.FromString("slashing"))
 			},
 			expected: Term{
 				Type:   TypeDamageDice,
@@ -91,7 +91,7 @@ func TestExpression_New(t *testing.T) {
 			if tt.expected.Sides > 0 {
 				assert.Equal(t, tt.expected.Sides, expression.Terms[0].Sides)
 			}
-			if tt.expected.Tags != nil {
+			if !tt.expected.Tags.IsEmpty() {
 				assert.Equal(t, tt.expected.Tags, expression.Terms[0].Tags)
 			}
 		})
