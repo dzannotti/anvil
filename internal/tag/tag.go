@@ -33,6 +33,10 @@ func (t Tag) String() string {
 	return t.value
 }
 
+func (t Tag) Strings() []string {
+	return strings.Split(t.value, ".")
+}
+
 func normalize(value string) string {
 	value = strings.ToLower(value)
 	value = whitespace.ReplaceAllString(value, "")

@@ -1,7 +1,12 @@
 package creature
 
 import (
+	"anvil/internal/core/definition"
 	"anvil/internal/core/event"
+	"anvil/internal/core/tags"
+	"anvil/internal/effect/state"
+	"anvil/internal/expression"
+	"anvil/internal/tagcontainer"
 )
 
 func (c *Creature) TakeDamage(damage int) {
@@ -11,4 +16,23 @@ func (c *Creature) TakeDamage(damage int) {
 
 func (c *Creature) StartTurn() {
 
+}
+
+func (c *Creature) AttackRoll(target definition.Creature, tc tagcontainer.TagContainer) definition.CheckResult {
+	expression := expression.FromD20("Base")
+	c.log.Start(event.NewAttackRoll(c, target))
+	defer c.log.End()
+	before := state.NewBeforeAttackRoll(c, target, &expression, tc)
+	c.effects.Evaluate(before)
+	expression.Evaluate()
+	after := state.NewAfterAttackRoll(c, target, &expression, tc)
+	c.effects.Evaluate(after)
+	c.log.Add(event.NewExpressionResult(expression))
+	value := after.Result.Value
+	crit := after.Result.IsCritical()
+	targetAC := target.ArmorClass()
+	c.log.Add(event.NewAttributeCalculation(tags.ArmorClass, targetAC))
+	ok := value >= targetAC.Value
+	c.log.Add(event.NewCheckResult(value, targetAC.Value, crit, ok))
+	return definition.NewCheckResult(value, expression, crit, ok)
 }

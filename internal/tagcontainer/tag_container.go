@@ -22,6 +22,10 @@ func (tc TagContainer) ID() string {
 	return strings.Join(tc.Strings(), "-")
 }
 
-func (tc TagContainer) Clone() *TagContainer {
+func (tc TagContainer) Clone() TagContainer {
 	return FromTags(tc.tags)
+}
+
+func (tc TagContainer) IsEmpty() bool {
+	return len(tc.tags) == 0
 }

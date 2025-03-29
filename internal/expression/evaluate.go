@@ -51,3 +51,13 @@ func (e Expression) evaluateD20Roll(term *Term) {
 	}
 	term.Value = min(values[0], values[1])
 }
+
+func (e Expression) IsCritical() bool {
+	if len(e.Terms) == 0 {
+		return false
+	}
+	if e.Terms[0].IsCritical != 0 {
+		return e.Terms[0].IsCritical == 1
+	}
+	return e.Terms[0].Values[0] == e.Terms[0].Sides
+}

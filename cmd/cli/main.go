@@ -20,8 +20,8 @@ func printLog(event log.Event) {
 	prettyprint.Print(os.Stdout, event)
 }
 
-func creature(log *log.EventLog, world *world.World, pos grid.Position, name string, hitPoints int) *core.Creature {
-	c := core.NewCreature(log, world, pos, name, hitPoints)
+func creature(log *log.EventLog, world *world.World, pos grid.Position, name string, hitPoints int, attributes core.Attributes, proficiencies core.Proficiencies) *core.Creature {
+	c := core.NewCreature(log, world, pos, name, hitPoints, attributes, proficiencies)
 	c.AddAction(base.NewAttackAction(c))
 	return c
 }
@@ -52,10 +52,11 @@ func main() {
 	setupWorld(world)
 	players := core.NewTeam("Players")
 	enemies := core.NewTeam("Enemies")
-	wizard := creature(log, world, grid.NewPosition(1, 1), "Wizard", 22)
-	fighter := creature(log, world, grid.NewPosition(1, 2), "Fighter", 22)
-	orc := creature(log, world, grid.NewPosition(4, 3), "Orc", 22)
-	goblin := creature(log, world, grid.NewPosition(4, 4), "Goblin", 22)
+	attributes := core.NewAttributes(core.AttributeValues{Strength: 10, Dexterity: 11, Constitution: 12, Intelligence: 13, Wisdom: 14, Charisma: 15})
+	wizard := creature(log, world, grid.NewPosition(1, 1), "Wizard", 22, attributes, core.NewProficiencies(2))
+	fighter := creature(log, world, grid.NewPosition(1, 2), "Fighter", 22, attributes, core.NewProficiencies(2))
+	orc := creature(log, world, grid.NewPosition(4, 3), "Orc", 22, attributes, core.NewProficiencies(2))
+	goblin := creature(log, world, grid.NewPosition(4, 4), "Goblin", 22, attributes, core.NewProficiencies(2))
 	players.AddMember(wizard)
 	players.AddMember(fighter)
 	enemies.AddMember(orc)

@@ -13,7 +13,7 @@ func TestTagContainer_HasTag(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		container *TagContainer
+		container TagContainer
 		tag       string
 		want      bool
 	}{
@@ -43,8 +43,8 @@ func TestTag_HasAnyTag(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		container1 *TagContainer
-		container2 *TagContainer
+		container1 TagContainer
+		container2 TagContainer
 		want       bool
 	}{
 		{
@@ -63,7 +63,7 @@ func TestTag_HasAnyTag(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.container1.HasAnyTag(*tt.container2))
+			assert.Equal(t, tt.want, tt.container1.HasAnyTag(tt.container2))
 		})
 	}
 }
@@ -73,8 +73,8 @@ func TestTag_HasAllTags(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		container1 *TagContainer
-		container2 *TagContainer
+		container1 TagContainer
+		container2 TagContainer
 		want       bool
 	}{
 		{
@@ -99,7 +99,7 @@ func TestTag_HasAllTags(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.container1.HasAllTag(*tt.container2))
+			assert.Equal(t, tt.want, tt.container1.HasAllTag(tt.container2))
 		})
 	}
 }

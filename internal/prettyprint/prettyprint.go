@@ -8,20 +8,61 @@ import (
 
 	"anvil/internal/core/event"
 	"anvil/internal/core/event/snapshot"
+	"anvil/internal/core/tags"
 	"anvil/internal/log"
+	"anvil/internal/tag"
 )
+
+var eventStack []log.Event
+
+func shouldPrintEnd() bool {
+	if len(eventStack) == 0 {
+		return true
+	}
+
+	stoppers := []reflect.Type{
+		reflect.TypeOf(event.ExpressionResult{}),
+		reflect.TypeOf(event.CheckResult{}),
+		reflect.TypeOf(event.AttributeCalculation{}),
+		/*reflect.TypeOf(event.AttributeChange{}),
+		reflect.TypeOf(event.Target{}),
+		reflect.TypeOf(event.SpendResource{}),*/
+	}
+
+	lastEvent := eventStack[len(eventStack)-1]
+	lastEventType := reflect.TypeOf(lastEvent.Data)
+
+	for _, stopper := range stoppers {
+		if lastEventType == stopper {
+			return false
+		}
+	}
+	return true
+}
 
 func Print(out io.Writer, ev log.Event) {
 	depthPrefix := strings.Repeat("│  ", max(0, ev.Depth-1))
 	if ev.IsEnd {
-		fmt.Fprintln(out, depthPrefix+"└─○")
+		if shouldPrintEnd() {
+			fmt.Fprintln(out, depthPrefix+"└─○")
+		}
+		eventStack = eventStack[:len(eventStack)-1]
 		return
+	}
+	if !ev.IsEnd {
+		eventStack = append(eventStack, ev)
 	}
 	extraPrefix := ""
 	if ev.Depth > 0 {
 		extraPrefix = "├─ "
 	}
-	fmt.Fprintln(out, depthPrefix+extraPrefix+eventToString(ev))
+	eventString := eventToString(ev)
+	lines := strings.Split(eventString, "\n")
+	first := depthPrefix + extraPrefix + lines[0]
+	fmt.Fprintln(out, first)
+	for _, line := range lines[1:] {
+		fmt.Fprintln(out, depthPrefix+"│  "+line)
+	}
 }
 
 func eventToString(ev log.Event) string {
@@ -38,8 +79,20 @@ func eventToString(ev log.Event) string {
 		return printUseAction(e)
 	case event.TakeDamage:
 		return printTakeDamage(e)
+	case event.ExpressionResult:
+		return printExpressionResult(e)
+	case event.CheckResult:
+		return printCheckResult(e)
+	case event.AttackRoll:
+		return printAttackRoll(e)
+	case event.AttributeCalculation:
+		return printAttributeCalculation(e)
 	}
-	return "unknown event" + reflect.TypeOf(ev.Data).Name()
+	t := reflect.TypeOf(ev.Data)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	return "unknown event " + t.Name()
 }
 
 func printWorld(w snapshot.World) string {
@@ -92,51 +145,67 @@ func printEncounter(e event.Encounter) string {
 		teams = append(teams, "│ └─○")
 	}
 	sb.WriteString("\n" + strings.Join(teams, "\n"))
-
+	sb.WriteString("\n└─○")
 	return sb.String()
 }
 
 func printRound(r event.Round) string {
-	sb := strings.Builder{}
-	sb.WriteString("🔄 Round ")
-	sb.WriteString(fmt.Sprint(r.Round + 1))
-	return sb.String()
+	return fmt.Sprintf("🔄 Round %d", r.Round+1)
 }
 
 func printTurn(t event.Turn) string {
-	sb := strings.Builder{}
-	sb.WriteString("🔃 Turn ")
-	sb.WriteString(fmt.Sprint(t.Turn + 1))
-	sb.WriteString(": ")
-	sb.WriteString(fmt.Sprint(t.Creature.Name))
-	return sb.String()
+	return fmt.Sprintf("🔃 Turn %d: %s", t.Turn+1, t.Creature.Name)
 }
 
 func printDeath(d event.Died) string {
-	sb := strings.Builder{}
-	sb.WriteString("☠️ ")
-	sb.WriteString(fmt.Sprint(d.Creature.Name))
-	sb.WriteString(" is about to die")
-	return sb.String()
+	return fmt.Sprintf("☠️ %s is about to die", d.Creature.Name)
 }
 
 func printUseAction(u event.UseAction) string {
-	sb := strings.Builder{}
-	sb.WriteString("🗡️ ")
-	sb.WriteString(fmt.Sprint(u.Source.Name))
-	sb.WriteString(" uses ")
-	sb.WriteString(fmt.Sprint(u.Action.Name))
-	sb.WriteString(" on ")
-	sb.WriteString(fmt.Sprint(u.Target.Name))
-	return sb.String()
+	return fmt.Sprintf("💫 %s uses %s on %s", u.Source.Name, u.Action.Name, u.Target.Name)
 }
 
 func printTakeDamage(d event.TakeDamage) string {
+	return fmt.Sprintf("🩸 %s takes %d damage", d.Target.Name, d.Damage)
+}
+
+func printExpressionResult(e event.ExpressionResult) string {
 	sb := strings.Builder{}
-	sb.WriteString("🩸 ")
-	sb.WriteString(fmt.Sprint(d.Target.Name))
-	sb.WriteString(" takes ")
-	sb.WriteString(fmt.Sprint(d.Damage))
-	sb.WriteString(" damage")
+	sb.WriteString("🎲 ")
+	sb.WriteString(printExpression(e.Expression))
+	return sb.String()
+}
+
+func printCheckResult(e event.CheckResult) string {
+	sb := strings.Builder{}
+	sIcon := map[bool]string{true: "✅", false: "❌"}
+	sb.WriteString(sIcon[e.Success])
+	if e.Critical {
+		sb.WriteString("💥 Critical")
+	}
+	success := map[bool]string{true: " Success", false: " Failure"}
+	sb.WriteString(success[e.Success])
+	outcome := sb.String()
+	return fmt.Sprintf("%s %d vs %d", outcome, e.Value, e.Against)
+}
+
+func printAttackRoll(e event.AttackRoll) string {
+	return fmt.Sprintf("🗡️ %s does an attack roll against %s", e.Source.Name, e.Target.Name)
+}
+
+func printAttributeCalculation(e event.AttributeCalculation) string {
+	emoji := map[tag.Tag]string{
+		tags.ArmorClass:   "🛡️",
+		tags.Strength:     "💪",
+		tags.Dexterity:    "🏹",
+		tags.Constitution: "❤️",
+		tags.Intelligence: "🧠",
+		tags.Wisdom:       "🧘",
+		tags.Charisma:     "👑",
+	}
+	sb := strings.Builder{}
+	sb.WriteString(emoji[e.Attribute])
+	sb.WriteString("\n")
+	sb.WriteString(printExpression(e.Expression))
 	return sb.String()
 }
