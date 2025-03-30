@@ -1,6 +1,6 @@
 package ai
 
-import "anvil/internal/core/ai/simple"
+import "anvil/internal/ai/simple"
 
 type AI interface {
 	Play()

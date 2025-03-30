@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"anvil/internal/ai"
 	"anvil/internal/core"
-	"anvil/internal/core/ai"
 	"anvil/internal/core/definition"
 	"anvil/internal/grid"
 	"anvil/internal/log"
