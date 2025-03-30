@@ -1,4 +1,4 @@
-package tagcontainer
+package tag_test
 
 import (
 	"testing"
@@ -27,7 +27,7 @@ func TestTagContainer_Id(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			container := FromString(tt.initialTag)
+			container := tag.ContainerFromString(tt.initialTag)
 			container.AddTag(tag.FromString(tt.additionalTag))
 			assert.Equal(t, tt.expectedId, container.ID())
 		})
@@ -55,7 +55,7 @@ func TestTagContainer_Clone(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			container := FromString(tt.initialTag)
+			container := tag.ContainerFromString(tt.initialTag)
 
 			container2 := container.Clone()
 			assert.Equal(t, container, container2)

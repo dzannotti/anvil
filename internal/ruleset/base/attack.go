@@ -3,7 +3,7 @@ package base
 import (
 	"anvil/internal/core/definition"
 	"anvil/internal/core/event"
-	"anvil/internal/tagcontainer"
+	"anvil/internal/tag"
 )
 
 type AttackAction struct {
@@ -26,7 +26,7 @@ func (a AttackAction) Perform(target definition.Creature) {
 	}
 	a.owner.Log().Start(event.NewUseAction(a, a.owner, target))
 	defer a.owner.Log().End()
-	result := a.owner.AttackRoll(target, tagcontainer.New())
+	result := a.owner.AttackRoll(target, tag.NewContainer())
 	if result.Success {
 		target.TakeDamage(5)
 	}

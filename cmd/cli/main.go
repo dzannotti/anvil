@@ -9,7 +9,6 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/core/ai"
 	"anvil/internal/core/definition"
-	"anvil/internal/core/world"
 	"anvil/internal/grid"
 	"anvil/internal/log"
 	"anvil/internal/prettyprint"
@@ -20,13 +19,13 @@ func printLog(event log.Event) {
 	prettyprint.Print(os.Stdout, event)
 }
 
-func creature(log *log.EventLog, world *world.World, pos grid.Position, name string, hitPoints int, attributes core.Attributes, proficiencies core.Proficiencies) *core.Creature {
+func creature(log *log.EventLog, world *core.World, pos grid.Position, name string, hitPoints int, attributes core.Attributes, proficiencies core.Proficiencies) *core.Creature {
 	c := core.NewCreature(log, world, pos, name, hitPoints, attributes, proficiencies)
 	c.AddAction(base.NewAttackAction(c))
 	return c
 }
 
-func setupWorld(world *world.World) {
+func setupWorld(world *core.World) {
 	for x := 0; x < world.Width(); x++ {
 		cell, _ := world.Navigation().At(grid.NewPosition(x, 0))
 		cell.SetWalkable(false)

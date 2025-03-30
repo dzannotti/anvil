@@ -3,7 +3,7 @@ package definition
 import (
 	"anvil/internal/expression"
 	"anvil/internal/log"
-	"anvil/internal/tagcontainer"
+	"anvil/internal/tag"
 )
 
 type Creature interface {
@@ -14,7 +14,7 @@ type Creature interface {
 	StartTurn()
 	Actions() []Action
 	ArmorClass() expression.Expression
-	AttackRoll(target Creature, tags tagcontainer.TagContainer) CheckResult
+	AttackRoll(target Creature, tags tag.Container) CheckResult
 	Log() *log.EventLog
 	TakeDamage(damage int)
 }

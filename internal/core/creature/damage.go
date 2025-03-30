@@ -6,7 +6,7 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/effect/state"
 	"anvil/internal/expression"
-	"anvil/internal/tagcontainer"
+	"anvil/internal/tag"
 )
 
 func (c *Creature) TakeDamage(damage int) {
@@ -18,7 +18,7 @@ func (c *Creature) StartTurn() {
 
 }
 
-func (c *Creature) AttackRoll(target definition.Creature, tc tagcontainer.TagContainer) definition.CheckResult {
+func (c *Creature) AttackRoll(target definition.Creature, tc tag.Container) definition.CheckResult {
 	expression := expression.FromD20("Base")
 	c.log.Start(event.NewAttackRoll(c, target))
 	defer c.log.End()

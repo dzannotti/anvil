@@ -1,4 +1,4 @@
-package tagcontainer
+package tag_test
 
 import (
 	"testing"
@@ -8,32 +8,32 @@ import (
 	"anvil/internal/tag"
 )
 
-func TestTagContainer_From(t *testing.T) {
+func TestContainer_From(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name     string
-		setup    func() TagContainer
+		setup    func() tag.Container
 		expected []tag.Tag
 	}{
 		{
 			name: "creates valid empty container",
-			setup: func() TagContainer {
-				return New()
+			setup: func() tag.Container {
+				return tag.NewContainer()
 			},
 			expected: []tag.Tag{},
 		},
 		{
 			name: "creates valid container from string",
-			setup: func() TagContainer {
-				return FromString("ability.damage.fire")
+			setup: func() tag.Container {
+				return tag.ContainerFromString("ability.damage.fire")
 			},
 			expected: []tag.Tag{tag.FromString("ability.damage.fire")},
 		},
 		{
 			name: "creates valid container from slice of string",
-			setup: func() TagContainer {
-				return FromStrings([]string{"ability.damage.fire", "ability.damage.ice"})
+			setup: func() tag.Container {
+				return tag.ContainerFromStrings([]string{"ability.damage.fire", "ability.damage.ice"})
 			},
 			expected: []tag.Tag{
 				tag.FromString("ability.damage.fire"),
@@ -42,15 +42,15 @@ func TestTagContainer_From(t *testing.T) {
 		},
 		{
 			name: "creates valid container from tag",
-			setup: func() TagContainer {
-				return FromTag(tag.FromString("ability.damage.fire"))
+			setup: func() tag.Container {
+				return tag.ContainerFromTag(tag.FromString("ability.damage.fire"))
 			},
 			expected: []tag.Tag{tag.FromString("ability.damage.fire")},
 		},
 		{
 			name: "creates valid container from slice of tag",
-			setup: func() TagContainer {
-				return FromTags([]tag.Tag{
+			setup: func() tag.Container {
+				return tag.ContainerFromTags([]tag.Tag{
 					tag.FromString("ability.damage.fire"),
 					tag.FromString("ability.damage.ice"),
 				})
@@ -65,9 +65,9 @@ func TestTagContainer_From(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			container := tt.setup()
-			assert.Equal(t, len(tt.expected), len(container.tags))
+			assert.Equal(t, len(tt.expected), len(container.Strings()))
 			for i, expectedTag := range tt.expected {
-				assert.True(t, expectedTag.MatchExact(container.tags[i]))
+				assert.True(t, expectedTag.MatchExact(tag.FromString(container.Strings()[i])))
 			}
 		})
 	}

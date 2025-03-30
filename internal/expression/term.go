@@ -1,6 +1,6 @@
 package expression
 
-import "anvil/internal/tagcontainer"
+import "anvil/internal/tag"
 
 type TermType string
 
@@ -17,17 +17,17 @@ const (
 )
 
 type Term struct {
-	Type            TermType                  `json:"type"`
-	Value           int                       `json:"value"`
-	Source          string                    `json:"source"`
-	Values          []int                     `json:"values"`
-	Times           int                       `json:"times"`
-	Sides           int                       `json:"sides"`
-	HasAdvantage    []string                  `json:"hasAdvantage"`
-	HasDisadvantage []string                  `json:"hasDisadvantage"`
-	Tags            tagcontainer.TagContainer `json:"tags"`
-	Terms           []Term                    `json:"terms"`
-	IsCritical      int                       `json:"isCritical"`
+	Type            TermType      `json:"type"`
+	Value           int           `json:"value"`
+	Source          string        `json:"source"`
+	Values          []int         `json:"values"`
+	Times           int           `json:"times"`
+	Sides           int           `json:"sides"`
+	HasAdvantage    []string      `json:"hasAdvantage"`
+	HasDisadvantage []string      `json:"hasDisadvantage"`
+	Tags            tag.Container `json:"tags"`
+	Terms           []Term        `json:"terms"`
+	IsCritical      int           `json:"isCritical"`
 }
 
 func (t *Term) shouldModifyRoll() bool {
@@ -62,6 +62,6 @@ func NewTerm(termType TermType, source string, terms ...Term) Term {
 		HasAdvantage:    []string{},
 		HasDisadvantage: []string{},
 		IsCritical:      0,
-		Tags:            tagcontainer.New(),
+		Tags:            tag.NewContainer(),
 	}
 }

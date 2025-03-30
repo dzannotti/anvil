@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"anvil/internal/tagcontainer"
+	"anvil/internal/tag"
 )
 
 func TestExpression_Add(t *testing.T) {
@@ -79,7 +79,7 @@ func TestExpression_Add(t *testing.T) {
 			name: "can add a damage scalar",
 			setup: func() Expression {
 				exp := Expression{}
-				exp.AddDamageScalar(2, "Damage", tagcontainer.FromString("slashing"))
+				exp.AddDamageScalar(2, "Damage", tag.ContainerFromString("slashing"))
 				return exp
 			},
 			expected: struct {
@@ -89,7 +89,7 @@ func TestExpression_Add(t *testing.T) {
 				term: Term{
 					Type:   TypeDamageScalar,
 					Source: "Damage",
-					Tags:   tagcontainer.FromString("slashing"),
+					Tags:   tag.ContainerFromString("slashing"),
 					Value:  2,
 				},
 			},
@@ -98,7 +98,7 @@ func TestExpression_Add(t *testing.T) {
 			name: "can add a damage dice",
 			setup: func() Expression {
 				exp := Expression{}
-				exp.AddDamageDice(2, 6, "Damage", tagcontainer.FromString("slashing"))
+				exp.AddDamageDice(2, 6, "Damage", tag.ContainerFromString("slashing"))
 				return exp
 			},
 			expected: struct {
@@ -108,7 +108,7 @@ func TestExpression_Add(t *testing.T) {
 				term: Term{
 					Type:   TypeDamageDice,
 					Source: "Damage",
-					Tags:   tagcontainer.FromString("slashing"),
+					Tags:   tag.ContainerFromString("slashing"),
 					Times:  2,
 					Sides:  6,
 				},

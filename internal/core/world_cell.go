@@ -1,4 +1,4 @@
-package world
+package core
 
 import (
 	"anvil/internal/core/creature"
@@ -7,39 +7,39 @@ import (
 	"slices"
 )
 
-type Cell struct {
+type WorldCell struct {
 	position  grid.Position
 	occupants []definition.Creature
 }
 
-func NewCell(position grid.Position) Cell {
-	return Cell{
+func NewWorldCell(position grid.Position) WorldCell {
+	return WorldCell{
 		position:  position,
 		occupants: make([]definition.Creature, 0),
 	}
 }
 
-func (c *Cell) Position() grid.Position {
+func (c *WorldCell) Position() grid.Position {
 	return c.position
 }
 
-func (c *Cell) AddOccupant(creature definition.Creature) {
+func (c *WorldCell) AddOccupant(creature definition.Creature) {
 	c.occupants = append(c.occupants, creature)
 }
 
-func (c *Cell) RemoveOccupant(creature definition.Creature) {
+func (c *WorldCell) RemoveOccupant(creature definition.Creature) {
 	c.occupants = slices.DeleteFunc(c.occupants, func(o definition.Creature) bool {
 		return o == creature
 	})
 }
 
-func (c *Cell) Occupant() (definition.Creature, bool) {
+func (c *WorldCell) Occupant() (definition.Creature, bool) {
 	if len(c.occupants) == 0 {
 		return &creature.Creature{}, false
 	}
 	return c.occupants[0], true
 }
 
-func (c *Cell) IsOccupied() bool {
+func (c *WorldCell) IsOccupied() bool {
 	return len(c.occupants) > 0
 }

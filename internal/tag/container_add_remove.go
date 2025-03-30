@@ -1,24 +1,20 @@
-package tagcontainer
+package tag
 
-import (
-	"anvil/internal/tag"
-)
-
-func (tc *TagContainer) Add(other TagContainer) {
+func (tc *Container) Add(other Container) {
 	for _, t := range other.tags {
 		tc.AddTag(t)
 	}
 }
 
-func (tc *TagContainer) AddTag(newTag tag.Tag) {
+func (tc *Container) AddTag(newTag Tag) {
 	if tc.HasTag(newTag) {
 		return
 	}
 	tc.tags = append(tc.tags, newTag)
 }
 
-func (tc *TagContainer) RemoveTag(target tag.Tag) {
-	newTags := make([]tag.Tag, 0, len(tc.tags))
+func (tc *Container) RemoveTag(target Tag) {
+	newTags := make([]Tag, 0, len(tc.tags))
 	for _, existing := range tc.tags {
 		if !existing.MatchExact(target) {
 			newTags = append(newTags, existing)

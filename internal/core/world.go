@@ -1,9 +1,22 @@
-package world
+package core
 
 import (
 	"anvil/internal/core/definition"
+	"anvil/internal/core/pathfinding"
 	"anvil/internal/grid"
 )
+
+type World struct {
+	grid       *grid.Grid[WorldCell]
+	navigation *pathfinding.Pathfinding
+}
+
+func NewWorld(width int, height int) *World {
+	return &World{
+		grid:       grid.New(width, height, NewWorldCell),
+		navigation: pathfinding.New(width, height),
+	}
+}
 
 func (w *World) Width() int {
 	return w.grid.Width()

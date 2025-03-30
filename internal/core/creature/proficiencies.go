@@ -2,17 +2,16 @@ package creature
 
 import (
 	"anvil/internal/tag"
-	"anvil/internal/tagcontainer"
 )
 
 type Proficiencies struct {
-	skills tagcontainer.TagContainer
+	skills tag.Container
 	bonus  int
 }
 
 func NewProficiencies(bonus int) Proficiencies {
 	return Proficiencies{
-		skills: tagcontainer.New(),
+		skills: tag.NewContainer(),
 		bonus:  bonus,
 	}
 }
@@ -21,11 +20,11 @@ func (p *Proficiencies) Add(tag tag.Tag) {
 	p.skills.AddTag(tag)
 }
 
-func (p Proficiencies) Has(tags tagcontainer.TagContainer) bool {
+func (p Proficiencies) Has(tags tag.Container) bool {
 	return tags.MatchAnyTag(p.skills)
 }
 
-func (p Proficiencies) Value(tags tagcontainer.TagContainer) int {
+func (p Proficiencies) Value(tags tag.Container) int {
 	if p.Has(tags) {
 		return p.bonus
 	}
