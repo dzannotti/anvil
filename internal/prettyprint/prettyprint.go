@@ -42,14 +42,14 @@ func shouldPrintEnd() bool {
 
 func Print(out io.Writer, ev eventbus.Message) {
 	depthPrefix := strings.Repeat("│  ", max(0, ev.Depth-1))
-	if ev.IsEnd {
+	if ev.End {
 		if shouldPrintEnd() {
 			fmt.Fprintln(out, depthPrefix+"└─○")
 		}
 		eventStack = eventStack[:len(eventStack)-1]
 		return
 	}
-	if !ev.IsEnd {
+	if !ev.End {
 		eventStack = append(eventStack, ev)
 	}
 	extraPrefix := ""

@@ -12,6 +12,6 @@ type TakeDamage struct {
 	MaxHitPoints int
 }
 
-func NewTakeDamage(target definition.Creature, damage int) TakeDamage {
-	return TakeDamage{Target: snapshot.CaptureCreature(target), Damage: damage, HitPoints: target.HitPoints(), MaxHitPoints: target.MaxHitPoints()}
+func NewTakeDamage(target definition.Creature, damage int) (string, TakeDamage) {
+	return "take_damage", TakeDamage{Target: snapshot.CaptureCreature(target), Damage: damage, HitPoints: target.HitPoints(), MaxHitPoints: target.MaxHitPoints()}
 }

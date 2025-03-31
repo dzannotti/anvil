@@ -7,6 +7,6 @@ type CheckResult struct {
 	Success  bool
 }
 
-func NewCheckResult(value int, against int, critical bool, success bool) CheckResult {
-	return CheckResult{Value: value, Against: against, Critical: critical, Success: success}
+func NewCheckResult(value int, against int, critical bool, success bool) (string, CheckResult) {
+	return "check_result", CheckResult{Value: value, Against: against, Critical: critical, Success: success}
 }

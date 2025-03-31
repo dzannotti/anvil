@@ -10,10 +10,10 @@ type Encounter struct {
 	World snapshot.World
 }
 
-func NewEncounter(f []definition.Team, world definition.World) Encounter {
+func NewEncounter(f []definition.Team, world definition.World) (string, Encounter) {
 	factions := make([]snapshot.Team, 0, len(f))
 	for i := range f {
 		factions = append(factions, snapshot.CaptureTeam(f[i]))
 	}
-	return Encounter{Teams: factions, World: snapshot.CaptureWorld(world)}
+	return "encounter", Encounter{Teams: factions, World: snapshot.CaptureWorld(world)}
 }

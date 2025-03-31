@@ -10,6 +10,6 @@ type AttributeCalculation struct {
 	Expression expression.Expression
 }
 
-func NewAttributeCalculation(attribute tag.Tag, expression expression.Expression) AttributeCalculation {
-	return AttributeCalculation{Attribute: attribute, Expression: expression}
+func NewAttributeCalculation(attribute tag.Tag, expression expression.Expression) (string, AttributeCalculation) {
+	return "attribute_calculation", AttributeCalculation{Attribute: attribute, Expression: expression}
 }

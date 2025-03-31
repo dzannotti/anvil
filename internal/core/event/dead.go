@@ -9,6 +9,6 @@ type Died struct {
 	Creature snapshot.Creature
 }
 
-func NewDied(src definition.Creature) Died {
-	return Died{Creature: snapshot.CaptureCreature(src)}
+func NewDied(src definition.Creature) (string, Died) {
+	return "died", Died{Creature: snapshot.CaptureCreature(src)}
 }

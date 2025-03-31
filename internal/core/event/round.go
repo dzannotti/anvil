@@ -10,10 +10,10 @@ type Round struct {
 	Creatures []snapshot.Creature
 }
 
-func NewRound(round int, c []definition.Creature) Round {
+func NewRound(round int, c []definition.Creature) (string, Round) {
 	creatures := make([]snapshot.Creature, 0, len(c))
 	for i := range c {
 		creatures = append(creatures, snapshot.CaptureCreature(c[i]))
 	}
-	return Round{Round: round, Creatures: creatures}
+	return "round", Round{Round: round, Creatures: creatures}
 }

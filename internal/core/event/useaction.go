@@ -11,6 +11,6 @@ type UseAction struct {
 	Action snapshot.Action
 }
 
-func NewUseAction(action definition.Action, source definition.Creature, target definition.Creature) UseAction {
-	return UseAction{Action: snapshot.CaptureAction(action), Source: snapshot.CaptureCreature(source), Target: snapshot.CaptureCreature(target)}
+func NewUseAction(action definition.Action, source definition.Creature, target definition.Creature) (string, UseAction) {
+	return "use_action", UseAction{Action: snapshot.CaptureAction(action), Source: snapshot.CaptureCreature(source), Target: snapshot.CaptureCreature(target)}
 }

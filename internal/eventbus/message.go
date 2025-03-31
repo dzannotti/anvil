@@ -2,6 +2,7 @@ package eventbus
 
 type Message struct {
 	Data  any
+	Kind  string
 	Depth int
-	IsEnd bool
+	End   bool
 }

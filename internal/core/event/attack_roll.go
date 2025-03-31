@@ -10,8 +10,8 @@ type AttackRoll struct {
 	Target snapshot.Creature
 }
 
-func NewAttackRoll(source definition.Creature, target definition.Creature) AttackRoll {
-	return AttackRoll{
+func NewAttackRoll(source definition.Creature, target definition.Creature) (string, AttackRoll) {
+	return "attack_roll", AttackRoll{
 		Source: snapshot.CaptureCreature(source),
 		Target: snapshot.CaptureCreature(target),
 	}

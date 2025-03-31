@@ -10,6 +10,6 @@ type Turn struct {
 	Creature snapshot.Creature
 }
 
-func NewTurn(turn int, src definition.Creature) Turn {
-	return Turn{Turn: turn, Creature: snapshot.CaptureCreature(src)}
+func NewTurn(turn int, src definition.Creature) (string, Turn) {
+	return "turn", Turn{Turn: turn, Creature: snapshot.CaptureCreature(src)}
 }
