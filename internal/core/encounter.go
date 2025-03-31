@@ -1,4 +1,4 @@
-package encounter
+package core
 
 import (
 	"anvil/internal/core/definition"
@@ -14,7 +14,7 @@ type Encounter struct {
 	world           definition.World
 }
 
-func New(hub *eventbus.Hub, world definition.World, teams []definition.Team) *Encounter {
+func NewEncounter(hub *eventbus.Hub, world definition.World, teams []definition.Team) *Encounter {
 	encounter := &Encounter{
 		world:           world,
 		hub:             hub,
