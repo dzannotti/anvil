@@ -17,6 +17,7 @@ import (
 
 func creature(hub *eventbus.Hub, world *core.World, pos grid.Position, name string, hitPoints int, attributes core.Attributes, proficiencies core.Proficiencies) *core.Creature {
 	c := core.NewCreature(hub, world, pos, name, hitPoints, attributes, proficiencies)
+	world.AddOccupant(pos, c)
 	c.AddAction(base.NewAttackAction(c))
 	return c
 }

@@ -11,7 +11,7 @@ import (
 type Creature struct {
 	log           *eventbus.Hub
 	position      grid.Position
-	world         definition.World
+	world         *World
 	attributes    Attributes
 	proficiencies Proficiencies
 	name          string
@@ -21,7 +21,7 @@ type Creature struct {
 	effects       *effect.Container
 }
 
-func NewCreature(log *eventbus.Hub, world definition.World, pos grid.Position, name string, hitPoints int, attributes Attributes, proficiencies Proficiencies) *Creature {
+func NewCreature(log *eventbus.Hub, world *World, pos grid.Position, name string, hitPoints int, attributes Attributes, proficiencies Proficiencies) *Creature {
 	creature := &Creature{
 		log:           log,
 		position:      pos,
@@ -33,8 +33,6 @@ func NewCreature(log *eventbus.Hub, world definition.World, pos grid.Position, n
 		attributes:    attributes,
 		proficiencies: proficiencies,
 	}
-	cell, _ := world.At(pos)
-	cell.AddOccupant(creature)
 	return creature
 }
 
