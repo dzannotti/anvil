@@ -1,7 +1,6 @@
 package core
 
 import (
-	"anvil/internal/core/creature"
 	"anvil/internal/core/definition"
 	"anvil/internal/grid"
 	"slices"
@@ -35,7 +34,7 @@ func (c *WorldCell) RemoveOccupant(creature definition.Creature) {
 
 func (c *WorldCell) Occupant() (definition.Creature, bool) {
 	if len(c.occupants) == 0 {
-		return &creature.Creature{}, false
+		return &Creature{}, false
 	}
 	return c.occupants[0], true
 }

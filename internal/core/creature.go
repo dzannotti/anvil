@@ -1,4 +1,4 @@
-package creature
+package core
 
 import (
 	"anvil/internal/core/definition"
@@ -21,7 +21,7 @@ type Creature struct {
 	effects       *effect.Container
 }
 
-func New(log *eventbus.Hub, world definition.World, pos grid.Position, name string, hitPoints int, attributes Attributes, proficiencies Proficiencies) *Creature {
+func NewCreature(log *eventbus.Hub, world definition.World, pos grid.Position, name string, hitPoints int, attributes Attributes, proficiencies Proficiencies) *Creature {
 	creature := &Creature{
 		log:           log,
 		position:      pos,

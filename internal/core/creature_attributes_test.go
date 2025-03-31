@@ -1,4 +1,4 @@
-package creature
+package core
 
 import (
 	"anvil/internal/core/tags"
