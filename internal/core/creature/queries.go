@@ -2,10 +2,10 @@ package creature
 
 import (
 	"anvil/internal/core/definition"
-	"anvil/internal/log"
+	"anvil/internal/eventbus"
 )
 
-func (c Creature) Log() *log.EventLog {
+func (c Creature) Log() *eventbus.Hub {
 	return c.log
 }
 

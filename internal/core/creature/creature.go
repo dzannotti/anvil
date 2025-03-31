@@ -4,12 +4,12 @@ import (
 	"anvil/internal/core/definition"
 	"anvil/internal/effect"
 	"anvil/internal/effect/state"
+	"anvil/internal/eventbus"
 	"anvil/internal/grid"
-	"anvil/internal/log"
 )
 
 type Creature struct {
-	log           *log.EventLog
+	log           *eventbus.Hub
 	position      grid.Position
 	world         definition.World
 	attributes    Attributes
@@ -21,7 +21,7 @@ type Creature struct {
 	effects       *effect.Container
 }
 
-func New(log *log.EventLog, world definition.World, pos grid.Position, name string, hitPoints int, attributes Attributes, proficiencies Proficiencies) *Creature {
+func New(log *eventbus.Hub, world definition.World, pos grid.Position, name string, hitPoints int, attributes Attributes, proficiencies Proficiencies) *Creature {
 	creature := &Creature{
 		log:           log,
 		position:      pos,

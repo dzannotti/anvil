@@ -1,8 +1,8 @@
 package definition
 
 import (
+	"anvil/internal/eventbus"
 	"anvil/internal/expression"
-	"anvil/internal/log"
 	"anvil/internal/tag"
 )
 
@@ -15,6 +15,6 @@ type Creature interface {
 	Actions() []Action
 	ArmorClass() expression.Expression
 	AttackRoll(target Creature, tags tag.Container) CheckResult
-	Log() *log.EventLog
+	Log() *eventbus.Hub
 	TakeDamage(damage int)
 }

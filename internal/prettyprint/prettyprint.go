@@ -9,11 +9,11 @@ import (
 	"anvil/internal/core/event"
 	"anvil/internal/core/event/snapshot"
 	"anvil/internal/core/tags"
-	"anvil/internal/log"
+	"anvil/internal/eventbus"
 	"anvil/internal/tag"
 )
 
-var eventStack []log.Event
+var eventStack []eventbus.Message
 
 func shouldPrintEnd() bool {
 	if len(eventStack) == 0 {
@@ -40,7 +40,7 @@ func shouldPrintEnd() bool {
 	return true
 }
 
-func Print(out io.Writer, ev log.Event) {
+func Print(out io.Writer, ev eventbus.Message) {
 	depthPrefix := strings.Repeat("│  ", max(0, ev.Depth-1))
 	if ev.IsEnd {
 		if shouldPrintEnd() {
@@ -56,7 +56,7 @@ func Print(out io.Writer, ev log.Event) {
 	if ev.Depth > 0 {
 		extraPrefix = "├─ "
 	}
-	eventString := eventToString(ev)
+	eventString := printMessage(ev)
 	lines := strings.Split(eventString, "\n")
 	first := depthPrefix + extraPrefix + lines[0]
 	fmt.Fprintln(out, first)
@@ -65,7 +65,7 @@ func Print(out io.Writer, ev log.Event) {
 	}
 }
 
-func eventToString(ev log.Event) string {
+func printMessage(ev eventbus.Message) string {
 	switch e := ev.Data.(type) {
 	case event.Encounter:
 		return printEncounter(e)

@@ -9,18 +9,14 @@ import (
 	"anvil/internal/ai"
 	"anvil/internal/core"
 	"anvil/internal/core/definition"
+	"anvil/internal/eventbus"
 	"anvil/internal/grid"
-	"anvil/internal/log"
 	"anvil/internal/prettyprint"
 	"anvil/internal/ruleset/base"
 )
 
-func printLog(event log.Event) {
-	prettyprint.Print(os.Stdout, event)
-}
-
-func creature(log *log.EventLog, world *core.World, pos grid.Position, name string, hitPoints int, attributes core.Attributes, proficiencies core.Proficiencies) *core.Creature {
-	c := core.NewCreature(log, world, pos, name, hitPoints, attributes, proficiencies)
+func creature(hub *eventbus.Hub, world *core.World, pos grid.Position, name string, hitPoints int, attributes core.Attributes, proficiencies core.Proficiencies) *core.Creature {
+	c := core.NewCreature(hub, world, pos, name, hitPoints, attributes, proficiencies)
 	c.AddAction(base.NewAttackAction(c))
 	return c
 }
@@ -45,22 +41,24 @@ func setupWorld(world *core.World) {
 }
 
 func main() {
-	log := log.New()
-	log.AddCapturer(printLog)
+	hub := eventbus.Hub{}
+	hub.Subscribe(func(msg eventbus.Message) {
+		prettyprint.Print(os.Stdout, msg)
+	})
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
 	players := core.NewTeam("Players")
 	enemies := core.NewTeam("Enemies")
 	attributes := core.NewAttributes(core.AttributeValues{Strength: 10, Dexterity: 11, Constitution: 12, Intelligence: 13, Wisdom: 14, Charisma: 15})
-	wizard := creature(log, world, grid.NewPosition(1, 1), "Wizard", 22, attributes, core.NewProficiencies(2))
-	fighter := creature(log, world, grid.NewPosition(1, 2), "Fighter", 22, attributes, core.NewProficiencies(2))
-	orc := creature(log, world, grid.NewPosition(4, 3), "Orc", 22, attributes, core.NewProficiencies(2))
-	goblin := creature(log, world, grid.NewPosition(4, 4), "Goblin", 22, attributes, core.NewProficiencies(2))
+	wizard := creature(&hub, world, grid.NewPosition(1, 1), "Wizard", 22, attributes, core.NewProficiencies(2))
+	fighter := creature(&hub, world, grid.NewPosition(1, 2), "Fighter", 22, attributes, core.NewProficiencies(2))
+	orc := creature(&hub, world, grid.NewPosition(4, 3), "Orc", 22, attributes, core.NewProficiencies(2))
+	goblin := creature(&hub, world, grid.NewPosition(4, 4), "Goblin", 22, attributes, core.NewProficiencies(2))
 	players.AddMember(wizard)
 	players.AddMember(fighter)
 	enemies.AddMember(orc)
 	enemies.AddMember(goblin)
-	encounter := core.NewEncounter(log, world, []definition.Team{players, enemies})
+	encounter := core.NewEncounter(&hub, world, []definition.Team{players, enemies})
 	gameAI := map[definition.Creature]ai.AI{
 		wizard:  ai.NewSimple(encounter, wizard),
 		fighter: ai.NewSimple(encounter, fighter),

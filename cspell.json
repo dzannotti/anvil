@@ -1,5 +1,5 @@
 {
-  "words": ["dzannotti", "eventemitter", "pathfinding", "neighbour", "neighbours", "tagcontainer"],
+  "words": ["dzannotti", "eventemitter", "pathfinding", "neighbour", "neighbours", "eventbus"],
   "ignorePaths": [
     ".gitignore",
     ".github/**/*",

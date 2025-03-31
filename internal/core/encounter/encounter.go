@@ -2,7 +2,7 @@ package encounter
 
 import (
 	"anvil/internal/core/definition"
-	"anvil/internal/log"
+	"anvil/internal/eventbus"
 )
 
 type Encounter struct {
@@ -10,14 +10,14 @@ type Encounter struct {
 	turn            int
 	initiativeOrder []definition.Creature
 	teams           []definition.Team
-	log             *log.EventLog
+	hub             *eventbus.Hub
 	world           definition.World
 }
 
-func New(log *log.EventLog, world definition.World, teams []definition.Team) *Encounter {
+func New(hub *eventbus.Hub, world definition.World, teams []definition.Team) *Encounter {
 	encounter := &Encounter{
 		world:           world,
-		log:             log,
+		hub:             hub,
 		teams:           teams,
 		initiativeOrder: []definition.Creature{},
 	}
