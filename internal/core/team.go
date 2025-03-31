@@ -1,4 +1,4 @@
-package team
+package core
 
 import (
 	"anvil/internal/core/definition"
@@ -9,7 +9,7 @@ type Team struct {
 	members []definition.Creature
 }
 
-func New(name string) *Team {
+func NewTeam(name string) *Team {
 	return &Team{
 		name:    name,
 		members: []definition.Creature{},

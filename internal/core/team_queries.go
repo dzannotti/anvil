@@ -1,4 +1,4 @@
-package team
+package core
 
 import "anvil/internal/core/definition"
 
