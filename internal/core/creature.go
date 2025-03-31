@@ -3,7 +3,6 @@ package core
 import (
 	"anvil/internal/core/definition"
 	"anvil/internal/effect"
-	"anvil/internal/effect/state"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 )
@@ -36,6 +35,6 @@ func NewCreature(log *eventbus.Hub, world *World, pos grid.Position, name string
 	return creature
 }
 
-func (c *Creature) Evaluate(state state.State) {
-	c.effects.Evaluate(state)
+func (c *Creature) Evaluate(event string, state any) {
+	c.effects.Evaluate(event, state)
 }
