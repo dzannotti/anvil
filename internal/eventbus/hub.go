@@ -1,14 +1,12 @@
 package eventbus
 
-import (
-	"anvil/internal/collection"
-)
+import "github.com/zyedidia/generic/stack"
 
 type MessageHandler func(data Message)
 
 type Hub struct {
 	events      []Message
-	stack       collection.Stack[Message]
+	stack       stack.Stack[Message]
 	subscribers []MessageHandler
 }
 
@@ -23,19 +21,19 @@ func (s *Hub) Add(data any) {
 
 func (s *Hub) Start(data any) {
 	event := Message{Data: data}
-	event.Depth = s.stack.Len()
+	event.Depth = s.stack.Size()
 	s.events = append(s.events, event)
 	s.stack.Push(event)
 	s.Emit(event)
 }
 
 func (s *Hub) End() {
-	last, ok := s.stack.Pop()
-	if !ok {
+	if s.stack.Size() == 0 {
 		return
 	}
+	last := s.stack.Pop()
 	event := Message{Data: last.Data}
-	event.Depth = s.stack.Len() + 1
+	event.Depth = s.stack.Size() + 1
 	event.IsEnd = true
 	s.events = append(s.events, event)
 	s.Emit(event)

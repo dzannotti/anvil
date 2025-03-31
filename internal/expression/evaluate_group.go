@@ -1,12 +1,13 @@
 package expression
 
-import "anvil/internal/collection"
+import (
+	mapset "github.com/deckarep/golang-set/v2"
+)
 
 func (e *Expression) EvaluateGroup() *Expression {
 	out := Expression{rng: defaultRoller{}}
 	e.Evaluate()
-	ids := collection.SliceElements(e.ID())
-	groups := groupTermsBy(*e, ids)
+	groups := e.groupTermsBy()
 	for i, group := range groups {
 		value := 0
 		for _, term := range group {
@@ -17,15 +18,16 @@ func (e *Expression) EvaluateGroup() *Expression {
 	return out.Evaluate()
 }
 
-func (e Expression) ID() []string {
-	ids := make([]string, len(e.Terms))
-	for i, term := range e.Terms {
-		ids[i] = term.Tags.ID()
+func (e Expression) uniqueTags() []string {
+	set := mapset.NewSet[string]()
+	for _, term := range e.Terms {
+		set.Add(term.Tags.ID())
 	}
-	return ids
+	return set.ToSlice()
 }
 
-func groupTermsBy(e Expression, ids []string) [][]Term {
+func (e Expression) groupTermsBy() [][]Term {
+	ids := e.uniqueTags()
 	terms := make([][]Term, len(ids))
 	for i, id := range ids {
 		for _, term := range e.Terms {

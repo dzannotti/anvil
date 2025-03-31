@@ -1,5 +1,13 @@
 {
-  "words": ["dzannotti", "eventemitter", "pathfinding", "neighbour", "neighbours", "eventbus"],
+  "words": ["dzannotti",
+    "eventemitter",
+    "pathfinding",
+    "neighbour",
+    "neighbours",
+    "eventbus",
+    "mapset",
+    "deckarep"
+  ],
   "ignorePaths": [
     ".gitignore",
     ".github/**/*",
