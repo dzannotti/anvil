@@ -6,23 +6,23 @@ import (
 )
 
 type World struct {
-	grid       *grid.Grid[WorldCell]
-	navigation *pathfinding.Pathfinding
+	Grid       *grid.Grid[WorldCell]
+	Navigation *pathfinding.Pathfinding
 }
 
 func NewWorld(width int, height int) *World {
 	return &World{
-		grid:       grid.New(width, height, NewWorldCell),
-		navigation: pathfinding.New(width, height),
+		Grid:       grid.New(width, height, NewWorldCell),
+		Navigation: pathfinding.New(width, height),
 	}
 }
 
 func (w *World) Width() int {
-	return w.grid.Width()
+	return w.Grid.Width()
 }
 
 func (w *World) Height() int {
-	return w.grid.Height()
+	return w.Grid.Height()
 }
 
 func (w *World) AddOccupant(pos grid.Position, o *Creature) {
@@ -36,21 +36,17 @@ func (w *World) RemoveOccupant(pos grid.Position, o *Creature) {
 }
 
 func (w *World) At(pos grid.Position) (*WorldCell, bool) {
-	return w.grid.At(pos)
+	return w.Grid.At(pos)
 }
 
 func (w World) IsValidPosition(pos grid.Position) bool {
-	return w.grid.IsValidPosition(pos)
+	return w.Grid.IsValidPosition(pos)
 }
 
 func (w World) CreaturesInRange(pos grid.Position, radius int) []*Creature {
 	creatures := make([]*Creature, 0)
-	for _, cell := range w.grid.CellsInRange(pos, radius) {
+	for _, cell := range w.Grid.CellsInRange(pos, radius) {
 		creatures = append(creatures, cell.occupants...)
 	}
 	return creatures
-}
-
-func (w World) Navigation() *pathfinding.Pathfinding {
-	return w.navigation
 }

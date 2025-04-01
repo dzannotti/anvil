@@ -23,19 +23,19 @@ func creature(hub *eventbus.Hub, world *core.World, pos grid.Position, name stri
 
 func setupWorld(world *core.World) {
 	for x := 0; x < world.Width(); x++ {
-		cell, _ := world.Navigation().At(grid.NewPosition(x, 0))
+		cell, _ := world.Navigation.At(grid.NewPosition(x, 0))
 		cell.SetWalkable(false)
 	}
 	for x := 0; x < world.Width(); x++ {
-		cell, _ := world.Navigation().At(grid.NewPosition(x, world.Height()-1))
+		cell, _ := world.Navigation.At(grid.NewPosition(x, world.Height()-1))
 		cell.SetWalkable(false)
 	}
 	for y := 0; y < world.Height(); y++ {
-		cell, _ := world.Navigation().At(grid.NewPosition(0, y))
+		cell, _ := world.Navigation.At(grid.NewPosition(0, y))
 		cell.SetWalkable(false)
 	}
 	for y := 0; y < world.Height(); y++ {
-		cell, _ := world.Navigation().At(grid.NewPosition(world.Width()-1, y))
+		cell, _ := world.Navigation.At(grid.NewPosition(world.Width()-1, y))
 		cell.SetWalkable(false)
 	}
 }
