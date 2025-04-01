@@ -152,7 +152,7 @@ func printDied(d core.DiedEvent) string {
 }
 
 func printUseAction(u core.UseActionEvent) string {
-	return fmt.Sprintf("💫 %s uses %s on %s", u.Source.Name, u.Action.Name, u.Target.Name)
+	return fmt.Sprintf("💫 %s uses %s on %s", u.Source.Name, u.Action.Name(), u.Target.Name)
 }
 
 func printTakeDamage(d core.TakeDamageEvent) string {

@@ -4,21 +4,21 @@ import (
 	"sync"
 )
 
-type EffectPriority int
+type Priority int
 
 const (
-	PriorityNormal       EffectPriority = iota
-	PriorityEarly        EffectPriority = -20
-	PriorityBase         EffectPriority = -60
-	PriorityBaseOverride EffectPriority = -40
-	PriorityLate         EffectPriority = 20
-	PriorityLast         EffectPriority = 40
+	PriorityNormal       Priority = iota
+	PriorityEarly        Priority = -20
+	PriorityBase         Priority = -60
+	PriorityBaseOverride Priority = -40
+	PriorityLate         Priority = 20
+	PriorityLast         Priority = 40
 )
 
 type Effect struct {
 	Name     string
 	Handlers map[string]func(*Effect, any, *sync.WaitGroup)
-	Priority EffectPriority
+	Priority Priority
 }
 
 func (e *Effect) Evaluate(event string, state any) {

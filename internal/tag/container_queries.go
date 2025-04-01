@@ -27,8 +27,8 @@ func (tc Container) MatchAllTag(other Container) bool {
 	return true
 }
 
-func (container Container) HasTag(target Tag) bool {
-	for _, t := range container.tags {
+func (tc Container) HasTag(target Tag) bool {
+	for _, t := range tc.tags {
 		if t.MatchExact(target) {
 			return true
 		}
@@ -36,18 +36,18 @@ func (container Container) HasTag(target Tag) bool {
 	return false
 }
 
-func (container Container) HasAnyTag(other Container) bool {
+func (tc Container) HasAnyTag(other Container) bool {
 	for _, t := range other.tags {
-		if container.HasTag(t) {
+		if tc.HasTag(t) {
 			return true
 		}
 	}
 	return false
 }
 
-func (container Container) HasAllTag(other Container) bool {
+func (tc Container) HasAllTag(other Container) bool {
 	for _, t := range other.tags {
-		if !container.HasTag(t) {
+		if !tc.HasTag(t) {
 			return false
 		}
 	}
