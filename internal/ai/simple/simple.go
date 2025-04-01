@@ -6,25 +6,18 @@ import (
 	"anvil/internal/core"
 )
 
-type AI struct {
-	encounter *core.Encounter
-	owner     *core.Creature
+type Simple struct {
+	Encounter *core.Encounter
+	Owner     *core.Creature
 }
 
-func New(encounter *core.Encounter, owner *core.Creature) *AI {
-	return &AI{
-		encounter: encounter,
-		owner:     owner,
-	}
-}
-
-func (ai *AI) Play() {
+func (ai *Simple) Play() {
 	if target, err := ai.ChooseTarget(); err == nil {
-		ai.owner.Actions[0].Perform(target)
+		ai.Owner.Actions[0].Perform(target)
 	}
 }
 
-func (ai AI) ChooseTarget() (*core.Creature, error) {
+func (ai Simple) ChooseTarget() (*core.Creature, error) {
 	enemies := ai.Enemies()
 	for i := range enemies {
 		if !enemies[i].IsDead() {
@@ -34,13 +27,13 @@ func (ai AI) ChooseTarget() (*core.Creature, error) {
 	return nil, errors.New("no target found")
 }
 
-func (ai AI) Enemies() []*core.Creature {
+func (ai Simple) Enemies() []*core.Creature {
 	team := core.TeamPlayers
-	if ai.owner.Team == core.TeamPlayers {
+	if ai.Owner.Team == core.TeamPlayers {
 		team = core.TeamEnemies
 	}
 	enemies := make([]*core.Creature, 0)
-	for _, c := range ai.encounter.Creatures {
+	for _, c := range ai.Encounter.Creatures {
 		if c.Team == team {
 			enemies = append(enemies, c)
 		}

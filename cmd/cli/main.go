@@ -69,10 +69,10 @@ func main() {
 		Creatures: []*core.Creature{wizard, fighter, orc, goblin},
 	}
 	gameAI := map[*core.Creature]ai.AI{
-		wizard:  ai.NewSimple(encounter, wizard),
-		fighter: ai.NewSimple(encounter, fighter),
-		orc:     ai.NewSimple(encounter, orc),
-		goblin:  ai.NewSimple(encounter, goblin),
+		wizard:  &ai.Simple{Encounter: encounter, Owner: wizard},
+		fighter: &ai.Simple{Encounter: encounter, Owner: fighter},
+		orc:     &ai.Simple{Encounter: encounter, Owner: orc},
+		goblin:  &ai.Simple{Encounter: encounter, Owner: goblin},
 	}
 	wg := sync.WaitGroup{}
 	start := time.Now()
