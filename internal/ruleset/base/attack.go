@@ -1,8 +1,8 @@
 package base
 
 import (
+	"anvil/internal/core"
 	"anvil/internal/core/definition"
-	"anvil/internal/core/event"
 	"anvil/internal/tag"
 )
 
@@ -24,7 +24,7 @@ func (a AttackAction) Perform(target definition.Creature) {
 	if target == nil {
 		return
 	}
-	a.owner.Log().Start(event.NewUseAction(a, a.owner, target))
+	a.owner.Log().Start(core.NewUseActionEvent(a, a.owner, target))
 	defer a.owner.Log().End()
 	result := a.owner.AttackRoll(target, tag.NewContainer())
 	if result.Success {

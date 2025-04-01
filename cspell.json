@@ -6,7 +6,9 @@
     "neighbours",
     "eventbus",
     "mapset",
-    "deckarep"
+    "deckarep",
+    "iancoleman",
+    "strcase"
   ],
   "ignorePaths": [
     ".gitignore",

@@ -1,16 +1,13 @@
 package prettyprint
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
-	"reflect"
+	"slices"
 	"strings"
 
-	"anvil/internal/core/event"
-	"anvil/internal/core/event/snapshot"
-	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
-	"anvil/internal/tag"
 )
 
 var eventStack []eventbus.Message
@@ -20,22 +17,18 @@ func shouldPrintEnd() bool {
 		return true
 	}
 
-	stoppers := []reflect.Type{
-		reflect.TypeOf(event.ExpressionResult{}),
-		reflect.TypeOf(event.CheckResult{}),
-		reflect.TypeOf(event.AttributeCalculation{}),
-		/*reflect.TypeOf(event.AttributeChange{}),
-		reflect.TypeOf(event.Target{}),
-		reflect.TypeOf(event.SpendResource{}),*/
+	stoppers := []string{
+		"expression_result",
+		"check_result",
+		"attribute_calculation",
+		"target",
+		"attribute_change",
+		"spend_resource",
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
-	lastEventType := reflect.TypeOf(lastEvent.Data)
-
-	for _, stopper := range stoppers {
-		if lastEventType == stopper {
-			return false
-		}
+	if slices.Contains(stoppers, lastEvent.Kind) {
+		return false
 	}
 	return true
 }
@@ -66,36 +59,35 @@ func Print(out io.Writer, ev eventbus.Message) {
 }
 
 func printMessage(ev eventbus.Message) string {
-	switch e := ev.Data.(type) {
-	case event.Encounter:
-		return printEncounter(e)
-	case event.Round:
-		return printRound(e)
-	case event.Turn:
-		return printTurn(e)
-	case event.Died:
-		return printDeath(e)
-	case event.UseAction:
-		return printUseAction(e)
-	case event.TakeDamage:
-		return printTakeDamage(e)
-	case event.ExpressionResult:
-		return printExpressionResult(e)
-	case event.CheckResult:
-		return printCheckResult(e)
-	case event.AttackRoll:
-		return printAttackRoll(e)
-	case event.AttributeCalculation:
-		return printAttributeCalculation(e)
+	switch ev.Kind {
+	case "encounter":
+		data := EncounterEvent{}
+		json.Unmarshal(ev.Data.([]byte), &data)
+		return printEncounter(data)
+		/*case Round:
+			return printRound(e)
+		case Turn:
+			return printTurn(e)
+		case Died:
+			return printDeath(e)
+		case UseAction:
+			return printUseAction(e)
+		case TakeDamage:
+			return printTakeDamage(e)
+		case ExpressionResult:
+			return printExpressionResult(e)
+		case CheckResult:
+			return printCheckResult(e)
+		case AttackRoll:
+			return printAttackRoll(e)
+		case AttributeCalculation:
+			return printAttributeCalculation(e)
+		}*/
 	}
-	t := reflect.TypeOf(ev.Data)
-	if t.Kind() == reflect.Ptr {
-		t = t.Elem()
-	}
-	return "unknown event " + t.Name()
+	return "unknown event " + ev.Kind
 }
 
-func printWorld(w snapshot.World) string {
+func printWorld(w World) string {
 	sb := strings.Builder{}
 	sb.WriteString("🌍 World\n")
 	for x := range len(w.Cells) {
@@ -115,7 +107,7 @@ func printWorld(w snapshot.World) string {
 	return sb.String()
 }
 
-func printCreature(c snapshot.Creature) string {
+func printCreature(c Creature) string {
 	sb := strings.Builder{}
 	stats := []string{
 		fmt.Sprintf("HP: %3d/%3d", c.HitPoints, c.MaxHitPoints),
@@ -124,7 +116,7 @@ func printCreature(c snapshot.Creature) string {
 	return sb.String()
 }
 
-func printTeam(f snapshot.Team) string {
+func printTeam(f Team) string {
 	sb := strings.Builder{}
 	sb.WriteString("🎴 " + f.Name)
 	creatures := []string{}
@@ -135,7 +127,7 @@ func printTeam(f snapshot.Team) string {
 	return sb.String()
 }
 
-func printEncounter(e event.Encounter) string {
+func printEncounter(e EncounterEvent) string {
 	sb := strings.Builder{}
 	sb.WriteString("🏰 Encounter Start")
 	teams := []string{}
@@ -149,34 +141,35 @@ func printEncounter(e event.Encounter) string {
 	return sb.String()
 }
 
-func printRound(r event.Round) string {
+/*
+func printRound(r RoundEvent) string {
 	return fmt.Sprintf("🔄 Round %d", r.Round+1)
 }
 
-func printTurn(t event.Turn) string {
+func printTurn(t TurnEvent) string {
 	return fmt.Sprintf("🔃 Turn %d: %s", t.Turn+1, t.Creature.Name)
 }
 
-func printDeath(d event.Died) string {
+func printDeath(d Died) string {
 	return fmt.Sprintf("☠️ %s is about to die", d.Creature.Name)
 }
 
-func printUseAction(u event.UseAction) string {
+func printUseAction(u UseAction) string {
 	return fmt.Sprintf("💫 %s uses %s on %s", u.Source.Name, u.Action.Name, u.Target.Name)
 }
 
-func printTakeDamage(d event.TakeDamage) string {
+func printTakeDamage(d TakeDamage) string {
 	return fmt.Sprintf("🩸 %s takes %d damage", d.Target.Name, d.Damage)
 }
 
-func printExpressionResult(e event.ExpressionResult) string {
+func printExpressionResult(e ExpressionResult) string {
 	sb := strings.Builder{}
 	sb.WriteString("🎲 ")
 	sb.WriteString(printExpression(e.Expression))
 	return sb.String()
 }
 
-func printCheckResult(e event.CheckResult) string {
+func printCheckResult(e CheckResult) string {
 	sb := strings.Builder{}
 	sIcon := map[bool]string{true: "✅", false: "❌"}
 	sb.WriteString(sIcon[e.Success])
@@ -189,11 +182,11 @@ func printCheckResult(e event.CheckResult) string {
 	return fmt.Sprintf("%s %d vs %d", outcome, e.Value, e.Against)
 }
 
-func printAttackRoll(e event.AttackRoll) string {
+func printAttackRoll(e AttackRoll) string {
 	return fmt.Sprintf("🗡️ %s does an attack roll against %s", e.Source.Name, e.Target.Name)
 }
 
-func printAttributeCalculation(e event.AttributeCalculation) string {
+func printAttributeCalculation(e AttributeCalculation) string {
 	emoji := map[tag.Tag]string{
 		tags.ArmorClass:   "🛡️",
 		tags.Strength:     "💪",
@@ -209,3 +202,4 @@ func printAttributeCalculation(e event.AttributeCalculation) string {
 	sb.WriteString(printExpression(e.Expression))
 	return sb.String()
 }
+*/

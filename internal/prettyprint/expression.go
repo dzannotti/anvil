@@ -2,7 +2,6 @@ package prettyprint
 
 import (
 	"anvil/internal/core/tags"
-	"anvil/internal/expression"
 	"anvil/internal/tag"
 	"fmt"
 	"strings"
@@ -20,7 +19,7 @@ func printValue(value int, first bool) string {
 	return fmt.Sprintf("- %d", ix.Abs(value))
 }
 
-func printTerm(term expression.Term, indent string, last, first bool) []string {
+func printTerm(term Term, indent string, last, first bool) []string {
 	branch := " ├─ "
 	if last {
 		branch = " └─ "
@@ -73,9 +72,9 @@ func printTerm(term expression.Term, indent string, last, first bool) []string {
 		}
 	}
 
-	if !term.Tags.IsEmpty() && len(indent) == 0 {
+	if len(term.Tags.Tags) > 0 && len(indent) == 0 {
 		termTags := strings.Builder{}
-		for _, t := range term.Tags.Strings() {
+		for _, t := range term.Tags.Tags {
 			termTags.WriteString(tags.ToReadableTag(tag.FromString(t)))
 		}
 		source.WriteString(fmt.Sprintf(" (%s)", termTags.String()))
@@ -95,7 +94,7 @@ func printTerm(term expression.Term, indent string, last, first bool) []string {
 	return result
 }
 
-func printTerms(terms []expression.Term, indent string) []string {
+func printTerms(terms []Term, indent string) []string {
 	lines := make([]string, 0)
 	for i, term := range terms {
 		last := i == len(terms)-1
@@ -105,7 +104,7 @@ func printTerms(terms []expression.Term, indent string) []string {
 	return lines
 }
 
-func printExpression(exp expression.Expression) string {
+func printExpression(exp Expression) string {
 	lines := make([]string, 1)
 	lines[0] = fmt.Sprintf("%d", exp.Value)
 	lines = append(lines, printTerms(exp.Terms, "")...)

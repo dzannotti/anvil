@@ -1,26 +1,30 @@
 package core
 
-/*func snapshotCreature(c Creature) map[string]any {
+import (
+	"anvil/internal/core/definition"
+	"anvil/internal/grid"
+)
+
+func snapshotCreature(c definition.Creature) map[string]any {
 	return map[string]any{
-		"Name":         c.Name,
-		"HitPoints":    c.HitPoints,
-		"MaxHitPoints": c.MaxHitPoints,
+		"Name":         c.Name(),
+		"HitPoints":    c.HitPoints(),
+		"MaxHitPoints": c.MaxHitPoints(),
 	}
 }
 
-/*
-func snapshotTeam(t Team) map[string]any {
-	creatures := make([]map[string]any, 0, len(t.Members))
-	for i := range t.Members {
-		creatures = append(creatures, snapshotCreature(t.Members[i]))
+func snapshotTeam(t definition.Team) map[string]any {
+	creatures := make([]map[string]any, 0, len(t.Members()))
+	for i := range t.Members() {
+		creatures = append(creatures, snapshotCreature(t.Members()[i]))
 	}
 	return map[string]any{
-		"Name":    t.Name,
+		"Name":    t.Name(),
 		"Members": creatures,
 	}
 }
 
-func snapshotWorld(w World) map[string]any {
+func snapshotWorld(w definition.World) map[string]any {
 	cells := make([][]map[string]any, w.Width())
 	for x := 0; x < w.Width(); x++ {
 		cells[x] = make([]map[string]any, w.Height())
@@ -41,9 +45,8 @@ func snapshotWorld(w World) map[string]any {
 	}
 }
 
-func snapshotAction(a Action) map[string]any {
+func snapshotAction(a definition.Action) map[string]any {
 	return map[string]any{
 		"Name": a.Name(),
 	}
 }
-*/

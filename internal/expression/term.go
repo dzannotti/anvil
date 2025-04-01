@@ -17,17 +17,17 @@ const (
 )
 
 type Term struct {
-	Type            TermType      `json:"type"`
-	Value           int           `json:"value"`
-	Source          string        `json:"source"`
-	Values          []int         `json:"values"`
-	Times           int           `json:"times"`
-	Sides           int           `json:"sides"`
-	HasAdvantage    []string      `json:"hasAdvantage"`
-	HasDisadvantage []string      `json:"hasDisadvantage"`
-	Tags            tag.Container `json:"tags"`
-	Terms           []Term        `json:"terms"`
-	IsCritical      int           `json:"isCritical"`
+	Type            TermType `json:"kind"`
+	Value           int
+	Source          string
+	Values          []int
+	Times           int
+	Sides           int
+	HasAdvantage    []string
+	HasDisadvantage []string
+	Tags            tag.Container
+	Terms           []Term
+	IsCritical      int
 }
 
 func (t *Term) shouldModifyRoll() bool {

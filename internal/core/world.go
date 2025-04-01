@@ -36,7 +36,7 @@ func (w *World) RemoveOccupant(pos grid.Position, o definition.Creature) {
 	cell.RemoveOccupant(o)
 }
 
-func (w *World) At(pos grid.Position) (*WorldCell, bool) {
+func (w *World) At(pos grid.Position) (definition.WorldCell, bool) {
 	return w.grid.At(pos)
 }
 
