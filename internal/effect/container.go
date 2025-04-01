@@ -6,10 +6,6 @@ type Container struct {
 	effects []Effect
 }
 
-func NewContainer(effects ...Effect) *Container {
-	return &Container{effects: effects}
-}
-
 func (c *Container) Add(effect Effect) {
 	c.effects = append(c.effects, effect)
 	slices.SortFunc(c.effects, func(a, b Effect) int {
