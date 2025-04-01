@@ -137,7 +137,7 @@ func TestObstacleAvoidance(t *testing.T) {
 			t.Error("path found when not expected")
 		}
 
-		if len(result.Path) != 0 {
+		if result != nil {
 			t.Error("path should be empty when destination is unreachable")
 		}
 	})
