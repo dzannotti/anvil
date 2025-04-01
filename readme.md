@@ -1,7 +1,7 @@
 # Anvil
 
 - [ ] remove definition\*
-- [ ] reinstate logs
+- [ ] rename log to hub?
 - [ ] remove constructors
 - [ ] cleanup pass
 - [ ] remove team?

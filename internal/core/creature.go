@@ -7,33 +7,33 @@ import (
 )
 
 type Creature struct {
-	log           *eventbus.Hub
-	position      grid.Position
-	world         *World
-	attributes    Attributes
-	proficiencies Proficiencies
-	name          string
-	hitPoints     int
-	maxHitPoints  int
-	actions       []Action
-	effects       *effect.Container
+	Log           *eventbus.Hub
+	Position      grid.Position
+	World         *World
+	Attributes    Attributes
+	Proficiencies Proficiencies
+	Name          string
+	HitPoints     int
+	MaxHitPoints  int
+	Actions       []Action
+	Effects       *effect.Container
 }
 
 func NewCreature(log *eventbus.Hub, world *World, pos grid.Position, name string, hitPoints int, attributes Attributes, proficiencies Proficiencies) *Creature {
 	creature := &Creature{
-		log:           log,
-		position:      pos,
-		world:         world,
-		name:          name,
-		effects:       effect.NewContainer(),
-		hitPoints:     hitPoints,
-		maxHitPoints:  hitPoints,
-		attributes:    attributes,
-		proficiencies: proficiencies,
+		Log:           log,
+		Position:      pos,
+		World:         world,
+		Name:          name,
+		Effects:       effect.NewContainer(),
+		HitPoints:     hitPoints,
+		MaxHitPoints:  hitPoints,
+		Attributes:    attributes,
+		Proficiencies: proficiencies,
 	}
 	return creature
 }
 
 func (c *Creature) Evaluate(event string, state any) {
-	c.effects.Evaluate(event, state)
+	c.Effects.Evaluate(event, state)
 }

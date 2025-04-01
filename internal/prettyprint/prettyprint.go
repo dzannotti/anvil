@@ -95,7 +95,7 @@ func printWorld(w core.World) string {
 			}
 			if cell.IsOccupied() {
 				occupant, _ := cell.Occupant()
-				sb.WriteString(occupant.Name()[0:1])
+				sb.WriteString(occupant.Name[0:1])
 				continue
 			}
 			sb.WriteString(".")
@@ -108,9 +108,9 @@ func printWorld(w core.World) string {
 func printCreature(c core.Creature) string {
 	sb := strings.Builder{}
 	stats := []string{
-		fmt.Sprintf("HP: %3d/%d", c.HitPoints(), c.MaxHitPoints()),
+		fmt.Sprintf("HP: %3d/%d", c.HitPoints, c.MaxHitPoints),
 	}
-	sb.WriteString(fmt.Sprintf("🧝 %-20s %s", c.Name(), strings.Join(stats, " ")))
+	sb.WriteString(fmt.Sprintf("🧝 %-20s %s", c.Name, strings.Join(stats, " ")))
 	return sb.String()
 }
 
@@ -144,19 +144,19 @@ func printRound(r core.RoundEvent) string {
 }
 
 func printTurn(t core.TurnEvent) string {
-	return fmt.Sprintf("🔃 Turn %d: %s", t.Turn+1, t.Creature.Name())
+	return fmt.Sprintf("🔃 Turn %d: %s", t.Turn+1, t.Creature.Name)
 }
 
 func printDied(d core.DiedEvent) string {
-	return fmt.Sprintf("☠️ %s is about to die", d.Creature.Name())
+	return fmt.Sprintf("☠️ %s is about to die", d.Creature.Name)
 }
 
 func printUseAction(u core.UseActionEvent) string {
-	return fmt.Sprintf("💫 %s uses %s on %s", u.Source.Name(), u.Action.Name(), u.Target.Name())
+	return fmt.Sprintf("💫 %s uses %s on %s", u.Source.Name, u.Action.Name, u.Target.Name)
 }
 
 func printTakeDamage(d core.TakeDamageEvent) string {
-	return fmt.Sprintf("🩸 %s takes %d damage", d.Target.Name(), d.Damage)
+	return fmt.Sprintf("🩸 %s takes %d damage", d.Target.Name, d.Damage)
 }
 
 func printExpressionResult(e core.ExpressionResultEvent) string {
@@ -180,7 +180,7 @@ func printCheckResult(e core.CheckResultEvent) string {
 }
 
 func printAttackRoll(e core.AttackRollEvent) string {
-	return fmt.Sprintf("🗡️ %s does an attack roll against %s", e.Source.Name(), e.Target.Name())
+	return fmt.Sprintf("🗡️ %s does an attack roll against %s", e.Source.Name, e.Target.Name)
 }
 
 func printAttributeCalculation(e core.AttributeCalculationEvent) string {
