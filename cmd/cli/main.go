@@ -8,7 +8,6 @@ import (
 
 	"anvil/internal/ai"
 	"anvil/internal/core"
-	"anvil/internal/core/definition"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 	"anvil/internal/prettyprint"
@@ -60,7 +59,7 @@ func main() {
 	enemies.AddMember(orc)
 	enemies.AddMember(goblin)
 	encounter := core.NewEncounter(&hub, world, []*core.Team{players, enemies})
-	gameAI := map[definition.Creature]ai.AI{
+	gameAI := map[*core.Creature]ai.AI{
 		wizard:  ai.NewSimple(encounter, wizard),
 		fighter: ai.NewSimple(encounter, fighter),
 		orc:     ai.NewSimple(encounter, orc),
@@ -69,7 +68,7 @@ func main() {
 	wg := sync.WaitGroup{}
 	start := time.Now()
 	wg.Add(1)
-	go encounter.Play(func(active definition.Creature, wg *sync.WaitGroup) {
+	go encounter.Play(func(active *core.Creature, wg *sync.WaitGroup) {
 		defer wg.Done()
 		gameAI[active].Play()
 	}, &wg)

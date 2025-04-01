@@ -1,7 +1,5 @@
 package core
 
-import "anvil/internal/core/definition"
-
 func (t Team) IsDead() bool {
 	for _, c := range t.Members {
 		if !c.IsDead() {
@@ -11,7 +9,7 @@ func (t Team) IsDead() bool {
 	return true
 }
 
-func (t Team) Contains(c definition.Creature) bool {
+func (t Team) Contains(c *Creature) bool {
 	for _, m := range t.Members {
 		if m == c {
 			return true

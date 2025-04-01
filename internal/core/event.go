@@ -1,7 +1,6 @@
 package core
 
 import (
-	"anvil/internal/core/definition"
 	"anvil/internal/expression"
 	"anvil/internal/tag"
 )
@@ -26,12 +25,12 @@ type EncounterEvent struct {
 
 type RoundEvent struct {
 	Round     int
-	Creatures []definition.Creature
+	Creatures []*Creature
 }
 
 type TurnEvent struct {
 	Turn     int
-	Creature definition.Creature
+	Creature Creature
 }
 
 type AttributeCalculationEvent struct {
@@ -51,21 +50,21 @@ type ExpressionResultEvent struct {
 }
 
 type DiedEvent struct {
-	Creature definition.Creature
+	Creature Creature
 }
 
 type AttackRollEvent struct {
-	Source definition.Creature
-	Target definition.Creature
+	Source Creature
+	Target Creature
 }
 
 type TakeDamageEvent struct {
-	Target definition.Creature
+	Target Creature
 	Damage int
 }
 
 type UseActionEvent struct {
-	Source definition.Creature
-	Target definition.Creature
-	Action definition.Action
+	Source Creature
+	Target Creature
+	Action Action
 }

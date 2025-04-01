@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"anvil/internal/core"
-	"anvil/internal/core/definition"
 )
 
 type AI struct {
@@ -25,7 +24,7 @@ func (ai *AI) Play() {
 	}
 }
 
-func (ai AI) ChooseTarget() (definition.Creature, error) {
+func (ai AI) ChooseTarget() (*core.Creature, error) {
 	enemies := ai.Enemies()
 	for i := range enemies {
 		if !enemies[i].IsDead() {
@@ -35,7 +34,7 @@ func (ai AI) ChooseTarget() (definition.Creature, error) {
 	return nil, errors.New("no target found")
 }
 
-func (ai AI) Enemies() []definition.Creature {
+func (ai AI) Enemies() []*core.Creature {
 	_, enemies := ai.Teams()
 	return enemies.Members
 }

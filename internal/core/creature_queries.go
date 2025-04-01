@@ -1,7 +1,6 @@
 package core
 
 import (
-	"anvil/internal/core/definition"
 	"anvil/internal/eventbus"
 )
 
@@ -25,10 +24,10 @@ func (c Creature) MaxHitPoints() int {
 	return c.maxHitPoints
 }
 
-func (c Creature) Actions() []definition.Action {
+func (c Creature) Actions() []Action {
 	return c.actions
 }
 
-func (c *Creature) AddAction(action ...definition.Action) {
+func (c *Creature) AddAction(action ...Action) {
 	c.actions = append(c.actions, action...)
 }

@@ -1,14 +1,13 @@
 package core
 
 import (
-	"anvil/internal/core/definition"
 	"anvil/internal/eventbus"
 )
 
 type Encounter struct {
 	round           int
 	turn            int
-	initiativeOrder []definition.Creature
+	initiativeOrder []*Creature
 	teams           []*Team
 	hub             *eventbus.Hub
 	World           *World
@@ -19,7 +18,7 @@ func NewEncounter(hub *eventbus.Hub, world *World, teams []*Team) *Encounter {
 		World:           world,
 		hub:             hub,
 		teams:           teams,
-		initiativeOrder: []definition.Creature{},
+		initiativeOrder: []*Creature{},
 	}
 	encounter.initiativeOrder = encounter.AllCreatures()
 	return encounter

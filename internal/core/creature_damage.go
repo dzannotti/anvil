@@ -9,16 +9,16 @@ import (
 
 func (c *Creature) TakeDamage(damage int) {
 	c.hitPoints = max(c.hitPoints-damage, 0)
-	c.log.Add(TakeDamageEventType, TakeDamageEvent{Target: c, Damage: damage})
+	c.log.Add(TakeDamageEventType, TakeDamageEvent{Target: *c, Damage: damage})
 }
 
 func (c *Creature) StartTurn() {
 
 }
 
-func (c *Creature) AttackRoll(target definition.Creature, tc tag.Container) definition.CheckResult {
+func (c *Creature) AttackRoll(target *Creature, tc tag.Container) definition.CheckResult {
 	expression := expression.FromD20("Base")
-	c.log.Start(AttackRollEventType, AttackRollEvent{Source: c, Target: target})
+	c.log.Start(AttackRollEventType, AttackRollEvent{Source: *c, Target: *target})
 	defer c.log.End()
 	before := BeforeAttackRollState{Source: c, Target: target, Expression: &expression, Tags: tc}
 	c.effects.Evaluate(BeforeAttackRollStateType, before)

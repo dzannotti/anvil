@@ -1,20 +1,19 @@
 package core
 
 import (
-	"anvil/internal/core/definition"
 	"anvil/internal/grid"
 	"slices"
 )
 
 type WorldCell struct {
 	position  grid.Position
-	occupants []definition.Creature
+	occupants []*Creature
 }
 
 func NewWorldCell(position grid.Position) WorldCell {
 	return WorldCell{
 		position:  position,
-		occupants: make([]definition.Creature, 0),
+		occupants: make([]*Creature, 0),
 	}
 }
 
@@ -22,17 +21,17 @@ func (c *WorldCell) Position() grid.Position {
 	return c.position
 }
 
-func (c *WorldCell) AddOccupant(creature definition.Creature) {
+func (c *WorldCell) AddOccupant(creature *Creature) {
 	c.occupants = append(c.occupants, creature)
 }
 
-func (c *WorldCell) RemoveOccupant(creature definition.Creature) {
-	c.occupants = slices.DeleteFunc(c.occupants, func(o definition.Creature) bool {
+func (c *WorldCell) RemoveOccupant(creature *Creature) {
+	c.occupants = slices.DeleteFunc(c.occupants, func(o *Creature) bool {
 		return o == creature
 	})
 }
 
-func (c *WorldCell) Occupant() (definition.Creature, bool) {
+func (c *WorldCell) Occupant() (*Creature, bool) {
 	if len(c.occupants) == 0 {
 		return &Creature{}, false
 	}

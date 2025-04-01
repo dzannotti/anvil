@@ -1,9 +1,5 @@
 package core
 
-import (
-	"anvil/internal/core/definition"
-)
-
 func (e Encounter) IsOver() bool {
 	alive := 0
 	for _, t := range e.teams {
@@ -14,12 +10,12 @@ func (e Encounter) IsOver() bool {
 	return alive <= 1
 }
 
-func (e Encounter) ActiveCreature() definition.Creature {
+func (e Encounter) ActiveCreature() *Creature {
 	return e.initiativeOrder[e.turn]
 }
 
-func (e Encounter) AllCreatures() []definition.Creature {
-	var allCreatures = []definition.Creature{}
+func (e Encounter) AllCreatures() []*Creature {
+	var allCreatures = []*Creature{}
 	for _, t := range e.teams {
 		allCreatures = append(allCreatures, t.Members...)
 	}

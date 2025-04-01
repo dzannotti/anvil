@@ -1,7 +1,6 @@
 package core
 
 import (
-	"anvil/internal/core/definition"
 	"anvil/internal/effect"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
@@ -16,7 +15,7 @@ type Creature struct {
 	name          string
 	hitPoints     int
 	maxHitPoints  int
-	actions       []definition.Action
+	actions       []Action
 	effects       *effect.Container
 }
 

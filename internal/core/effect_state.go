@@ -1,7 +1,6 @@
 package core
 
 import (
-	"anvil/internal/core/definition"
 	"anvil/internal/expression"
 	"anvil/internal/tag"
 )
@@ -13,15 +12,15 @@ const (
 )
 
 type BeforeAttackRollState struct {
-	Source     definition.Creature
-	Target     definition.Creature
+	Source     *Creature
+	Target     *Creature
 	Expression *expression.Expression
 	Tags       tag.Container
 }
 
 type AfterAttackRollState struct {
-	Source definition.Creature
-	Target definition.Creature
+	Source *Creature
+	Target *Creature
 	Result *expression.Expression
 	Tags   tag.Container
 }

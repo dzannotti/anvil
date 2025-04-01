@@ -2,14 +2,12 @@ package core
 
 import (
 	"sync"
-
-	"anvil/internal/core/definition"
 )
 
-type Act = func(active definition.Creature, wg *sync.WaitGroup)
+type Act = func(active *Creature, wg *sync.WaitGroup)
 
 func (e *Encounter) playTurn(act Act) {
-	e.hub.Start(TurnEventType, TurnEvent{Turn: e.turn, Creature: e.ActiveCreature()})
+	e.hub.Start(TurnEventType, TurnEvent{Turn: e.turn, Creature: *e.ActiveCreature()})
 	defer e.hub.End()
 	turnWG := sync.WaitGroup{}
 	turnWG.Add(1)

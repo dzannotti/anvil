@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"anvil/internal/core"
-	"anvil/internal/core/definition"
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
@@ -106,7 +105,7 @@ func printWorld(w core.World) string {
 	return sb.String()
 }
 
-func printCreature(c definition.Creature) string {
+func printCreature(c core.Creature) string {
 	sb := strings.Builder{}
 	stats := []string{
 		fmt.Sprintf("HP: %3d/%d", c.HitPoints(), c.MaxHitPoints()),
@@ -120,7 +119,7 @@ func printTeam(t core.Team) string {
 	sb.WriteString("🎴 " + t.Name)
 	creatures := []string{}
 	for _, c := range t.Members {
-		creatures = append(creatures, indent(printCreature(c)))
+		creatures = append(creatures, indent(printCreature(*c)))
 	}
 	sb.WriteString("\n" + strings.Join(creatures, "\n"))
 	return sb.String()
