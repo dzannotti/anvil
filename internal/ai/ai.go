@@ -6,4 +6,4 @@ type AI interface {
 	Play()
 }
 
-var NewSimple = simple.New
+type Simple = simple.Simple

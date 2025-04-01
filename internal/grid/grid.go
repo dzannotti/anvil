@@ -1,8 +1,8 @@
 package grid
 
 type Grid[cell any] struct {
-	width  int
-	height int
+	Width  int
+	Height int
 	cells  [][]cell
 }
 
@@ -13,13 +13,13 @@ func New[cell any](width int, height int, creator CellCreator[cell]) *Grid[cell]
 	for x := 0; x < width; x++ {
 		cells[x] = make([]cell, height)
 		for y := 0; y < height; y++ {
-			cells[x][y] = creator(NewPosition(x, y))
+			cells[x][y] = creator(Position{X: x, Y: y})
 		}
 	}
 
 	return &Grid[cell]{
-		width:  width,
-		height: height,
+		Width:  width,
+		Height: height,
 		cells:  cells,
 	}
 }
@@ -32,22 +32,14 @@ func (g Grid[cell]) At(pos Position) (*cell, bool) {
 }
 
 func (g Grid[cell]) IsValidPosition(pos Position) bool {
-	return pos.X >= 0 && pos.X < g.width && pos.Y >= 0 && pos.Y < g.height
-}
-
-func (g Grid[cell]) Width() int {
-	return g.width
-}
-
-func (g Grid[cell]) Height() int {
-	return g.height
+	return pos.X >= 0 && pos.X < g.Width && pos.Y >= 0 && pos.Y < g.Height
 }
 
 func (g Grid[cell]) CellsInRange(origin Position, radius int) []*cell {
 	cells := make([]*cell, 0)
 	for x := -radius; x <= radius; x++ {
 		for y := -radius; y <= radius; y++ {
-			pos := origin.Add(NewPosition(x, y))
+			pos := origin.Add(Position{X: x, Y: y})
 			cell, _ := g.At(pos)
 			if cell != nil {
 				cells = append(cells, cell)

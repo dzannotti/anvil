@@ -20,6 +20,84 @@ func printValue(value int, first bool) string {
 	return fmt.Sprintf("- %d", ix.Abs(value))
 }
 
+func formatDiceRolls(term expression.Term) string {
+	if len(term.Values) <= 1 {
+		return ""
+	}
+	rolls := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(term.Values)), ", "), "[]")
+	formula := fmt.Sprintf("%dd%d", term.Times, term.Sides)
+	return fmt.Sprintf(" (%s: %s)", formula, rolls)
+}
+
+func formatDice(term expression.Term) string {
+	if !strings.Contains(string(term.Type), "dice") {
+		return ""
+	}
+	if len(term.Values) <= 1 {
+		return fmt.Sprintf(" (%dd%d)", term.Times, term.Sides)
+	}
+	return formatDiceRolls(term)
+}
+
+func formatBranch(indent string, last bool) string {
+	if last {
+		return indent + "    "
+	}
+	return indent + "│   "
+}
+
+func formatAdvantage(term expression.Term, indent string, last bool) []string {
+	if len(term.HasAdvantage) == 0 {
+		return nil
+	}
+
+	formatted := make([]string, 0)
+	indent = formatBranch(indent, last)
+	totalItems := len(term.HasAdvantage) + len(term.HasDisadvantage)
+
+	for idx, source := range term.HasAdvantage {
+		isLast := idx == totalItems-1
+		branch := "├─ "
+		if isLast {
+			branch = "└─ "
+		}
+		formatted = append(formatted, fmt.Sprintf("\n%s%sAdvantage: %s", indent, branch, source))
+	}
+
+	return formatted
+}
+
+func formatDisadvantage(term expression.Term, indent string, last bool) []string {
+	if len(term.HasDisadvantage) == 0 {
+		return nil
+	}
+
+	formatted := make([]string, 0)
+	indent = formatBranch(indent, last)
+
+	for idx, source := range term.HasDisadvantage {
+		isLast := idx == len(term.HasDisadvantage)-1
+		branch := "├─ "
+		if isLast {
+			branch = "└─ "
+		}
+		formatted = append(formatted, fmt.Sprintf("\n%s%sDisadvantage: %s", indent, branch, source))
+	}
+
+	return formatted
+}
+
+func formatTags(term expression.Term) string {
+	if term.Tags.IsEmpty() {
+		return ""
+	}
+	termTags := strings.Builder{}
+	for _, t := range term.Tags.Strings() {
+		termTags.WriteString(tags.ToReadableTag(tag.FromString(t)))
+	}
+	return fmt.Sprintf(" (%s)", termTags.String())
+}
+
 func printTerm(term expression.Term, indent string, last, first bool) []string {
 	branch := " ├─ "
 	if last {
@@ -29,59 +107,24 @@ func printTerm(term expression.Term, indent string, last, first bool) []string {
 	value := printValue(term.Value, first)
 	source := strings.Builder{}
 	source.WriteString(term.Source)
-	var formulaPart string
 
 	if strings.Contains(string(term.Type), "dice") {
-		formula := fmt.Sprintf("%dd%d", term.Times, term.Sides)
-		if strings.Contains(string(term.Type), "20") {
-			formattedAdv := make([]string, 0)
-			advDisIndent := indent
-			if last {
-				advDisIndent += "    "
-			} else {
-				advDisIndent += "│   "
-			}
+		advantages := formatAdvantage(term, indent, last)
+		disadvantages := formatDisadvantage(term, indent, last)
 
-			for idx, advSource := range term.HasAdvantage {
-				isLastAdv := idx == len(term.HasAdvantage)+len(term.HasDisadvantage)-1
-				advBranch := "├─ "
-				if isLastAdv {
-					advBranch = "└─ "
-				}
-				formattedAdv = append(formattedAdv, fmt.Sprintf("\n%s%sAdvantage: %s", advDisIndent, advBranch, advSource))
-			}
-
-			for idx, disSource := range term.HasDisadvantage {
-				isLastDis := idx == len(term.HasDisadvantage)-1
-				disBranch := "├─ "
-				if isLastDis {
-					disBranch = "└─ "
-				}
-				formattedAdv = append(formattedAdv, fmt.Sprintf("\n%s%sDisadvantage: %s", advDisIndent, disBranch, disSource))
-			}
-
-			if len(formattedAdv) > 0 {
-				source.WriteString(strings.Join(formattedAdv, ""))
-			}
+		if len(advantages) > 0 {
+			source.WriteString(strings.Join(advantages, ""))
 		}
-
-		if len(term.Values) > 1 {
-			rolls := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(term.Values)), ", "), "[]")
-			formulaPart = fmt.Sprintf(" (%s: %s)", formula, rolls)
-		} else {
-			formulaPart = fmt.Sprintf(" (%s)", formula)
+		if len(disadvantages) > 0 {
+			source.WriteString(strings.Join(disadvantages, ""))
 		}
 	}
 
 	if !term.Tags.IsEmpty() && len(indent) == 0 {
-		termTags := strings.Builder{}
-		for _, t := range term.Tags.Strings() {
-			termTags.WriteString(tags.ToReadableTag(tag.FromString(t)))
-		}
-		source.WriteString(fmt.Sprintf(" (%s)", termTags.String()))
+		source.WriteString(formatTags(term))
 	}
 
-	result = append(result, fmt.Sprintf("%s%s%s%s %s", indent, branch, value, formulaPart, source.String()))
+	result = append(result, fmt.Sprintf("%s%s%s%s %s", indent, branch, value, formatDice(term), source.String()))
 
 	if len(term.Terms) > 0 {
 		newIndent := indent

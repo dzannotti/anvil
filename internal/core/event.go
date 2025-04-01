@@ -19,8 +19,8 @@ const (
 )
 
 type EncounterEvent struct {
-	Teams []*Team
-	World World
+	Creatures []*Creature
+	World     World
 }
 
 type RoundEvent struct {

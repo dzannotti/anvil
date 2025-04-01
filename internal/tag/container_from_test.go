@@ -19,7 +19,7 @@ func TestContainer_From(t *testing.T) {
 		{
 			name: "creates valid empty container",
 			setup: func() tag.Container {
-				return tag.NewContainer()
+				return tag.Container{}
 			},
 			expected: []tag.Tag{},
 		},

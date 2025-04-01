@@ -2,7 +2,7 @@ package tag
 
 func ContainerFromString(value string) Container {
 	if len(value) == 0 {
-		return NewContainer()
+		return Container{}
 	}
 	return Container{
 		tags: []Tag{FromString(value)},
@@ -24,9 +24,11 @@ func ContainerFromTag(value Tag) Container {
 }
 
 func ContainerFromTags(values []Tag) Container {
-	tags := make([]Tag, len(values))
-	copy(tags, values)
-	return Container{tags: tags}
+	tc := Container{}
+	for _, value := range values {
+		tc.AddTag(value)
+	}
+	return tc
 }
 
 func ContainerFromContainer(value Container) Container {

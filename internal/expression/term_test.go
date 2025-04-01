@@ -63,14 +63,14 @@ func TestTerm_Clone(t *testing.T) {
 		{
 			name: "should deep copy all fields and slices",
 			originalTerm: func() Term {
-				term := NewTerm(TypeDice, "test")
+				term := makeTerm(TypeDice, "test")
 				term.Value = 10
 				term.Values = []int{1, 2, 3}
 				term.Times = 2
 				term.Sides = 6
 				term.HasAdvantage = []string{"adv1", "adv2"}
 				term.HasDisadvantage = []string{"dis1"}
-				term.Terms = []Term{NewTerm(TypeScalar, "sub")}
+				term.Terms = []Term{makeTerm(TypeScalar, "sub")}
 				return term
 			}(),
 			modifyFunc: func(t *Term) {

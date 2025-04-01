@@ -84,12 +84,12 @@ func printMessage(ev eventbus.Message) string {
 func printWorld(w core.World) string {
 	sb := strings.Builder{}
 	sb.WriteString("🌍 World\n")
-	for x := 0; x < w.Width(); x++ {
-		for y := range w.Height() {
+	for y := range w.Height() {
+		for x := 0; x < w.Width(); x++ {
 			pos := grid.Position{X: x, Y: y}
-			nav, _ := w.Navigation().At(pos)
+			nav, _ := w.Navigation.At(pos)
 			cell, _ := w.At(pos)
-			if !nav.IsWalkable() {
+			if !nav.Walkable {
 				sb.WriteString("#")
 				continue
 			}
@@ -114,27 +114,31 @@ func printCreature(c core.Creature) string {
 	return sb.String()
 }
 
-func printTeam(t core.Team) string {
+func printTeam(creatures []*core.Creature) string {
 	sb := strings.Builder{}
-	sb.WriteString("🎴 " + t.Name)
-	creatures := []string{}
-	for _, c := range t.Members {
-		creatures = append(creatures, indent(printCreature(*c)))
+	sb.WriteString("🎴 " + creatures[0].Name)
+	out := []string{}
+	for _, c := range creatures {
+		out = append(out, indent(printCreature(*c)))
 	}
-	sb.WriteString("\n" + strings.Join(creatures, "\n"))
+	sb.WriteString("\n" + strings.Join(out, "\n"))
 	return sb.String()
 }
 
 func printEncounter(e core.EncounterEvent) string {
 	sb := strings.Builder{}
 	sb.WriteString("🏰 Encounter Start")
-	teams := []string{}
 	sb.WriteString("\n" + indent(printWorld(e.World)))
-	for _, f := range e.Teams {
-		teams = append(teams, indent(printTeam(*f)))
-		teams = append(teams, "│ └─○")
+	teams := map[string][]*core.Creature{}
+	for _, c := range e.Creatures {
+		teams[string(c.Team)] = append(teams[string(c.Team)], c)
 	}
-	sb.WriteString("\n" + strings.Join(teams, "\n"))
+	out := []string{}
+	for _, t := range teams {
+		out = append(out, indent(printTeam(t)))
+		out = append(out, "│ └─○")
+	}
+	sb.WriteString("\n" + strings.Join(out, "\n"))
 	sb.WriteString("\n└─○")
 	return sb.String()
 }
