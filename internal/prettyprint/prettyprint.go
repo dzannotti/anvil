@@ -1,13 +1,15 @@
 package prettyprint
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"slices"
 	"strings"
 
+	"anvil/internal/core"
+	"anvil/internal/core/definition"
 	"anvil/internal/eventbus"
+	"anvil/internal/grid"
 )
 
 var eventStack []eventbus.Message
@@ -18,19 +20,13 @@ func shouldPrintEnd() bool {
 	}
 
 	stoppers := []string{
-		"expression_result",
-		"check_result",
-		"attribute_calculation",
-		"target",
-		"attribute_change",
-		"spend_resource",
+		core.ExpressionResultEventType,
+		core.CheckResultEventType,
+		core.AttributeCalculationEventType,
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
-	if slices.Contains(stoppers, lastEvent.Kind) {
-		return false
-	}
-	return true
+	return !slices.Contains(stoppers, lastEvent.Kind)
 }
 
 func Print(out io.Writer, ev eventbus.Message) {
@@ -60,10 +56,8 @@ func Print(out io.Writer, ev eventbus.Message) {
 
 func printMessage(ev eventbus.Message) string {
 	switch ev.Kind {
-	case "encounter":
-		data := EncounterEvent{}
-		json.Unmarshal(ev.Data.([]byte), &data)
-		return printEncounter(data)
+	case core.EncounterEventType:
+		return printEncounter(ev.Data.(core.EncounterEvent))
 		/*case Round:
 			return printRound(e)
 		case Turn:
@@ -87,17 +81,21 @@ func printMessage(ev eventbus.Message) string {
 	return "unknown event " + ev.Kind
 }
 
-func printWorld(w World) string {
+func printWorld(w definition.World) string {
 	sb := strings.Builder{}
 	sb.WriteString("🌍 World\n")
-	for x := range len(w.Cells) {
-		for y := range len(w.Cells[x]) {
-			if !w.Cells[x][y].Walkable {
+	for x := range w.Width() {
+		for y := range w.Height() {
+			pos := grid.Position{X: x, Y: y}
+			nav, _ := w.Navigation().At(pos)
+			cell, _ := w.At(pos)
+			if !nav.IsWalkable() {
 				sb.WriteString("#")
 				continue
 			}
-			if w.Cells[x][y].Occupant.Name != "" {
-				sb.WriteString(w.Cells[x][y].Occupant.Name[0:1])
+			if cell.IsOccupied() {
+				occupant, _ := cell.Occupant()
+				sb.WriteString(occupant.Name()[0:1])
 				continue
 			}
 			sb.WriteString(".")
@@ -107,27 +105,27 @@ func printWorld(w World) string {
 	return sb.String()
 }
 
-func printCreature(c Creature) string {
+func printCreature(c definition.Creature) string {
 	sb := strings.Builder{}
 	stats := []string{
-		fmt.Sprintf("HP: %3d/%3d", c.HitPoints, c.MaxHitPoints),
+		fmt.Sprintf("HP: %3d/%d", c.HitPoints(), c.MaxHitPoints()),
 	}
-	sb.WriteString(fmt.Sprintf("🧝 %-20s %s", c.Name, strings.Join(stats, " ")))
+	sb.WriteString(fmt.Sprintf("🧝 %-20s %s", c.Name(), strings.Join(stats, " ")))
 	return sb.String()
 }
 
-func printTeam(f Team) string {
+func printTeam(t definition.Team) string {
 	sb := strings.Builder{}
-	sb.WriteString("🎴 " + f.Name)
+	sb.WriteString("🎴 " + t.Name())
 	creatures := []string{}
-	for _, c := range f.Members {
+	for _, c := range t.Members() {
 		creatures = append(creatures, indent(printCreature(c)))
 	}
 	sb.WriteString("\n" + strings.Join(creatures, "\n"))
 	return sb.String()
 }
 
-func printEncounter(e EncounterEvent) string {
+func printEncounter(e core.EncounterEvent) string {
 	sb := strings.Builder{}
 	sb.WriteString("🏰 Encounter Start")
 	teams := []string{}

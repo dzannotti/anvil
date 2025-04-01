@@ -2,95 +2,70 @@ package core
 
 import (
 	"anvil/internal/core/definition"
-	"anvil/internal/core/serialize"
 	"anvil/internal/expression"
 	"anvil/internal/tag"
-	"encoding/json"
 )
 
-func NewEncounterEvent(encounter definition.Encounter) (string, []byte) {
-	teams := make([]map[string]any, 0, len(encounter.Teams()))
-	for i := range encounter.Teams() {
-		teams = append(teams, snapshotTeam(encounter.Teams()[i]))
-	}
-	data := serialize.ToJSON(map[string]any{
-		"Teams": teams,
-		"World": snapshotWorld(encounter.World()),
-	})
-	return "encounter", data
+const (
+	EncounterEventType            = "encounter"
+	RoundEventType                = "round"
+	TurnEventType                 = "turn"
+	AttributeCalculationEventType = "attributeCalculation"
+	CheckResultEventType          = "checkResult"
+	ExpressionResultEventType     = "expressionResult"
+	DiedEventType                 = "died"
+	AttackRollEventType           = "attackRoll"
+	TakeDamageEventType           = "takeDamage"
+	UseActionEventType            = "useAction"
+)
+
+type EncounterEvent struct {
+	Teams []definition.Team
+	World definition.World
 }
 
-func NewRoundEvent(round int, c []definition.Creature) (string, []byte) {
-	creatures := make([]map[string]any, 0, len(c))
-	for i := range c {
-		creatures = append(creatures, snapshotCreature(c[i]))
-	}
-	data := serialize.ToJSON(map[string]any{
-		"Round":     round,
-		"Creatures": creatures,
-	})
-
-	return "round", data
+type RoundEvent struct {
+	Round     int
+	Creatures []definition.Creature
 }
 
-func NewTurnEvent(turn int, src definition.Creature) (string, []byte) {
-	data := serialize.ToJSON(map[string]any{
-		"Turn":     turn,
-		"Creature": snapshotCreature(src),
-	})
-
-	return "turn", data
+type TurnEvent struct {
+	Turn     int
+	Creature definition.Creature
 }
 
-func NewTakeDamageEvent(src definition.Creature, damage int) (string, []byte) {
-	data := serialize.ToJSON(map[string]any{
-		"Creature": snapshotCreature(src),
-		"Damage":   damage,
-	})
-
-	return "take_damage", data
+type AttributeCalculationEvent struct {
+	Attribute  tag.Tag
+	Expression expression.Expression
 }
 
-func NewAttackRollEvent(src definition.Creature, dst definition.Creature) (string, []byte) {
-	data := serialize.ToJSON(map[string]any{
-		"creature": snapshotCreature(src),
-		"target":   snapshotCreature(dst),
-	})
-
-	return "attack_roll", data
+type CheckResultEvent struct {
+	Value    int
+	Against  int
+	Critical bool
+	Success  bool
 }
 
-func NewExpressionResultEvent(expr expression.Expression) (string, []byte) {
-	data := serialize.ToJSON(map[string]any{
-		"Expression": expr,
-	})
-
-	return "expression_result", data
+type ExpressionResultEvent struct {
+	Expression expression.Expression
 }
 
-func NewAttributeCalculationEvent(tag tag.Tag, expr expression.Expression) (string, []byte) {
-	data, _ := json.Marshal(map[string]any{
-		"Expression": expr,
-	})
-	return "attribute_calculation", data
+type DiedEvent struct {
+	Creature definition.Creature
 }
 
-func NewCheckResultEvent(value int, against int, critical bool, success bool) (string, []byte) {
-	data, _ := json.Marshal(map[string]any{
-		"Value":    value,
-		"Against":  against,
-		"Critical": critical,
-		"Success":  success,
-	})
-	return "check_result", data
+type AttackRollEvent struct {
+	Source definition.Creature
+	Target definition.Creature
 }
 
-func NewUseActionEvent(a definition.Action, src definition.Creature, target definition.Creature) (string, []byte) {
-	data, _ := json.Marshal(map[string]any{
-		"Action":  snapshotAction(a),
-		"Source":  snapshotCreature(src),
-		"Target":  snapshotCreature(target),
-		"Success": true,
-	})
-	return "use_action", data
+type TakeDamageEvent struct {
+	Target definition.Creature
+	Damage int
+}
+
+type UseActionEvent struct {
+	Source definition.Creature
+	Target definition.Creature
+	Action definition.Action
 }

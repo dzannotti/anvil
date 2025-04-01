@@ -6,6 +6,12 @@ import (
 	"anvil/internal/tag"
 )
 
+const (
+	BeforeAttackRollStateType     = "BeforeAttackRollState"
+	AfterAttackRollStateType      = "AfterAttackRollState"
+	AttributeCalculationStateType = "AttributeCalculationState"
+)
+
 type BeforeAttackRollState struct {
 	Source     definition.Creature
 	Target     definition.Creature
