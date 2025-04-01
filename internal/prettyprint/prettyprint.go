@@ -8,8 +8,10 @@ import (
 
 	"anvil/internal/core"
 	"anvil/internal/core/definition"
+	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
+	"anvil/internal/tag"
 )
 
 var eventStack []eventbus.Message
@@ -58,25 +60,24 @@ func printMessage(ev eventbus.Message) string {
 	switch ev.Kind {
 	case core.EncounterEventType:
 		return printEncounter(ev.Data.(core.EncounterEvent))
-		/*case Round:
-			return printRound(e)
-		case Turn:
-			return printTurn(e)
-		case Died:
-			return printDeath(e)
-		case UseAction:
-			return printUseAction(e)
-		case TakeDamage:
-			return printTakeDamage(e)
-		case ExpressionResult:
-			return printExpressionResult(e)
-		case CheckResult:
-			return printCheckResult(e)
-		case AttackRoll:
-			return printAttackRoll(e)
-		case AttributeCalculation:
-			return printAttributeCalculation(e)
-		}*/
+	case core.RoundEventType:
+		return printRound(ev.Data.(core.RoundEvent))
+	case core.TurnEventType:
+		return printTurn(ev.Data.(core.TurnEvent))
+	case core.DiedEventType:
+		return printDied(ev.Data.(core.DiedEvent))
+	case core.UseActionEventType:
+		return printUseAction(ev.Data.(core.UseActionEvent))
+	case core.TakeDamageEventType:
+		return printTakeDamage(ev.Data.(core.TakeDamageEvent))
+	case core.ExpressionResultEventType:
+		return printExpressionResult(ev.Data.(core.ExpressionResultEvent))
+	case core.CheckResultEventType:
+		return printCheckResult(ev.Data.(core.CheckResultEvent))
+	case core.AttackRollEventType:
+		return printAttackRoll(ev.Data.(core.AttackRollEvent))
+	case core.AttributeCalculationEventType:
+		return printAttributeCalculation(ev.Data.(core.AttributeCalculationEvent))
 	}
 	return "unknown event " + ev.Kind
 }
@@ -139,35 +140,34 @@ func printEncounter(e core.EncounterEvent) string {
 	return sb.String()
 }
 
-/*
-func printRound(r RoundEvent) string {
+func printRound(r core.RoundEvent) string {
 	return fmt.Sprintf("🔄 Round %d", r.Round+1)
 }
 
-func printTurn(t TurnEvent) string {
-	return fmt.Sprintf("🔃 Turn %d: %s", t.Turn+1, t.Creature.Name)
+func printTurn(t core.TurnEvent) string {
+	return fmt.Sprintf("🔃 Turn %d: %s", t.Turn+1, t.Creature.Name())
 }
 
-func printDeath(d Died) string {
-	return fmt.Sprintf("☠️ %s is about to die", d.Creature.Name)
+func printDied(d core.DiedEvent) string {
+	return fmt.Sprintf("☠️ %s is about to die", d.Creature.Name())
 }
 
-func printUseAction(u UseAction) string {
-	return fmt.Sprintf("💫 %s uses %s on %s", u.Source.Name, u.Action.Name, u.Target.Name)
+func printUseAction(u core.UseActionEvent) string {
+	return fmt.Sprintf("💫 %s uses %s on %s", u.Source.Name(), u.Action.Name(), u.Target.Name())
 }
 
-func printTakeDamage(d TakeDamage) string {
-	return fmt.Sprintf("🩸 %s takes %d damage", d.Target.Name, d.Damage)
+func printTakeDamage(d core.TakeDamageEvent) string {
+	return fmt.Sprintf("🩸 %s takes %d damage", d.Target.Name(), d.Damage)
 }
 
-func printExpressionResult(e ExpressionResult) string {
+func printExpressionResult(e core.ExpressionResultEvent) string {
 	sb := strings.Builder{}
 	sb.WriteString("🎲 ")
 	sb.WriteString(printExpression(e.Expression))
 	return sb.String()
 }
 
-func printCheckResult(e CheckResult) string {
+func printCheckResult(e core.CheckResultEvent) string {
 	sb := strings.Builder{}
 	sIcon := map[bool]string{true: "✅", false: "❌"}
 	sb.WriteString(sIcon[e.Success])
@@ -180,11 +180,11 @@ func printCheckResult(e CheckResult) string {
 	return fmt.Sprintf("%s %d vs %d", outcome, e.Value, e.Against)
 }
 
-func printAttackRoll(e AttackRoll) string {
-	return fmt.Sprintf("🗡️ %s does an attack roll against %s", e.Source.Name, e.Target.Name)
+func printAttackRoll(e core.AttackRollEvent) string {
+	return fmt.Sprintf("🗡️ %s does an attack roll against %s", e.Source.Name(), e.Target.Name())
 }
 
-func printAttributeCalculation(e AttributeCalculation) string {
+func printAttributeCalculation(e core.AttributeCalculationEvent) string {
 	emoji := map[tag.Tag]string{
 		tags.ArmorClass:   "🛡️",
 		tags.Strength:     "💪",
@@ -200,4 +200,3 @@ func printAttributeCalculation(e AttributeCalculation) string {
 	sb.WriteString(printExpression(e.Expression))
 	return sb.String()
 }
-*/
