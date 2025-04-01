@@ -39,7 +39,7 @@ func (t Term) Clone() Term {
 	for i := range t.Terms {
 		cloned[i] = t.Terms[i].Clone()
 	}
-	newTerm := NewTerm(t.Type, t.Source, cloned...)
+	newTerm := makeTerm(t.Type, t.Source, cloned...)
 	newTerm.Value = t.Value
 	newTerm.Times = t.Times
 	newTerm.Sides = t.Sides
@@ -50,7 +50,7 @@ func (t Term) Clone() Term {
 	return newTerm
 }
 
-func NewTerm(termType TermType, source string, terms ...Term) Term {
+func makeTerm(termType TermType, source string, terms ...Term) Term {
 	if terms == nil {
 		terms = []Term{}
 	}

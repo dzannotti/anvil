@@ -5,34 +5,34 @@ import (
 )
 
 func (e *Expression) AddScalar(value int, source string, terms ...Term) {
-	term := NewTerm(TypeScalar, source, terms...)
+	term := makeTerm(TypeScalar, source, terms...)
 	term.Value = value
 	e.Terms = append(e.Terms, term)
 }
 
 func (e *Expression) AddDice(times int, sides int, source string, terms ...Term) {
-	term := NewTerm(TypeDice, source, terms...)
+	term := makeTerm(TypeDice, source, terms...)
 	term.Times = times
 	term.Sides = sides
 	e.Terms = append(e.Terms, term)
 }
 
 func (e *Expression) AddD20(source string, terms ...Term) {
-	term := NewTerm(TypeDice20, source, terms...)
+	term := makeTerm(TypeDice20, source, terms...)
 	term.Times = 1
 	term.Sides = 20
 	e.Terms = append(e.Terms, term)
 }
 
 func (e *Expression) AddDamageScalar(value int, source string, tags tag.Container, terms ...Term) {
-	term := NewTerm(TypeDamageScalar, source, terms...)
+	term := makeTerm(TypeDamageScalar, source, terms...)
 	term.Value = value
 	term.Tags = e.primaryTags(tags)
 	e.Terms = append(e.Terms, term)
 }
 
 func (e *Expression) AddDamageDice(times int, sides int, source string, tags tag.Container, terms ...Term) {
-	term := NewTerm(TypeDamageDice, source, terms...)
+	term := makeTerm(TypeDamageDice, source, terms...)
 	term.Times = times
 	term.Sides = sides
 	term.Tags = e.primaryTags(tags)

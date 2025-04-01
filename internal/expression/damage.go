@@ -15,7 +15,7 @@ func (e *Expression) HalveDamage(tag tag.Tag, source string) {
 		}
 		e.evaluateTerm(&term)
 		value := math.Floor(float64(term.Value) / 2.0)
-		e.Terms[i] = NewTerm(TypeScalarHalve, source, term)
+		e.Terms[i] = makeTerm(TypeScalarHalve, source, term)
 		e.Terms[i].Value = int(value)
 		e.Terms[i].Tags = term.Tags
 	}
@@ -23,7 +23,7 @@ func (e *Expression) HalveDamage(tag tag.Tag, source string) {
 
 func (e *Expression) ReplaceWith(value int, source string) {
 	terms := e.Terms
-	newTerm := NewTerm(TypeScalarReplace, source, terms...)
+	newTerm := makeTerm(TypeScalarReplace, source, terms...)
 	newTerm.Value = value
 	e.Terms = []Term{newTerm}
 }
