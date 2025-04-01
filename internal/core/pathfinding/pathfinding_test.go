@@ -51,15 +51,18 @@ func TestBasicPathFinding(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			pathFinding := New(5, 5)
-			result := pathFinding.FindPath(tt.start, tt.end)
-
-			if len(result) != len(tt.expected) {
-				t.Errorf("path length = %v, want %v", len(result), len(tt.expected))
+			result, ok := pathFinding.FindPath(tt.start, tt.end)
+			if !ok {
+				t.Errorf("path not found")
 			}
 
-			for i := range result {
-				if result[i] != tt.expected[i] {
-					t.Errorf("path[%d] = %v, want %v", i, result[i], tt.expected[i])
+			if len(result.Path) != len(tt.expected) {
+				t.Errorf("path length = %v, want %v", len(result.Path), len(tt.expected))
+			}
+
+			for i := range result.Path {
+				if result.Path[i] != tt.expected[i] {
+					t.Errorf("path[%d] = %v, want %v", i, result.Path[i], tt.expected[i])
 				}
 			}
 		})
@@ -75,35 +78,39 @@ func TestObstacleAvoidance(t *testing.T) {
 		}
 		node, ok := pathFinding.At(grid.Position{X: 2, Y: 1})
 		if ok {
-			node.SetWalkable(false)
+			node.Walkable = false
 		}
 		node, ok = pathFinding.At(grid.Position{X: 2, Y: 2})
 		if ok {
-			node.SetWalkable(false)
+			node.Walkable = false
 		}
 		node, ok = pathFinding.At(grid.Position{X: 2, Y: 3})
 		if ok {
-			node.SetWalkable(false)
+			node.Walkable = false
 		}
 
 		start := grid.Position{X: 1, Y: 2}
 		end := grid.Position{X: 3, Y: 2}
-		result := pathFinding.FindPath(start, end)
+		result, ok := pathFinding.FindPath(start, end)
 
-		if len(result) <= 2 {
+		if !ok {
+			t.Error("path not found")
+		}
+
+		if len(result.Path) <= 2 {
 			t.Error("path should be longer than direct route")
 		}
 
-		if !containsPosition(result, start) {
+		if !containsPosition(result.Path, start) {
 			t.Error("path should contain start position")
 		}
-		if !containsPosition(result, end) {
+		if !containsPosition(result.Path, end) {
 			t.Error("path should contain end position")
 		}
 
-		for _, pos := range result {
+		for _, pos := range result.Path {
 			node, _ := pathFinding.At(pos)
-			if !node.IsWalkable() {
+			if !node.Walkable {
 				t.Errorf("path contains obstacle at position %v", pos)
 			}
 		}
@@ -118,15 +125,19 @@ func TestObstacleAvoidance(t *testing.T) {
 		for y := 0; y < 5; y++ {
 			node, ok := pathFinding.At(grid.Position{X: 2, Y: y})
 			if ok {
-				node.SetWalkable(false)
+				node.Walkable = false
 			}
 		}
 
 		start := grid.Position{X: 1, Y: 2}
 		end := grid.Position{X: 3, Y: 2}
-		result := pathFinding.FindPath(start, end)
+		result, ok := pathFinding.FindPath(start, end)
 
-		if len(result) != 0 {
+		if ok {
+			t.Error("path found when not expected")
+		}
+
+		if len(result.Path) != 0 {
 			t.Error("path should be empty when destination is unreachable")
 		}
 	})
@@ -137,9 +148,13 @@ func TestPathOptimality(t *testing.T) {
 		pathFinding := New(5, 5)
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 2, Y: 2}
-		result := pathFinding.FindPath(start, end)
+		result, ok := pathFinding.FindPath(start, end)
 
-		if len(result) != 3 {
+		if !ok {
+			t.Error("path not found")
+		}
+
+		if len(result.Path) != 3 {
 			t.Error("path should be diagonal with length 3")
 		}
 	})
@@ -152,17 +167,17 @@ func TestPathOptimality(t *testing.T) {
 		}
 		node, ok := pathFinding.At(grid.Position{X: 1, Y: 1})
 		if ok {
-			node.SetWalkable(false)
+			node.Walkable = false
 		}
 
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 2, Y: 2}
-		result := pathFinding.FindPath(start, end)
+		result, _ := pathFinding.FindPath(start, end)
 
-		if len(result) <= 3 {
+		if len(result.Path) <= 3 {
 			t.Error("path should be longer than diagonal")
 		}
-		if containsPosition(result, grid.Position{X: 1, Y: 1}) {
+		if containsPosition(result.Path, grid.Position{X: 1, Y: 1}) {
 			t.Error("path should not contain obstacle position")
 		}
 	})
@@ -175,14 +190,14 @@ func TestPathOptimality(t *testing.T) {
 		}
 		node, ok := pathFinding.At(grid.Position{X: 1, Y: 0})
 		if ok {
-			node.SetWalkable(false)
+			node.Walkable = false
 		}
 
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 2, Y: 0}
-		result := pathFinding.FindPath(start, end)
+		result, _ := pathFinding.FindPath(start, end)
 
-		if len(result) <= 3 {
+		if len(result.Path) <= 3 {
 			t.Error("path should be longer than diagonal")
 		}
 	})
@@ -211,7 +226,7 @@ func TestHelperFunctions(t *testing.T) {
 		}
 
 		for _, node := range neighbors {
-			pos := node.Position()
+			pos := node.Position
 			if pos.X < 0 || pos.X >= 5 || pos.Y < 0 || pos.Y >= 5 {
 				t.Errorf("neighbor position %v is out of bounds", pos)
 			}
@@ -233,27 +248,27 @@ func TestHelperFunctions(t *testing.T) {
 		pathFinding := New(5, 5)
 		nodes := []*Node{
 			{
-				position: grid.Position{X: 0, Y: 0},
-				gCost:    20,
-				hCost:    30,
+				Position: grid.Position{X: 0, Y: 0},
+				GCost:    20,
+				HCost:    30,
 			},
 			{
-				position: grid.Position{X: 1, Y: 1},
-				gCost:    10,
-				hCost:    10,
+				Position: grid.Position{X: 1, Y: 1},
+				GCost:    10,
+				HCost:    10,
 			},
 			{
-				position: grid.Position{X: 2, Y: 2},
-				gCost:    30,
-				hCost:    20,
+				Position: grid.Position{X: 2, Y: 2},
+				GCost:    30,
+				HCost:    20,
 			},
 		}
 
 		lowestNode := pathFinding.lowestFCost(nodes)
 		expectedPos := grid.Position{X: 1, Y: 1}
 
-		if lowestNode.Position() != expectedPos {
-			t.Errorf("lowest fCost node position = %v, want %v", lowestNode.Position(), expectedPos)
+		if lowestNode.Position != expectedPos {
+			t.Errorf("lowest fCost node position = %v, want %v", lowestNode.Position, expectedPos)
 		}
 		if lowestNode.FCost() != 20 {
 			t.Errorf("lowest fCost = %v, want 20", lowestNode.FCost())

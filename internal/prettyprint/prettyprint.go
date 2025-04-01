@@ -89,7 +89,7 @@ func printWorld(w core.World) string {
 			pos := grid.Position{X: x, Y: y}
 			nav, _ := w.Navigation.At(pos)
 			cell, _ := w.At(pos)
-			if !nav.IsWalkable() {
+			if !nav.Walkable {
 				sb.WriteString("#")
 				continue
 			}

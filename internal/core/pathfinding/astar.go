@@ -12,19 +12,19 @@ const (
 	MoveStraightCost = 10
 )
 
-func (pf *Pathfinding) FindPath(start grid.Position, end grid.Position) []grid.Position {
+func (pf *Pathfinding) FindPath(start grid.Position, end grid.Position) (*Result, bool) {
 	pf.reset()
 	open := []*Node{}
 	closed := []*Node{}
 	startNode, _ := pf.grid.At(start)
 	endNode, _ := pf.grid.At(end)
 	open = append(open, startNode)
-	startNode.SetGCost(0)
-	startNode.SetHCost(pf.distance(start, end))
+	startNode.GCost = 0
+	startNode.HCost = pf.distance(start, end)
 	for len(open) > 0 {
 		current := pf.lowestFCost(open)
 		if current == endNode {
-			return pf.calculatePath(endNode)
+			return pf.calculatePath(endNode), true
 		}
 		open = slices.DeleteFunc(open, func(n *Node) bool {
 			return n == current
@@ -34,18 +34,18 @@ func (pf *Pathfinding) FindPath(start grid.Position, end grid.Position) []grid.P
 			if slices.Contains(closed, neighbour) {
 				continue
 			}
-			tentativeGCost := current.GCost() + pf.distance(current.Position(), neighbour.Position())
-			if tentativeGCost < neighbour.GCost() {
-				neighbour.SetParent(current)
-				neighbour.SetGCost(tentativeGCost)
-				neighbour.SetHCost(pf.distance(neighbour.Position(), end))
+			tentativeGCost := current.GCost + pf.distance(current.Position, neighbour.Position)
+			if tentativeGCost < neighbour.GCost {
+				neighbour.Parent = current
+				neighbour.GCost = tentativeGCost
+				neighbour.HCost = pf.distance(neighbour.Position, end)
 				if !slices.Contains(open, neighbour) {
 					open = append(open, neighbour)
 				}
 			}
 		}
 	}
-	return nil
+	return &Result{}, false
 }
 
 func (pf *Pathfinding) reset() {
@@ -77,26 +77,26 @@ func (pf *Pathfinding) neighbours(node *Node) []*Node {
 	}
 	neighbours := make([]*Node, 0)
 	for _, offset := range offset {
-		pos := offset.Add(node.Position())
+		pos := offset.Add(node.Position)
 		neighbour, ok := pf.grid.At(pos)
 		if !ok {
 			continue
 		}
-		if !neighbour.IsWalkable() {
+		if !neighbour.Walkable {
 			continue
 		}
 		// For diagonal moves, check if both adjacent cells are walkable
-		dx := pos.X - node.Position().X
-		dy := pos.Y - node.Position().Y
+		dx := pos.X - node.Position.X
+		dy := pos.Y - node.Position.Y
 		if dx != 0 && dy != 0 {
-			horizontalPos := node.Position().Add(grid.Position{X: dx, Y: 0})
-			verticalPos := node.Position().Add(grid.Position{X: 0, Y: dy})
+			horizontalPos := node.Position.Add(grid.Position{X: dx, Y: 0})
+			verticalPos := node.Position.Add(grid.Position{X: 0, Y: dy})
 			horizontalNode, ok := pf.grid.At(horizontalPos)
-			if !ok || !horizontalNode.IsWalkable() {
+			if !ok || !horizontalNode.Walkable {
 				continue
 			}
 			verticalNode, ok := pf.grid.At(verticalPos)
-			if !ok || !verticalNode.IsWalkable() {
+			if !ok || !verticalNode.Walkable {
 				continue
 			}
 		}
@@ -112,14 +112,14 @@ func (pf *Pathfinding) lowestFCost(nodes []*Node) *Node {
 	return nodes[0]
 }
 
-func (pf *Pathfinding) calculatePath(end *Node) []grid.Position {
+func (pf *Pathfinding) calculatePath(end *Node) *Result {
 	result := Result{}
 	current := end
 	for current != nil {
-		result.path = append(result.path, current.Position())
-		current = current.Parent()
+		result.Path = append(result.Path, current.Position)
+		current = current.Parent
 	}
-	result.cost = end.FCost()
-	slices.Reverse(result.path)
-	return result.path
+	result.Cost = end.FCost()
+	slices.Reverse(result.Path)
+	return &result
 }

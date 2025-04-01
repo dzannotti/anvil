@@ -35,19 +35,19 @@ func makeCreature(hub *eventbus.Hub, world *core.World, team core.TeamID, pos gr
 func setupWorld(world *core.World) {
 	for x := 0; x < world.Width(); x++ {
 		cell, _ := world.Navigation.At(grid.Position{X: x, Y: 0})
-		cell.SetWalkable(false)
+		cell.Walkable = false
 	}
 	for x := 0; x < world.Width(); x++ {
 		cell, _ := world.Navigation.At(grid.Position{X: x, Y: world.Height() - 1})
-		cell.SetWalkable(false)
+		cell.Walkable = false
 	}
 	for y := 0; y < world.Height(); y++ {
 		cell, _ := world.Navigation.At(grid.Position{X: 0, Y: y})
-		cell.SetWalkable(false)
+		cell.Walkable = false
 	}
 	for y := 0; y < world.Height(); y++ {
 		cell, _ := world.Navigation.At(grid.Position{X: world.Width() - 1, Y: y})
-		cell.SetWalkable(false)
+		cell.Walkable = false
 	}
 }
 
