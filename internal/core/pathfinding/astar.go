@@ -45,7 +45,7 @@ func (pf *Pathfinding) FindPath(start grid.Position, end grid.Position) (*Result
 			}
 		}
 	}
-	return &Result{}, false
+	return nil, false
 }
 
 func (pf *Pathfinding) reset() {
