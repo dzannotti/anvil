@@ -1,7 +1,6 @@
 package core
 
 import (
-	"anvil/internal/core/definition"
 	"anvil/internal/core/tags"
 	"anvil/internal/expression"
 	"anvil/internal/tag"
@@ -16,7 +15,7 @@ func (c *Creature) StartTurn() {
 
 }
 
-func (c *Creature) AttackRoll(target *Creature, tc tag.Container) definition.CheckResult {
+func (c *Creature) AttackRoll(target *Creature, tc tag.Container) CheckResult {
 	expression := expression.FromD20("Base")
 	c.Log.Start(AttackRollEventType, AttackRollEvent{Source: *c, Target: *target})
 	defer c.Log.End()
@@ -32,5 +31,5 @@ func (c *Creature) AttackRoll(target *Creature, tc tag.Container) definition.Che
 	c.Log.Add(AttributeCalculationEventType, AttributeCalculationEvent{Attribute: tags.ArmorClass, Expression: targetAC})
 	ok := value >= targetAC.Value
 	c.Log.Add(CheckResultEventType, CheckResultEvent{Value: value, Against: targetAC.Value, Critical: crit, Success: ok})
-	return definition.NewCheckResult(value, expression, crit, ok)
+	return CheckResult{Value: value, Against: expression.Value, Critical: crit, Success: ok}
 }
