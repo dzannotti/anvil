@@ -82,10 +82,10 @@ func printMessage(ev eventbus.Message) string {
 	return "unknown event " + ev.Kind
 }
 
-func printWorld(w definition.World) string {
+func printWorld(w core.World) string {
 	sb := strings.Builder{}
 	sb.WriteString("🌍 World\n")
-	for x := range w.Width() {
+	for x := 0; x < w.Width(); x++ {
 		for y := range w.Height() {
 			pos := grid.Position{X: x, Y: y}
 			nav, _ := w.Navigation().At(pos)

@@ -11,12 +11,12 @@ type Encounter struct {
 	initiativeOrder []definition.Creature
 	teams           []definition.Team
 	hub             *eventbus.Hub
-	world           *World
+	World           *World
 }
 
 func NewEncounter(hub *eventbus.Hub, world *World, teams []definition.Team) *Encounter {
 	encounter := &Encounter{
-		world:           world,
+		World:           world,
 		hub:             hub,
 		teams:           teams,
 		initiativeOrder: []definition.Creature{},

@@ -38,7 +38,3 @@ func (e Encounter) Winner() definition.Team {
 func (e Encounter) Teams() []definition.Team {
 	return e.teams
 }
-
-func (e Encounter) World() definition.World {
-	return e.world
-}

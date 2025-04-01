@@ -21,7 +21,7 @@ const (
 
 type EncounterEvent struct {
 	Teams []definition.Team
-	World definition.World
+	World World
 }
 
 type RoundEvent struct {

@@ -33,7 +33,7 @@ func (e *Encounter) playRound(act Act) {
 
 func (e *Encounter) Play(act Act, wg *sync.WaitGroup) {
 	e.round = 0
-	e.hub.Start(EncounterEventType, EncounterEvent{Teams: e.Teams(), World: e.world})
+	e.hub.Start(EncounterEventType, EncounterEvent{Teams: e.Teams(), World: *e.World})
 	defer e.hub.End()
 	defer wg.Done()
 	for !e.IsOver() {
