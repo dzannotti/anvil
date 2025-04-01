@@ -26,15 +26,15 @@ func (e Encounter) AllCreatures() []definition.Creature {
 	return allCreatures
 }
 
-func (e Encounter) Winner() definition.Team {
+func (e Encounter) Winner() (Team, bool) {
 	for _, t := range e.teams {
 		if !t.IsDead() {
-			return t
+			return *t, true
 		}
 	}
-	return nil
+	return Team{}, false
 }
 
-func (e Encounter) Teams() []definition.Team {
+func (e Encounter) Teams() []*Team {
 	return e.teams
 }

@@ -115,7 +115,7 @@ func printCreature(c definition.Creature) string {
 	return sb.String()
 }
 
-func printTeam(t definition.Team) string {
+func printTeam(t core.Team) string {
 	sb := strings.Builder{}
 	sb.WriteString("🎴 " + t.Name())
 	creatures := []string{}
@@ -132,7 +132,7 @@ func printEncounter(e core.EncounterEvent) string {
 	teams := []string{}
 	sb.WriteString("\n" + indent(printWorld(e.World)))
 	for _, f := range e.Teams {
-		teams = append(teams, indent(printTeam(f)))
+		teams = append(teams, indent(printTeam(*f)))
 		teams = append(teams, "│ └─○")
 	}
 	sb.WriteString("\n" + strings.Join(teams, "\n"))

@@ -59,7 +59,7 @@ func main() {
 	players.AddMember(fighter)
 	enemies.AddMember(orc)
 	enemies.AddMember(goblin)
-	encounter := core.NewEncounter(&hub, world, []definition.Team{players, enemies})
+	encounter := core.NewEncounter(&hub, world, []*core.Team{players, enemies})
 	gameAI := map[definition.Creature]ai.AI{
 		wizard:  ai.NewSimple(encounter, wizard),
 		fighter: ai.NewSimple(encounter, fighter),
@@ -74,6 +74,11 @@ func main() {
 		gameAI[active].Play()
 	}, &wg)
 	wg.Wait()
-	fmt.Println("Winner:", encounter.Winner().Name())
+	winner, ok := encounter.Winner()
+	if !ok {
+		fmt.Println("All dead")
+		return
+	}
+	fmt.Println("Winner:", winner.Name())
 	fmt.Printf("%v elapsed\n", time.Since(start))
 }

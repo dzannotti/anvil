@@ -9,12 +9,12 @@ type Encounter struct {
 	round           int
 	turn            int
 	initiativeOrder []definition.Creature
-	teams           []definition.Team
+	teams           []*Team
 	hub             *eventbus.Hub
 	World           *World
 }
 
-func NewEncounter(hub *eventbus.Hub, world *World, teams []definition.Team) *Encounter {
+func NewEncounter(hub *eventbus.Hub, world *World, teams []*Team) *Encounter {
 	encounter := &Encounter{
 		World:           world,
 		hub:             hub,

@@ -40,7 +40,7 @@ func (ai AI) Enemies() []definition.Creature {
 	return enemies.Members()
 }
 
-func (ai AI) Teams() (definition.Team, definition.Team) {
+func (ai AI) Teams() (*core.Team, *core.Team) {
 	teams := ai.encounter.Teams()
 	if teams[0].Contains(ai.owner) {
 		return teams[0], teams[1]

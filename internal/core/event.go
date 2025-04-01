@@ -20,7 +20,7 @@ const (
 )
 
 type EncounterEvent struct {
-	Teams []definition.Team
+	Teams []*Team
 	World World
 }
 
