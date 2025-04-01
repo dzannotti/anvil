@@ -1,7 +1,6 @@
 package core
 
 import (
-	"anvil/internal/core/definition"
 	"anvil/internal/core/pathfinding"
 	"anvil/internal/grid"
 )
@@ -52,6 +51,6 @@ func (w World) CreaturesInRange(pos grid.Position, radius int) []*Creature {
 	return creatures
 }
 
-func (w World) Navigation() definition.Pathfinding {
+func (w World) Navigation() *pathfinding.Pathfinding {
 	return w.navigation
 }
