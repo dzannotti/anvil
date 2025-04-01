@@ -1,8 +1,8 @@
 package grid
 
 type Grid[cell any] struct {
-	width  int
-	height int
+	Width  int
+	Height int
 	cells  [][]cell
 }
 
@@ -18,8 +18,8 @@ func New[cell any](width int, height int, creator CellCreator[cell]) *Grid[cell]
 	}
 
 	return &Grid[cell]{
-		width:  width,
-		height: height,
+		Width:  width,
+		Height: height,
 		cells:  cells,
 	}
 }
@@ -32,15 +32,7 @@ func (g Grid[cell]) At(pos Position) (*cell, bool) {
 }
 
 func (g Grid[cell]) IsValidPosition(pos Position) bool {
-	return pos.X >= 0 && pos.X < g.width && pos.Y >= 0 && pos.Y < g.height
-}
-
-func (g Grid[cell]) Width() int {
-	return g.width
-}
-
-func (g Grid[cell]) Height() int {
-	return g.height
+	return pos.X >= 0 && pos.X < g.Width && pos.Y >= 0 && pos.Y < g.Height
 }
 
 func (g Grid[cell]) CellsInRange(origin Position, radius int) []*cell {

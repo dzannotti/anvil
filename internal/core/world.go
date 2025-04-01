@@ -18,11 +18,11 @@ func NewWorld(width int, height int) *World {
 }
 
 func (w *World) Width() int {
-	return w.Grid.Width()
+	return w.Grid.Width
 }
 
 func (w *World) Height() int {
-	return w.Grid.Height()
+	return w.Grid.Height
 }
 
 func (w *World) AddOccupant(pos grid.Position, o *Creature) {
