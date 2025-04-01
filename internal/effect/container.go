@@ -1,8 +1,6 @@
 package effect
 
-import (
-	"anvil/internal/effect/state"
-)
+import "slices"
 
 type Container struct {
 	effects []Effect
@@ -14,6 +12,9 @@ func NewContainer(effects ...Effect) *Container {
 
 func (c *Container) Add(effect Effect) {
 	c.effects = append(c.effects, effect)
+	slices.SortFunc(c.effects, func(a, b Effect) int {
+		return int(a.Priority) - int(b.Priority)
+	})
 }
 
 func (c *Container) Remove(effect Effect) {
@@ -25,8 +26,8 @@ func (c *Container) Remove(effect Effect) {
 	}
 }
 
-func (c *Container) Evaluate(state state.State) {
+func (c *Container) Evaluate(event string, state any) {
 	for _, effect := range c.effects {
-		effect.Evaluate(state)
+		effect.Evaluate(event, state)
 	}
 }

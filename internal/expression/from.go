@@ -1,6 +1,6 @@
 package expression
 
-import "anvil/internal/tagcontainer"
+import "anvil/internal/tag"
 
 func FromScalar(value int, source string, terms ...Term) Expression {
 	e := Expression{rng: defaultRoller{}}
@@ -20,13 +20,13 @@ func FromD20(source string, terms ...Term) Expression {
 	return e
 }
 
-func FromDamageScalar(value int, source string, tags tagcontainer.TagContainer, terms ...Term) Expression {
+func FromDamageScalar(value int, source string, tags tag.Container, terms ...Term) Expression {
 	e := Expression{rng: defaultRoller{}}
 	e.AddDamageScalar(value, source, tags, terms...)
 	return e
 }
 
-func FromDamageDice(times int, sides int, source string, tags tagcontainer.TagContainer, terms ...Term) Expression {
+func FromDamageDice(times int, sides int, source string, tags tag.Container, terms ...Term) Expression {
 	e := Expression{rng: defaultRoller{}}
 	e.AddDamageDice(times, sides, source, tags, terms...)
 	return e

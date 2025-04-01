@@ -1,30 +1,28 @@
 package effect
 
 import (
-	"anvil/internal/effect/state"
 	"sync"
 )
 
-type Option func(Effect)
+type Priority int
+
+const (
+	PriorityNormal       Priority = iota
+	PriorityEarly        Priority = -20
+	PriorityBase         Priority = -60
+	PriorityBaseOverride Priority = -40
+	PriorityLate         Priority = 20
+	PriorityLast         Priority = 40
+)
 
 type Effect struct {
 	Name     string
-	handlers map[state.Type]func(*Effect, state.State, *sync.WaitGroup)
+	Handlers map[string]func(*Effect, any, *sync.WaitGroup)
+	Priority Priority
 }
 
-func New(name string, opts ...Option) Effect {
-	e := Effect{
-		Name:     name,
-		handlers: make(map[state.Type]func(*Effect, state.State, *sync.WaitGroup)),
-	}
-	for _, opt := range opts {
-		opt(e)
-	}
-	return e
-}
-
-func (e *Effect) Evaluate(state state.State) {
-	handler, exists := e.handlers[state.Type()]
+func (e *Effect) Evaluate(event string, state any) {
+	handler, exists := e.Handlers[event]
 	if exists {
 		wg := &sync.WaitGroup{}
 		wg.Add(1)
@@ -33,24 +31,8 @@ func (e *Effect) Evaluate(state state.State) {
 	}
 }
 
-func withHandler[S state.State](stateType state.Type, handler func(*Effect, S, *sync.WaitGroup)) Option {
-	return func(e Effect) {
-		e.handlers[stateType] = func(e *Effect, s state.State, wg *sync.WaitGroup) {
-			if state, ok := s.(S); ok {
-				handler(e, state, wg)
-			}
-		}
+func (e *Effect) WithHandler(event string, handler func(*Effect, any, *sync.WaitGroup)) {
+	e.Handlers[event] = func(e *Effect, s any, wg *sync.WaitGroup) {
+		handler(e, s, wg)
 	}
-}
-
-func WithAttributeCalculation(handler func(*Effect, *state.AttributeCalculation, *sync.WaitGroup)) Option {
-	return withHandler(state.AttributeCalculationType, handler)
-}
-
-func WithBeforeAttackRoll(handler func(*Effect, *state.BeforeAttackRoll, *sync.WaitGroup)) Option {
-	return withHandler(state.BeforeAttackRollType, handler)
-}
-
-func WithAfterAttackRoll(handler func(*Effect, *state.AfterAttackRoll, *sync.WaitGroup)) Option {
-	return withHandler(state.AfterAttackRollType, handler)
 }

@@ -1,7 +1,6 @@
 package pathfinding
 
 import (
-	"anvil/internal/core/definition"
 	"anvil/internal/grid"
 )
 
@@ -28,6 +27,6 @@ func (pf *Pathfinding) Setup(obstacles [][]bool) {
 	}
 }
 
-func (pf *Pathfinding) At(position grid.Position) (definition.PathNode, bool) {
+func (pf *Pathfinding) At(position grid.Position) (*Node, bool) {
 	return pf.grid.At(position)
 }

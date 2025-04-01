@@ -2,7 +2,6 @@ package expression
 
 import (
 	"anvil/internal/tag"
-	"anvil/internal/tagcontainer"
 )
 
 func (e *Expression) AddScalar(value int, source string, terms ...Term) {
@@ -25,14 +24,14 @@ func (e *Expression) AddD20(source string, terms ...Term) {
 	e.Terms = append(e.Terms, term)
 }
 
-func (e *Expression) AddDamageScalar(value int, source string, tags tagcontainer.TagContainer, terms ...Term) {
+func (e *Expression) AddDamageScalar(value int, source string, tags tag.Container, terms ...Term) {
 	term := NewTerm(TypeDamageScalar, source, terms...)
 	term.Value = value
 	term.Tags = e.primaryTags(tags)
 	e.Terms = append(e.Terms, term)
 }
 
-func (e *Expression) AddDamageDice(times int, sides int, source string, tags tagcontainer.TagContainer, terms ...Term) {
+func (e *Expression) AddDamageDice(times int, sides int, source string, tags tag.Container, terms ...Term) {
 	term := NewTerm(TypeDamageDice, source, terms...)
 	term.Times = times
 	term.Sides = sides
@@ -40,7 +39,7 @@ func (e *Expression) AddDamageDice(times int, sides int, source string, tags tag
 	e.Terms = append(e.Terms, term)
 }
 
-func (e Expression) primaryTags(tags tagcontainer.TagContainer) tagcontainer.TagContainer {
+func (e Expression) primaryTags(tags tag.Container) tag.Container {
 	if len(e.Terms) > 0 {
 		if e.Terms[0].Tags.HasTag(tag.FromString("primary")) {
 			return e.Terms[0].Tags

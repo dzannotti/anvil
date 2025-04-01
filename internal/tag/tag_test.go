@@ -1,6 +1,7 @@
-package tag
+package tag_test
 
 import (
+	"anvil/internal/tag"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -68,8 +69,8 @@ func TestTag_New(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tag := FromString(tt.input)
-			assert.Equal(t, tt.expected, tag.value)
+			tag := tag.FromString(tt.input)
+			assert.Equal(t, tt.expected, tag.String())
 		})
 	}
 }
@@ -99,8 +100,8 @@ func TestTag_MatchExact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tag1 := FromString(tt.tag1)
-			tag2 := FromString(tt.tag2)
+			tag1 := tag.FromString(tt.tag1)
+			tag2 := tag.FromString(tt.tag2)
 			assert.Equal(t, tt.expected, tag1.MatchExact(tag2))
 		})
 	}
@@ -131,8 +132,8 @@ func TestTag_Match(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tag1 := FromString(tt.tag1)
-			tag2 := FromString(tt.tag2)
+			tag1 := tag.FromString(tt.tag1)
+			tag2 := tag.FromString(tt.tag2)
 			assert.Equal(t, tt.expected, tag1.Match(tag2))
 		})
 	}
@@ -155,7 +156,7 @@ func TestTag_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tag := FromString(tt.input)
+			tag := tag.FromString(tt.input)
 			assert.Equal(t, tt.expected, tag.String())
 		})
 	}

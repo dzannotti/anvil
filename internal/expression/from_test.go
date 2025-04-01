@@ -1,7 +1,7 @@
 package expression
 
 import (
-	"anvil/internal/tagcontainer"
+	"anvil/internal/tag"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -53,24 +53,24 @@ func TestExpression_New(t *testing.T) {
 		{
 			name: "can create from damage scalar",
 			setup: func() Expression {
-				return FromDamageScalar(2, "Damage", tagcontainer.FromString("slashing"))
+				return FromDamageScalar(2, "Damage", tag.ContainerFromString("slashing"))
 			},
 			expected: Term{
 				Type:   TypeDamageScalar,
 				Source: "Damage",
-				Tags:   tagcontainer.FromString("slashing"),
+				Tags:   tag.ContainerFromString("slashing"),
 				Value:  2,
 			},
 		},
 		{
 			name: "can create from damage dice",
 			setup: func() Expression {
-				return FromDamageDice(2, 6, "Damage", tagcontainer.FromString("slashing"))
+				return FromDamageDice(2, 6, "Damage", tag.ContainerFromString("slashing"))
 			},
 			expected: Term{
 				Type:   TypeDamageDice,
 				Source: "Damage",
-				Tags:   tagcontainer.FromString("slashing"),
+				Tags:   tag.ContainerFromString("slashing"),
 				Times:  2,
 				Sides:  6,
 			},

@@ -1,18 +1,17 @@
 package base
 
 import (
-	"anvil/internal/core/definition"
-	"anvil/internal/core/event"
-	"anvil/internal/tagcontainer"
+	"anvil/internal/core"
+	"anvil/internal/tag"
 )
 
 type AttackAction struct {
-	owner definition.Creature
+	Owner *core.Creature
 }
 
-func NewAttackAction(owner definition.Creature) AttackAction {
+func NewAttackAction(owner *core.Creature) AttackAction {
 	return AttackAction{
-		owner: owner,
+		Owner: owner,
 	}
 }
 
@@ -20,13 +19,13 @@ func (a AttackAction) Name() string {
 	return "Attack"
 }
 
-func (a AttackAction) Perform(target definition.Creature) {
+func (a AttackAction) Perform(target *core.Creature) {
 	if target == nil {
 		return
 	}
-	a.owner.Log().Start(event.NewUseAction(a, a.owner, target))
-	defer a.owner.Log().End()
-	result := a.owner.AttackRoll(target, tagcontainer.New())
+	a.Owner.Log.Start(core.UseActionEventType, core.UseActionEvent{Action: a, Source: *a.Owner, Target: *target})
+	defer a.Owner.Log.End()
+	result := a.Owner.AttackRoll(target, tag.NewContainer())
 	if result.Success {
 		target.TakeDamage(5)
 	}
