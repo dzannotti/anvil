@@ -37,7 +37,7 @@ func (ai AI) ChooseTarget() (definition.Creature, error) {
 
 func (ai AI) Enemies() []definition.Creature {
 	_, enemies := ai.Teams()
-	return enemies.Members()
+	return enemies.Members
 }
 
 func (ai AI) Teams() (*core.Team, *core.Team) {

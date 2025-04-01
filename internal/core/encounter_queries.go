@@ -21,7 +21,7 @@ func (e Encounter) ActiveCreature() definition.Creature {
 func (e Encounter) AllCreatures() []definition.Creature {
 	var allCreatures = []definition.Creature{}
 	for _, t := range e.teams {
-		allCreatures = append(allCreatures, t.Members()...)
+		allCreatures = append(allCreatures, t.Members...)
 	}
 	return allCreatures
 }

@@ -3,7 +3,7 @@ package core
 import "anvil/internal/core/definition"
 
 func (t Team) IsDead() bool {
-	for _, c := range t.members {
+	for _, c := range t.Members {
 		if !c.IsDead() {
 			return false
 		}
@@ -11,12 +11,8 @@ func (t Team) IsDead() bool {
 	return true
 }
 
-func (t Team) Name() string {
-	return t.name
-}
-
 func (t Team) Contains(c definition.Creature) bool {
-	for _, m := range t.members {
+	for _, m := range t.Members {
 		if m == c {
 			return true
 		}

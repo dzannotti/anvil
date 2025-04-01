@@ -5,13 +5,13 @@ import (
 )
 
 type Team struct {
-	name    string
-	members []definition.Creature
+	Name    string
+	Members []definition.Creature
 }
 
 func NewTeam(name string) *Team {
 	return &Team{
-		name:    name,
-		members: []definition.Creature{},
+		Name:    name,
+		Members: []definition.Creature{},
 	}
 }

@@ -79,6 +79,6 @@ func main() {
 		fmt.Println("All dead")
 		return
 	}
-	fmt.Println("Winner:", winner.Name())
+	fmt.Println("Winner:", winner.Name)
 	fmt.Printf("%v elapsed\n", time.Since(start))
 }

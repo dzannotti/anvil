@@ -117,9 +117,9 @@ func printCreature(c definition.Creature) string {
 
 func printTeam(t core.Team) string {
 	sb := strings.Builder{}
-	sb.WriteString("🎴 " + t.Name())
+	sb.WriteString("🎴 " + t.Name)
 	creatures := []string{}
-	for _, c := range t.Members() {
+	for _, c := range t.Members {
 		creatures = append(creatures, indent(printCreature(c)))
 	}
 	sb.WriteString("\n" + strings.Join(creatures, "\n"))
