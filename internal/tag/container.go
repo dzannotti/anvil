@@ -8,10 +8,6 @@ type Container struct {
 	tags []Tag
 }
 
-func NewContainer() Container {
-	return Container{tags: []Tag{}}
-}
-
 func (tc Container) Strings() []string {
 	tags := make([]string, len(tc.tags))
 	for i, tag := range tc.tags {

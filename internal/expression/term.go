@@ -62,6 +62,6 @@ func NewTerm(termType TermType, source string, terms ...Term) Term {
 		HasAdvantage:    []string{},
 		HasDisadvantage: []string{},
 		IsCritical:      0,
-		Tags:            tag.NewContainer(),
+		Tags:            tag.Container{},
 	}
 }

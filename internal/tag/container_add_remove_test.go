@@ -104,7 +104,7 @@ func TestTagContainer_RemoveTag(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			container := tag.NewContainer()
+			container := tag.Container{}
 			container.AddTag(tag.FromString(tt.initialTagStr))
 			container.RemoveTag(tag.FromString(tt.tagToRemove))
 			assert.Equal(t, tt.expectedLength, len(container.Strings()))

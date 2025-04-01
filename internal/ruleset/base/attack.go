@@ -25,7 +25,7 @@ func (a AttackAction) Perform(target *core.Creature) {
 	}
 	a.Owner.Log.Start(core.UseActionEventType, core.UseActionEvent{Action: a, Source: *a.Owner, Target: *target})
 	defer a.Owner.Log.End()
-	result := a.Owner.AttackRoll(target, tag.NewContainer())
+	result := a.Owner.AttackRoll(target, tag.Container{})
 	if result.Success {
 		target.TakeDamage(5)
 	}
