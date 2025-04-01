@@ -12,7 +12,9 @@ type World struct {
 
 func NewWorld(width int, height int) *World {
 	return &World{
-		Grid:       grid.New(width, height, NewWorldCell),
+		Grid: grid.New(width, height, func(pos grid.Position) WorldCell {
+			return WorldCell{Position: pos}
+		}),
 		Navigation: pathfinding.New(width, height),
 	}
 }
@@ -46,7 +48,7 @@ func (w World) IsValidPosition(pos grid.Position) bool {
 func (w World) CreaturesInRange(pos grid.Position, radius int) []*Creature {
 	creatures := make([]*Creature, 0)
 	for _, cell := range w.Grid.CellsInRange(pos, radius) {
-		creatures = append(creatures, cell.occupants...)
+		creatures = append(creatures, cell.Occupants...)
 	}
 	return creatures
 }

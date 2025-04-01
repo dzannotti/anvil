@@ -6,38 +6,27 @@ import (
 )
 
 type WorldCell struct {
-	position  grid.Position
-	occupants []*Creature
-}
-
-func NewWorldCell(position grid.Position) WorldCell {
-	return WorldCell{
-		position:  position,
-		occupants: make([]*Creature, 0),
-	}
-}
-
-func (c *WorldCell) Position() grid.Position {
-	return c.position
+	Position  grid.Position
+	Occupants []*Creature
 }
 
 func (c *WorldCell) AddOccupant(creature *Creature) {
-	c.occupants = append(c.occupants, creature)
+	c.Occupants = append(c.Occupants, creature)
 }
 
 func (c *WorldCell) RemoveOccupant(creature *Creature) {
-	c.occupants = slices.DeleteFunc(c.occupants, func(o *Creature) bool {
+	c.Occupants = slices.DeleteFunc(c.Occupants, func(o *Creature) bool {
 		return o == creature
 	})
 }
 
 func (c *WorldCell) Occupant() (*Creature, bool) {
-	if len(c.occupants) == 0 {
+	if len(c.Occupants) == 0 {
 		return &Creature{}, false
 	}
-	return c.occupants[0], true
+	return c.Occupants[0], true
 }
 
 func (c *WorldCell) IsOccupied() bool {
-	return len(c.occupants) > 0
+	return len(c.Occupants) > 0
 }
