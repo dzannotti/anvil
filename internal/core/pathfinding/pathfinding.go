@@ -18,15 +18,6 @@ func New(width int, height int) *Pathfinding {
 	}
 }
 
-func (pf *Pathfinding) Setup(obstacles [][]bool) {
-	for x := 0; x < pf.width; x++ {
-		for y := 0; y < pf.height; y++ {
-			node, _ := pf.grid.At(grid.Position{X: x, Y: y})
-			node.SetWalkable(!obstacles[x][y])
-		}
-	}
-}
-
 func (pf *Pathfinding) At(position grid.Position) (*Node, bool) {
 	return pf.grid.At(position)
 }

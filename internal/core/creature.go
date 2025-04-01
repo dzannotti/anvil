@@ -17,6 +17,7 @@ type Creature struct {
 	HitPoints     int
 	MaxHitPoints  int
 	Actions       []Action
+	Team          TeamID
 	Effects       effect.Container
 }
 

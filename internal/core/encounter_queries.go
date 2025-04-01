@@ -2,31 +2,33 @@ package core
 
 func (e Encounter) IsOver() bool {
 	alive := 0
-	for _, t := range e.Teams {
-		if !t.IsDead() {
-			alive++
+	teams := []TeamID{TeamPlayers, TeamEnemies, TeamNeutral, TeamGaea}
+	for _, t := range teams {
+		if !e.IsTeamDead(t) {
+			alive = alive + 1
 		}
 	}
 	return alive <= 1
+}
+
+func (e Encounter) IsTeamDead(team TeamID) bool {
+	for _, c := range e.Creatures {
+		if c.Team == team && !c.IsDead() {
+			return false
+		}
+	}
+	return true
 }
 
 func (e Encounter) ActiveCreature() *Creature {
 	return e.InitiativeOrder[e.Turn]
 }
 
-func (e Encounter) AllCreatures() []*Creature {
-	var allCreatures = []*Creature{}
-	for _, t := range e.Teams {
-		allCreatures = append(allCreatures, t.Members...)
-	}
-	return allCreatures
-}
-
-func (e Encounter) Winner() (Team, bool) {
-	for _, t := range e.Teams {
-		if !t.IsDead() {
-			return *t, true
+func (e Encounter) Winner() (string, bool) {
+	for _, c := range e.Creatures {
+		if !c.IsDead() {
+			return c.Name, true
 		}
 	}
-	return Team{}, false
+	return "", false
 }

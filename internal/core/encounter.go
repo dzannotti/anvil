@@ -2,6 +2,7 @@ package core
 
 import (
 	"anvil/internal/eventbus"
+	"slices"
 	"sync"
 )
 
@@ -9,7 +10,7 @@ type Encounter struct {
 	Round           int
 	Turn            int
 	InitiativeOrder []*Creature
-	Teams           []*Team
+	Creatures       []*Creature
 	Hub             *eventbus.Hub
 	World           *World
 }
@@ -27,7 +28,7 @@ func (e *Encounter) playTurn(act Act) {
 }
 
 func (e *Encounter) playRound(act Act) {
-	e.Hub.Start(RoundEventType, RoundEvent{Round: e.Round, Creatures: e.AllCreatures()})
+	e.Hub.Start(RoundEventType, RoundEvent{Round: e.Round, Creatures: e.Creatures})
 	defer e.Hub.End()
 	e.Turn = 0
 	for i := range e.InitiativeOrder {
@@ -42,8 +43,8 @@ func (e *Encounter) playRound(act Act) {
 func (e *Encounter) Play(act Act, wg *sync.WaitGroup) {
 	e.Round = 0
 	e.Turn = 0
-	e.InitiativeOrder = e.AllCreatures()
-	e.Hub.Start(EncounterEventType, EncounterEvent{Teams: e.Teams, World: *e.World})
+	e.InitiativeOrder = slices.Clone(e.Creatures)
+	e.Hub.Start(EncounterEventType, EncounterEvent{Creatures: e.Creatures, World: *e.World})
 	defer e.Hub.End()
 	defer wg.Done()
 	for !e.IsOver() {

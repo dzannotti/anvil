@@ -35,14 +35,15 @@ func (ai AI) ChooseTarget() (*core.Creature, error) {
 }
 
 func (ai AI) Enemies() []*core.Creature {
-	_, enemies := ai.Teams()
-	return enemies.Members
-}
-
-func (ai AI) Teams() (*core.Team, *core.Team) {
-	teams := ai.encounter.Teams
-	if teams[0].Contains(ai.owner) {
-		return teams[0], teams[1]
+	team := core.TeamPlayers
+	if ai.owner.Team == core.TeamPlayers {
+		team = core.TeamEnemies
 	}
-	return teams[1], teams[0]
+	enemies := make([]*core.Creature, 0)
+	for _, c := range ai.encounter.Creatures {
+		if c.Team == team {
+			enemies = append(enemies, c)
+		}
+	}
+	return enemies
 }

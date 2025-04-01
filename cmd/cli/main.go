@@ -15,12 +15,13 @@ import (
 	"anvil/internal/ruleset/base"
 )
 
-func makeCreature(hub *eventbus.Hub, world *core.World, pos grid.Position, name string, hitPoints int, attributes stats.Attributes, proficiencies stats.Proficiencies) *core.Creature {
+func makeCreature(hub *eventbus.Hub, world *core.World, team core.TeamID, pos grid.Position, name string, hitPoints int, attributes stats.Attributes, proficiencies stats.Proficiencies) *core.Creature {
 	c := &core.Creature{
 		Log:           hub,
 		Position:      pos,
 		World:         world,
 		Name:          name,
+		Team:          team,
 		HitPoints:     hitPoints,
 		MaxHitPoints:  hitPoints,
 		Attributes:    attributes,
@@ -57,21 +58,15 @@ func main() {
 	})
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
-	players := &core.Team{Name: "Players"}
-	enemies := &core.Team{Name: "Enemies"}
 	attributes := stats.Attributes{Strength: 10, Dexterity: 11, Constitution: 12, Intelligence: 13, Wisdom: 14, Charisma: 15}
-	wizard := makeCreature(&hub, world, grid.Position{X: 1, Y: 1}, "Wizard", 22, attributes, stats.Proficiencies{Bonus: 2})
-	fighter := makeCreature(&hub, world, grid.Position{X: 1, Y: 2}, "Fighter", 22, attributes, stats.Proficiencies{Bonus: 2})
-	orc := makeCreature(&hub, world, grid.Position{X: 4, Y: 3}, "Orc", 22, attributes, stats.Proficiencies{Bonus: 2})
-	goblin := makeCreature(&hub, world, grid.Position{X: 4, Y: 4}, "Goblin", 22, attributes, stats.Proficiencies{Bonus: 2})
-	players.AddMember(wizard)
-	players.AddMember(fighter)
-	enemies.AddMember(orc)
-	enemies.AddMember(goblin)
+	wizard := makeCreature(&hub, world, core.TeamPlayers, grid.Position{X: 1, Y: 1}, "Wizard", 22, attributes, stats.Proficiencies{Bonus: 2})
+	fighter := makeCreature(&hub, world, core.TeamPlayers, grid.Position{X: 1, Y: 2}, "Fighter", 22, attributes, stats.Proficiencies{Bonus: 2})
+	orc := makeCreature(&hub, world, core.TeamEnemies, grid.Position{X: 4, Y: 3}, "Orc", 22, attributes, stats.Proficiencies{Bonus: 2})
+	goblin := makeCreature(&hub, world, core.TeamEnemies, grid.Position{X: 4, Y: 4}, "Goblin", 22, attributes, stats.Proficiencies{Bonus: 2})
 	encounter := &core.Encounter{
-		Hub:   &hub,
-		World: world,
-		Teams: []*core.Team{players, enemies},
+		Hub:       &hub,
+		World:     world,
+		Creatures: []*core.Creature{wizard, fighter, orc, goblin},
 	}
 	gameAI := map[*core.Creature]ai.AI{
 		wizard:  ai.NewSimple(encounter, wizard),
@@ -92,6 +87,6 @@ func main() {
 		fmt.Println("All dead")
 		return
 	}
-	fmt.Println("Winner:", winner.Name)
+	fmt.Println("Winner:", winner)
 	fmt.Printf("%v elapsed\n", time.Since(start))
 }

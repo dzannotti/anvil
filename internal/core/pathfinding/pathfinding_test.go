@@ -73,10 +73,18 @@ func TestObstacleAvoidance(t *testing.T) {
 		for i := range obstacles {
 			obstacles[i] = make([]bool, 5)
 		}
-		obstacles[2][1] = true
-		obstacles[2][2] = true
-		obstacles[2][3] = true
-		pathFinding.Setup(obstacles)
+		node, ok := pathFinding.At(grid.Position{X: 2, Y: 1})
+		if ok {
+			node.SetWalkable(false)
+		}
+		node, ok = pathFinding.At(grid.Position{X: 2, Y: 2})
+		if ok {
+			node.SetWalkable(false)
+		}
+		node, ok = pathFinding.At(grid.Position{X: 2, Y: 3})
+		if ok {
+			node.SetWalkable(false)
+		}
 
 		start := grid.Position{X: 1, Y: 2}
 		end := grid.Position{X: 3, Y: 2}
@@ -94,7 +102,8 @@ func TestObstacleAvoidance(t *testing.T) {
 		}
 
 		for _, pos := range result {
-			if obstacles[pos.X][pos.Y] {
+			node, _ := pathFinding.At(pos)
+			if !node.IsWalkable() {
 				t.Errorf("path contains obstacle at position %v", pos)
 			}
 		}
@@ -107,9 +116,11 @@ func TestObstacleAvoidance(t *testing.T) {
 			obstacles[i] = make([]bool, 5)
 		}
 		for y := 0; y < 5; y++ {
-			obstacles[2][y] = true
+			node, ok := pathFinding.At(grid.Position{X: 2, Y: y})
+			if ok {
+				node.SetWalkable(false)
+			}
 		}
-		pathFinding.Setup(obstacles)
 
 		start := grid.Position{X: 1, Y: 2}
 		end := grid.Position{X: 3, Y: 2}
@@ -139,8 +150,10 @@ func TestPathOptimality(t *testing.T) {
 		for i := range obstacles {
 			obstacles[i] = make([]bool, 5)
 		}
-		obstacles[1][1] = true
-		pathFinding.Setup(obstacles)
+		node, ok := pathFinding.At(grid.Position{X: 1, Y: 1})
+		if ok {
+			node.SetWalkable(false)
+		}
 
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 2, Y: 2}
@@ -160,8 +173,10 @@ func TestPathOptimality(t *testing.T) {
 		for i := range obstacles {
 			obstacles[i] = make([]bool, 5)
 		}
-		obstacles[1][0] = true
-		pathFinding.Setup(obstacles)
+		node, ok := pathFinding.At(grid.Position{X: 1, Y: 0})
+		if ok {
+			node.SetWalkable(false)
+		}
 
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 2, Y: 0}
