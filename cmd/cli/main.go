@@ -33,19 +33,19 @@ func creature(hub *eventbus.Hub, world *core.World, pos grid.Position, name stri
 
 func setupWorld(world *core.World) {
 	for x := 0; x < world.Width(); x++ {
-		cell, _ := world.Navigation.At(grid.NewPosition(x, 0))
+		cell, _ := world.Navigation.At(grid.Position{X: x, Y: 0})
 		cell.SetWalkable(false)
 	}
 	for x := 0; x < world.Width(); x++ {
-		cell, _ := world.Navigation.At(grid.NewPosition(x, world.Height()-1))
+		cell, _ := world.Navigation.At(grid.Position{X: x, Y: world.Height() - 1})
 		cell.SetWalkable(false)
 	}
 	for y := 0; y < world.Height(); y++ {
-		cell, _ := world.Navigation.At(grid.NewPosition(0, y))
+		cell, _ := world.Navigation.At(grid.Position{X: 0, Y: y})
 		cell.SetWalkable(false)
 	}
 	for y := 0; y < world.Height(); y++ {
-		cell, _ := world.Navigation.At(grid.NewPosition(world.Width()-1, y))
+		cell, _ := world.Navigation.At(grid.Position{X: world.Width() - 1, Y: y})
 		cell.SetWalkable(false)
 	}
 }
@@ -57,13 +57,13 @@ func main() {
 	})
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
-	players := core.NewTeam("Players")
-	enemies := core.NewTeam("Enemies")
+	players := &core.Team{Name: "Players"}
+	enemies := &core.Team{Name: "Enemies"}
 	attributes := stats.Attributes{Strength: 10, Dexterity: 11, Constitution: 12, Intelligence: 13, Wisdom: 14, Charisma: 15}
-	wizard := creature(&hub, world, grid.NewPosition(1, 1), "Wizard", 22, attributes, stats.Proficiencies{Bonus: 2})
-	fighter := creature(&hub, world, grid.NewPosition(1, 2), "Fighter", 22, attributes, stats.Proficiencies{Bonus: 2})
-	orc := creature(&hub, world, grid.NewPosition(4, 3), "Orc", 22, attributes, stats.Proficiencies{Bonus: 2})
-	goblin := creature(&hub, world, grid.NewPosition(4, 4), "Goblin", 22, attributes, stats.Proficiencies{Bonus: 2})
+	wizard := creature(&hub, world, grid.Position{X: 1, Y: 1}, "Wizard", 22, attributes, stats.Proficiencies{Bonus: 2})
+	fighter := creature(&hub, world, grid.Position{X: 1, Y: 2}, "Fighter", 22, attributes, stats.Proficiencies{Bonus: 2})
+	orc := creature(&hub, world, grid.Position{X: 4, Y: 3}, "Orc", 22, attributes, stats.Proficiencies{Bonus: 2})
+	goblin := creature(&hub, world, grid.Position{X: 4, Y: 4}, "Goblin", 22, attributes, stats.Proficiencies{Bonus: 2})
 	players.AddMember(wizard)
 	players.AddMember(fighter)
 	enemies.AddMember(orc)

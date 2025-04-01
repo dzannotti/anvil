@@ -13,7 +13,7 @@ func New[cell any](width int, height int, creator CellCreator[cell]) *Grid[cell]
 	for x := 0; x < width; x++ {
 		cells[x] = make([]cell, height)
 		for y := 0; y < height; y++ {
-			cells[x][y] = creator(NewPosition(x, y))
+			cells[x][y] = creator(Position{X: x, Y: y})
 		}
 	}
 
@@ -39,7 +39,7 @@ func (g Grid[cell]) CellsInRange(origin Position, radius int) []*cell {
 	cells := make([]*cell, 0)
 	for x := -radius; x <= radius; x++ {
 		for y := -radius; y <= radius; y++ {
-			pos := origin.Add(NewPosition(x, y))
+			pos := origin.Add(Position{X: x, Y: y})
 			cell, _ := g.At(pos)
 			if cell != nil {
 				cells = append(cells, cell)

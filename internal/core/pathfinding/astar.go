@@ -51,7 +51,7 @@ func (pf *Pathfinding) FindPath(start grid.Position, end grid.Position) []grid.P
 func (pf *Pathfinding) reset() {
 	for x := 0; x < pf.width; x++ {
 		for y := 0; y < pf.height; y++ {
-			node, _ := pf.grid.At(grid.NewPosition(x, y))
+			node, _ := pf.grid.At(grid.Position{X: x, Y: y})
 			node.reset()
 		}
 	}

@@ -5,13 +5,6 @@ type Position struct {
 	Y int
 }
 
-func NewPosition(x int, y int) Position {
-	return Position{
-		X: x,
-		Y: y,
-	}
-}
-
 func (p Position) Add(other Position) Position {
 	return Position{
 		X: p.X + other.X,

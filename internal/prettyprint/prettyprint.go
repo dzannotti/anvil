@@ -84,8 +84,8 @@ func printMessage(ev eventbus.Message) string {
 func printWorld(w core.World) string {
 	sb := strings.Builder{}
 	sb.WriteString("🌍 World\n")
-	for x := 0; x < w.Width(); x++ {
-		for y := range w.Height() {
+	for y := range w.Height() {
+		for x := 0; x < w.Width(); x++ {
 			pos := grid.Position{X: x, Y: y}
 			nav, _ := w.Navigation.At(pos)
 			cell, _ := w.At(pos)

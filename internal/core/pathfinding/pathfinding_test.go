@@ -14,36 +14,36 @@ func TestBasicPathFinding(t *testing.T) {
 	}{
 		{
 			name:  "straight horizontal path",
-			start: grid.NewPosition(0, 2),
-			end:   grid.NewPosition(4, 2),
+			start: grid.Position{X: 0, Y: 2},
+			end:   grid.Position{X: 4, Y: 2},
 			expected: []grid.Position{
-				grid.NewPosition(0, 2),
-				grid.NewPosition(1, 2),
-				grid.NewPosition(2, 2),
-				grid.NewPosition(3, 2),
-				grid.NewPosition(4, 2),
+				{X: 0, Y: 2},
+				{X: 1, Y: 2},
+				{X: 2, Y: 2},
+				{X: 3, Y: 2},
+				{X: 4, Y: 2},
 			},
 		},
 		{
 			name:  "straight vertical path",
-			start: grid.NewPosition(2, 0),
-			end:   grid.NewPosition(2, 4),
+			start: grid.Position{X: 2, Y: 0},
+			end:   grid.Position{X: 2, Y: 4},
 			expected: []grid.Position{
-				grid.NewPosition(2, 0),
-				grid.NewPosition(2, 1),
-				grid.NewPosition(2, 2),
-				grid.NewPosition(2, 3),
-				grid.NewPosition(2, 4),
+				{X: 2, Y: 0},
+				{X: 2, Y: 1},
+				{X: 2, Y: 2},
+				{X: 2, Y: 3},
+				{X: 2, Y: 4},
 			},
 		},
 		{
 			name:  "diagonal path",
-			start: grid.NewPosition(0, 0),
-			end:   grid.NewPosition(2, 2),
+			start: grid.Position{X: 0, Y: 0},
+			end:   grid.Position{X: 2, Y: 2},
 			expected: []grid.Position{
-				grid.NewPosition(0, 0),
-				grid.NewPosition(1, 1),
-				grid.NewPosition(2, 2),
+				{X: 0, Y: 0},
+				{X: 1, Y: 1},
+				{X: 2, Y: 2},
 			},
 		},
 	}
@@ -78,8 +78,8 @@ func TestObstacleAvoidance(t *testing.T) {
 		obstacles[2][3] = true
 		pathFinding.Setup(obstacles)
 
-		start := grid.NewPosition(1, 2)
-		end := grid.NewPosition(3, 2)
+		start := grid.Position{X: 1, Y: 2}
+		end := grid.Position{X: 3, Y: 2}
 		result := pathFinding.FindPath(start, end)
 
 		if len(result) <= 2 {
@@ -111,8 +111,8 @@ func TestObstacleAvoidance(t *testing.T) {
 		}
 		pathFinding.Setup(obstacles)
 
-		start := grid.NewPosition(1, 2)
-		end := grid.NewPosition(3, 2)
+		start := grid.Position{X: 1, Y: 2}
+		end := grid.Position{X: 3, Y: 2}
 		result := pathFinding.FindPath(start, end)
 
 		if len(result) != 0 {
@@ -124,8 +124,8 @@ func TestObstacleAvoidance(t *testing.T) {
 func TestPathOptimality(t *testing.T) {
 	t.Run("should prefer diagonal movement when it's shorter", func(t *testing.T) {
 		pathFinding := New(5, 5)
-		start := grid.NewPosition(0, 0)
-		end := grid.NewPosition(2, 2)
+		start := grid.Position{X: 0, Y: 0}
+		end := grid.Position{X: 2, Y: 2}
 		result := pathFinding.FindPath(start, end)
 
 		if len(result) != 3 {
@@ -142,14 +142,14 @@ func TestPathOptimality(t *testing.T) {
 		obstacles[1][1] = true
 		pathFinding.Setup(obstacles)
 
-		start := grid.NewPosition(0, 0)
-		end := grid.NewPosition(2, 2)
+		start := grid.Position{X: 0, Y: 0}
+		end := grid.Position{X: 2, Y: 2}
 		result := pathFinding.FindPath(start, end)
 
 		if len(result) <= 3 {
 			t.Error("path should be longer than diagonal")
 		}
-		if containsPosition(result, grid.NewPosition(1, 1)) {
+		if containsPosition(result, grid.Position{X: 1, Y: 1}) {
 			t.Error("path should not contain obstacle position")
 		}
 	})
@@ -163,8 +163,8 @@ func TestPathOptimality(t *testing.T) {
 		obstacles[1][0] = true
 		pathFinding.Setup(obstacles)
 
-		start := grid.NewPosition(0, 0)
-		end := grid.NewPosition(2, 0)
+		start := grid.Position{X: 0, Y: 0}
+		end := grid.Position{X: 2, Y: 0}
 		result := pathFinding.FindPath(start, end)
 
 		if len(result) <= 3 {
@@ -176,8 +176,8 @@ func TestPathOptimality(t *testing.T) {
 func TestHelperFunctions(t *testing.T) {
 	t.Run("should calculate correct distance", func(t *testing.T) {
 		pathFinding := New(5, 5)
-		start := grid.NewPosition(0, 0)
-		end := grid.NewPosition(3, 3)
+		start := grid.Position{X: 0, Y: 0}
+		end := grid.Position{X: 3, Y: 3}
 		distance := pathFinding.distance(start, end)
 
 		if distance != 30 {
@@ -187,7 +187,7 @@ func TestHelperFunctions(t *testing.T) {
 
 	t.Run("should generate valid neighbor nodes", func(t *testing.T) {
 		pathFinding := New(5, 5)
-		center := grid.NewPosition(2, 2)
+		center := grid.Position{X: 2, Y: 2}
 		node, _ := pathFinding.grid.At(center)
 		neighbors := pathFinding.neighbours(node)
 
@@ -205,7 +205,7 @@ func TestHelperFunctions(t *testing.T) {
 
 	t.Run("should generate fewer neighbors at edges", func(t *testing.T) {
 		pathFinding := New(5, 5)
-		corner := grid.NewPosition(0, 0)
+		corner := grid.Position{X: 0, Y: 0}
 		node, _ := pathFinding.grid.At(corner)
 		neighbors := pathFinding.neighbours(node)
 
@@ -218,24 +218,24 @@ func TestHelperFunctions(t *testing.T) {
 		pathFinding := New(5, 5)
 		nodes := []*Node{
 			{
-				position: grid.NewPosition(0, 0),
+				position: grid.Position{X: 0, Y: 0},
 				gCost:    20,
 				hCost:    30,
 			},
 			{
-				position: grid.NewPosition(1, 1),
+				position: grid.Position{X: 1, Y: 1},
 				gCost:    10,
 				hCost:    10,
 			},
 			{
-				position: grid.NewPosition(2, 2),
+				position: grid.Position{X: 2, Y: 2},
 				gCost:    30,
 				hCost:    20,
 			},
 		}
 
 		lowestNode := pathFinding.lowestFCost(nodes)
-		expectedPos := grid.NewPosition(1, 1)
+		expectedPos := grid.Position{X: 1, Y: 1}
 
 		if lowestNode.Position() != expectedPos {
 			t.Errorf("lowest fCost node position = %v, want %v", lowestNode.Position(), expectedPos)
