@@ -1,4 +1,4 @@
-package effect
+package core
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 
 func TestContainer_Add(t *testing.T) {
 	t.Run("adds effects in priority order", func(t *testing.T) {
-		c := &Container{}
+		c := &EffectContainer{}
 		e1 := &Effect{Name: "e1", Priority: PriorityNormal}
 		e2 := &Effect{Name: "e2", Priority: PriorityEarly}
 		e3 := &Effect{Name: "e3", Priority: PriorityLate}
@@ -23,7 +23,7 @@ func TestContainer_Add(t *testing.T) {
 
 func TestContainer_Remove(t *testing.T) {
 	t.Run("removes effect by name", func(t *testing.T) {
-		c := &Container{}
+		c := &EffectContainer{}
 		e1 := &Effect{Name: "e1"}
 		e2 := &Effect{Name: "e2"}
 
@@ -35,7 +35,7 @@ func TestContainer_Remove(t *testing.T) {
 	})
 
 	t.Run("does nothing if effect not found", func(t *testing.T) {
-		c := &Container{}
+		c := &EffectContainer{}
 		e1 := &Effect{Name: "e1"}
 		e2 := &Effect{Name: "e2"}
 		e3 := &Effect{Name: "e3"}
@@ -49,14 +49,14 @@ func TestContainer_Remove(t *testing.T) {
 
 func TestContainer_Evaluate(t *testing.T) {
 	t.Run("evaluates effects in priority order", func(t *testing.T) {
-		c := &Container{}
+		c := &EffectContainer{}
 		order := []string{}
 		e1 := &Effect{Name: "e1", Priority: PriorityNormal}
-		e1.WithHandler("test", func(_ *Effect, _ any) { order = append(order, "e1") })
+		e1.withHandler("test", func(_ *Effect, _ any) { order = append(order, "e1") })
 		e2 := &Effect{Name: "e2", Priority: PriorityEarly}
-		e2.WithHandler("test", func(_ *Effect, _ any) { order = append(order, "e2") })
+		e2.withHandler("test", func(_ *Effect, _ any) { order = append(order, "e2") })
 		e3 := &Effect{Name: "e3", Priority: PriorityLate}
-		e3.WithHandler("test", func(_ *Effect, _ any) { order = append(order, "e3") })
+		e3.withHandler("test", func(_ *Effect, _ any) { order = append(order, "e3") })
 
 		c.Add(e1)
 		c.Add(e2)
@@ -67,9 +67,9 @@ func TestContainer_Evaluate(t *testing.T) {
 	})
 
 	t.Run("does nothing for unhandled events", func(t *testing.T) {
-		c := &Container{}
+		c := &EffectContainer{}
 		e1 := &Effect{Name: "e1"}
-		e1.WithHandler("test", func(_ *Effect, _ any) { t.Error("should not be called") })
+		e1.withHandler("test", func(_ *Effect, _ any) { t.Error("should not be called") })
 
 		c.Add(e1)
 		c.Evaluate("unhandled", nil)

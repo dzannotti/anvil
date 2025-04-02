@@ -2,7 +2,6 @@ package core
 
 import (
 	"anvil/internal/core/stats"
-	"anvil/internal/effect"
 	"anvil/internal/grid"
 )
 
@@ -17,7 +16,7 @@ type Actor struct {
 	MaxHitPoints  int
 	Actions       []Action
 	Team          TeamID
-	Effects       effect.Container
+	Effects       EffectContainer
 }
 
 func (a *Actor) StartTurn() {

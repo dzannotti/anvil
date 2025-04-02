@@ -1,4 +1,4 @@
-package effect
+package core
 
 import (
 	"sync"
@@ -43,6 +43,24 @@ func (e *Effect) Evaluate(event string, state any) {
 	}
 }
 
-func (e *Effect) WithHandler(event string, handler func(*Effect, any)) {
+func (e *Effect) withHandler(event string, handler func(*Effect, any)) {
 	e.Handlers.get()[event] = handler
+}
+
+func (e *Effect) WithBeforeAttackRoll(handler func(*Effect, *BeforeAttackRollState)) {
+	e.Handlers.get()[BeforeAttackRollStateType] = func(e *Effect, state any) {
+		handler(e, state.(*BeforeAttackRollState))
+	}
+}
+
+func (e *Effect) WithAfterAttackRollState(handler func(*Effect, *AfterAttackRollState)) {
+	e.Handlers.get()[AfterAttackRollStateType] = func(e *Effect, state any) {
+		handler(e, state.(*AfterAttackRollState))
+	}
+}
+
+func (e *Effect) WithAttributeCalculationState(handler func(*Effect, *AttributeCalculationState)) {
+	e.Handlers.get()[AttributeCalculationStateType] = func(e *Effect, state any) {
+		handler(e, state.(*AttributeCalculationState))
+	}
 }

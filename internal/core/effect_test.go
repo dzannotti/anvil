@@ -1,4 +1,4 @@
-package effect
+package core
 
 import (
 	"anvil/internal/expression"
@@ -15,7 +15,7 @@ func TestEffect_Evaluate(t *testing.T) {
 	t.Run("handler executes when event matches", func(t *testing.T) {
 		e := &Effect{}
 		called := false
-		e.WithHandler("test", func(_ *Effect, _ any) {
+		e.withHandler("test", func(_ *Effect, _ any) {
 			called = true
 		})
 		e.Evaluate("test", nil)
@@ -25,7 +25,7 @@ func TestEffect_Evaluate(t *testing.T) {
 	t.Run("handler does not execute when event does not match", func(t *testing.T) {
 		e := &Effect{}
 		called := false
-		e.WithHandler("test", func(_ *Effect, _ any) {
+		e.withHandler("test", func(_ *Effect, _ any) {
 			called = true
 		})
 
@@ -37,7 +37,7 @@ func TestEffect_Evaluate(t *testing.T) {
 		e := &Effect{}
 		expr := expression.FromScalar(10, "test")
 		state := &testState{Expression: &expr}
-		e.WithHandler("modify", func(_ *Effect, s any) {
+		e.withHandler("modify", func(_ *Effect, s any) {
 			state := s.(*testState) // panics if not the correct typ
 			state.Expression.AddScalar(5, "test")
 		})
