@@ -15,14 +15,23 @@ const (
 	PriorityLast         Priority = 40
 )
 
+type Handlers map[string]func(*Effect, any)
+
+func (h *Handlers) get() Handlers {
+	if *h == nil {
+		*h = make(map[string]func(*Effect, any))
+	}
+	return *h
+}
+
 type Effect struct {
 	Name     string
-	Handlers map[string]func(*Effect, any)
+	Handlers Handlers
 	Priority Priority
 }
 
 func (e *Effect) Evaluate(event string, state any) {
-	handler, exists := e.Handlers[event]
+	handler, exists := e.Handlers.get()[event]
 	if exists {
 		wg := &sync.WaitGroup{}
 		wg.Add(1)
@@ -35,7 +44,5 @@ func (e *Effect) Evaluate(event string, state any) {
 }
 
 func (e *Effect) WithHandler(event string, handler func(*Effect, any)) {
-	e.Handlers[event] = func(e *Effect, s any) {
-		handler(e, s)
-	}
+	e.Handlers.get()[event] = handler
 }
