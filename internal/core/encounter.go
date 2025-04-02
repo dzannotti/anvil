@@ -42,9 +42,12 @@ func (e *Encounter) playRound(act Act) {
 	}
 }
 
-func (e *Encounter) Play(act Act) {
+func (e *Encounter) Play(act Act) string {
 	e.Round = 0
 	e.Turn = 0
+	for _, a := range e.Actors {
+		a.Encounter = e
+	}
 	e.InitiativeOrder = slices.Clone(e.Actors)
 	e.Log.Start(EncounterEventType, EncounterEvent{Actors: e.Actors, World: *e.World})
 	defer e.Log.End()
@@ -52,4 +55,6 @@ func (e *Encounter) Play(act Act) {
 		e.playRound(act)
 		e.Round = e.Round + 1
 	}
+	winner, _ := e.Winner()
+	return winner
 }

@@ -9,6 +9,11 @@ import (
 func (a *Actor) TakeDamage(damage int) {
 	a.HitPoints = max(a.HitPoints-damage, 0)
 	a.Log.Add(TakeDamageEventType, TakeDamageEvent{Target: *a, Damage: damage})
+	if a.IsDead() {
+		a.Log.Start(DeathEventType, DeathEvent{Actor: *a})
+		a.Log.Add(ConfirmEventType, ConfirmEvent{Confirm: true})
+		a.Log.End()
+	}
 }
 
 func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
