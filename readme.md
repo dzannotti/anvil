@@ -1,9 +1,55 @@
 # Anvil
 
-- [x] remove definition\*
-- [x] rename log to hub?
-- [x] remove constructors/make shit public where possible aoe
-- [x] remove team?
-- [x] rename creature to Actor?
-- [ ] cleanup pass (world pass thru functions remove?)
-- [ ] start adding actual things
+- [ ] Armor class Modifier (dex)?
+- [ ] attribute modifiers in rolls
+- [ ] proficiency modifier
+- [ ] items/weapons
+- [ ] weapon attack (unarmed/natural/weapon)
+- [ ] Fighting style defense
+- [ ] death
+- [ ] crit
+- [ ] undead fortitude
+- [ ] saving throws implementation
+- [ ] action use is on grid cell (targets listed below)
+- [ ] attribute follow same as armor class structure?
+- [ ] resources
+- [ ] move based on resources
+- [ ] existing attacks using resources
+- [ ] revise AI to do something 'till it can do no more
+- [ ] conditions
+- [ ] death saving throws for PC
+- [ ] fire ball
+- [ ] ability check?
+- [ ] attacks of opportunity
+- [ ] finesse
+- [ ] unarmed strike
+- [ ] fire bolt
+- [ ] prone
+- [ ] instant death (overkill)
+- [ ] resistance/vulnerability
+- [ ] something with temp hit points
+- [ ] lucky?
+- [ ] action that gives poison
+- [ ] action that uses start/end turn
+- [ ] web
+- [ ] dash
+- [ ] vulnerability
+- [ ] resistances
+- [ ] up casting
+- [ ] bark skin
+- [ ] bane
+- [ ] hex
+- [ ] aid
+- [ ] armor of agathys
+- [ ] blade ward
+- [ ] bless
+- [ ] chill touch
+- [ ] power word stun
+- [ ] hold person
+- [ ] hold monster
+- [ ] hunter's mark
+- [ ] prismatic spray
+- [ ] tasha's laughter
+- [ ] thunder wave
+- [ ] phantasmal killer
+- [ ] invisibility
