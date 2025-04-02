@@ -24,6 +24,7 @@ func shouldPrintEnd() bool {
 		core.ExpressionResultEventType,
 		core.CheckResultEventType,
 		core.AttributeCalculationEventType,
+		core.ConfirmEventType,
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
@@ -63,8 +64,8 @@ func printMessage(ev eventbus.Message) string {
 		return printRound(ev.Data.(core.RoundEvent))
 	case core.TurnEventType:
 		return printTurn(ev.Data.(core.TurnEvent))
-	case core.DiedEventType:
-		return printDied(ev.Data.(core.DiedEvent))
+	case core.DeathEventType:
+		return printDeath(ev.Data.(core.DeathEvent))
 	case core.UseActionEventType:
 		return printUseAction(ev.Data.(core.UseActionEvent))
 	case core.TakeDamageEventType:
@@ -77,6 +78,8 @@ func printMessage(ev eventbus.Message) string {
 		return printAttackRoll(ev.Data.(core.AttackRollEvent))
 	case core.AttributeCalculationEventType:
 		return printAttributeCalculation(ev.Data.(core.AttributeCalculationEvent))
+	case core.ConfirmEventType:
+		return printConfirm(ev.Data.(core.ConfirmEvent))
 	}
 	return "unknown event " + ev.Kind
 }
@@ -151,8 +154,15 @@ func printTurn(t core.TurnEvent) string {
 	return fmt.Sprintf("🔃 Turn %d: %s", t.Turn+1, t.Actor.Name)
 }
 
-func printDied(d core.DiedEvent) string {
+func printDeath(d core.DeathEvent) string {
 	return fmt.Sprintf("☠️ %s is about to die", d.Actor.Name)
+}
+
+func printConfirm(c core.ConfirmEvent) string {
+	if c.Confirm {
+		return "✅ Confirmed"
+	}
+	return "❌ Denied"
 }
 
 func printUseAction(u core.UseActionEvent) string {
@@ -160,7 +170,7 @@ func printUseAction(u core.UseActionEvent) string {
 }
 
 func printTakeDamage(d core.TakeDamageEvent) string {
-	return fmt.Sprintf("🩸 %s takes %d damage", d.Target.Name, d.Damage)
+	return fmt.Sprintf("🩸 %s takes %d damage (%d HP left)", d.Target.Name, d.Damage, d.Target.HitPoints)
 }
 
 func printExpressionResult(e core.ExpressionResultEvent) string {

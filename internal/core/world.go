@@ -52,3 +52,11 @@ func (w World) ActorsInRange(pos grid.Position, radius int) []*Actor {
 	}
 	return actors
 }
+
+func (w World) ActorAt(pos grid.Position) (*Actor, bool) {
+	cell, ok := w.At(pos)
+	if !ok {
+		return nil, false
+	}
+	return cell.Occupant()
+}

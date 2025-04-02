@@ -19,9 +19,7 @@ linters:
         rules:
           - unused-parameter
     paths:
-      - third_party$
-      - builtin$
-      - examples$
+      - internal/ai/aiutils/debug.go
 formatters:
   enable:
     - gofmt

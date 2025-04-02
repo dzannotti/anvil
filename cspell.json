@@ -8,7 +8,10 @@
     "mapset",
     "deckarep",
     "iancoleman",
-    "strcase"
+    "strcase",
+    "stretchr",
+    "aiutils",
+    "chebyshev"
   ],
   "ignorePaths": [
     ".gitignore",

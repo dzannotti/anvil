@@ -2,7 +2,7 @@ package core
 
 func (e Encounter) IsOver() bool {
 	alive := 0
-	teams := []TeamID{TeamPlayers, TeamEnemies, TeamNeutral, TeamGaea}
+	teams := []TeamID{TeamPlayers, TeamEnemies}
 	for _, t := range teams {
 		if !e.IsTeamDead(t) {
 			alive = alive + 1
@@ -27,7 +27,7 @@ func (e Encounter) ActiveActor() *Actor {
 func (e Encounter) Winner() (string, bool) {
 	for _, c := range e.Actors {
 		if !c.IsDead() {
-			return c.Name, true
+			return string(c.Team), true
 		}
 	}
 	return "", false

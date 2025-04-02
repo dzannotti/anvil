@@ -12,7 +12,8 @@ const (
 	AttributeCalculationEventType = "attributeCalculation"
 	CheckResultEventType          = "checkResult"
 	ExpressionResultEventType     = "expressionResult"
-	DiedEventType                 = "died"
+	ConfirmEventType              = "confirm"
+	DeathEventType                = "death"
 	AttackRollEventType           = "attackRoll"
 	TakeDamageEventType           = "takeDamage"
 	UseActionEventType            = "useAction"
@@ -45,12 +46,17 @@ type CheckResultEvent struct {
 	Success  bool
 }
 
-type ExpressionResultEvent struct {
-	Expression expression.Expression
+type ConfirmEvent struct {
+	Actor   Actor
+	Confirm bool
 }
 
-type DiedEvent struct {
+type DeathEvent struct {
 	Actor Actor
+}
+
+type ExpressionResultEvent struct {
+	Expression expression.Expression
 }
 
 type AttackRollEvent struct {

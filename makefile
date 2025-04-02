@@ -56,6 +56,10 @@ lint:
 	@echo Running linter...
 	@golangci-lint run ./...
 
+fmt:
+	@echo Running formatter...
+	@go fmt ./...
+
 run:
 	@echo Running application...
 	@go run $(GOSRC)/main.go
@@ -81,4 +85,5 @@ help:
 	@echo   run-fast - Run without full make overhead
 	@echo   deps   - Install dependencies
 	@echo   loc    - Count lines of code
+	@echo   fmt    - Format code
 	@echo   help   - Show this help message

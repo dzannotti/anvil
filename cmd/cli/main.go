@@ -57,12 +57,11 @@ func main() {
 		goblin:  &ai.Simple{Encounter: encounter, Owner: goblin},
 	}
 	start := time.Now()
-	encounter.Play(func(active *core.Actor) {
+	winner := encounter.Play(func(active *core.Actor) {
 		gameAI[active].Play()
 	})
 	total := time.Since(start)
-	winner, ok := encounter.Winner()
-	if !ok {
+	if len(winner) == 0 {
 		fmt.Println("All dead")
 		return
 	}

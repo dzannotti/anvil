@@ -7,6 +7,7 @@ import (
 
 type Actor struct {
 	Log           LogWriter
+	Encounter     *Encounter
 	Position      grid.Position
 	World         *World
 	Attributes    stats.Attributes
@@ -33,4 +34,8 @@ func (a *Actor) AddAction(action ...Action) {
 
 func (a Actor) IsDead() bool {
 	return a.HitPoints == 0
+}
+
+func (a Actor) CanAct() bool {
+	return !a.IsDead()
 }
