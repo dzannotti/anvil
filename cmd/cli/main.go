@@ -12,25 +12,8 @@ import (
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 	"anvil/internal/prettyprint"
-	"anvil/internal/ruleset/base"
+	"anvil/internal/ruleset"
 )
-
-func makeCreature(hub *eventbus.Hub, world *core.World, team core.TeamID, pos grid.Position, name string, hitPoints int, attributes stats.Attributes, proficiencies stats.Proficiencies) *core.Creature {
-	c := &core.Creature{
-		Log:           hub,
-		Position:      pos,
-		World:         world,
-		Name:          name,
-		Team:          team,
-		HitPoints:     hitPoints,
-		MaxHitPoints:  hitPoints,
-		Attributes:    attributes,
-		Proficiencies: proficiencies,
-	}
-	world.AddOccupant(pos, c)
-	c.AddAction(base.NewAttackAction(c))
-	return c
-}
 
 func setupWorld(world *core.World) {
 	for x := 0; x < world.Width(); x++ {
@@ -59,16 +42,16 @@ func main() {
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
 	attributes := stats.Attributes{Strength: 10, Dexterity: 11, Constitution: 12, Intelligence: 13, Wisdom: 14, Charisma: 15}
-	wizard := makeCreature(&hub, world, core.TeamPlayers, grid.Position{X: 1, Y: 1}, "Wizard", 22, attributes, stats.Proficiencies{Bonus: 2})
-	fighter := makeCreature(&hub, world, core.TeamPlayers, grid.Position{X: 1, Y: 2}, "Fighter", 22, attributes, stats.Proficiencies{Bonus: 2})
-	orc := makeCreature(&hub, world, core.TeamEnemies, grid.Position{X: 4, Y: 3}, "Orc", 22, attributes, stats.Proficiencies{Bonus: 2})
-	goblin := makeCreature(&hub, world, core.TeamEnemies, grid.Position{X: 4, Y: 4}, "Goblin", 22, attributes, stats.Proficiencies{Bonus: 2})
+	wizard := ruleset.NewPCActor(&hub, world, grid.Position{X: 1, Y: 1}, "Wizard", 22, attributes, stats.Proficiencies{Bonus: 2})
+	fighter := ruleset.NewPCActor(&hub, world, grid.Position{X: 1, Y: 2}, "Fighter", 22, attributes, stats.Proficiencies{Bonus: 2})
+	orc := ruleset.NewNPCActor(&hub, world, grid.Position{X: 4, Y: 3}, "Orc", 22, attributes, stats.Proficiencies{Bonus: 2})
+	goblin := ruleset.NewNPCActor(&hub, world, grid.Position{X: 4, Y: 4}, "Goblin", 22, attributes, stats.Proficiencies{Bonus: 2})
 	encounter := &core.Encounter{
-		Hub:       &hub,
-		World:     world,
-		Creatures: []*core.Creature{wizard, fighter, orc, goblin},
+		Hub:    &hub,
+		World:  world,
+		Actors: []*core.Actor{wizard, fighter, orc, goblin},
 	}
-	gameAI := map[*core.Creature]ai.AI{
+	gameAI := map[*core.Actor]ai.AI{
 		wizard:  &ai.Simple{Encounter: encounter, Owner: wizard},
 		fighter: &ai.Simple{Encounter: encounter, Owner: fighter},
 		orc:     &ai.Simple{Encounter: encounter, Owner: orc},
@@ -77,7 +60,7 @@ func main() {
 	wg := sync.WaitGroup{}
 	start := time.Now()
 	wg.Add(1)
-	go encounter.Play(func(active *core.Creature, wg *sync.WaitGroup) {
+	go encounter.Play(func(active *core.Actor, wg *sync.WaitGroup) {
 		defer wg.Done()
 		gameAI[active].Play()
 	}, &wg)

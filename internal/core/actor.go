@@ -7,7 +7,7 @@ import (
 	"anvil/internal/grid"
 )
 
-type Creature struct {
+type Actor struct {
 	Log           *eventbus.Hub
 	Position      grid.Position
 	World         *World
@@ -21,14 +21,18 @@ type Creature struct {
 	Effects       effect.Container
 }
 
-func (c *Creature) Evaluate(event string, state any) {
-	c.Effects.Evaluate(event, state)
+func (a *Actor) StartTurn() {
+
 }
 
-func (c Creature) IsDead() bool {
-	return c.HitPoints == 0
+func (a *Actor) Evaluate(event string, state any) {
+	a.Effects.Evaluate(event, state)
 }
 
-func (c *Creature) AddAction(action ...Action) {
-	c.Actions = append(c.Actions, action...)
+func (a *Actor) AddAction(action ...Action) {
+	a.Actions = append(a.Actions, action...)
+}
+
+func (a Actor) IsDead() bool {
+	return a.HitPoints == 0
 }

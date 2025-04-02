@@ -12,7 +12,7 @@ func (e Encounter) IsOver() bool {
 }
 
 func (e Encounter) IsTeamDead(team TeamID) bool {
-	for _, c := range e.Creatures {
+	for _, c := range e.Actors {
 		if c.Team == team && !c.IsDead() {
 			return false
 		}
@@ -20,12 +20,12 @@ func (e Encounter) IsTeamDead(team TeamID) bool {
 	return true
 }
 
-func (e Encounter) ActiveCreature() *Creature {
+func (e Encounter) ActiveActor() *Actor {
 	return e.InitiativeOrder[e.Turn]
 }
 
 func (e Encounter) Winner() (string, bool) {
-	for _, c := range e.Creatures {
+	for _, c := range e.Actors {
 		if !c.IsDead() {
 			return c.Name, true
 		}

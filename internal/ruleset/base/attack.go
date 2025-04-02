@@ -6,10 +6,10 @@ import (
 )
 
 type AttackAction struct {
-	Owner *core.Creature
+	Owner *core.Actor
 }
 
-func NewAttackAction(owner *core.Creature) AttackAction {
+func NewAttackAction(owner *core.Actor) AttackAction {
 	return AttackAction{
 		Owner: owner,
 	}
@@ -19,7 +19,7 @@ func (a AttackAction) Name() string {
 	return "Attack"
 }
 
-func (a AttackAction) Perform(target *core.Creature) {
+func (a AttackAction) Perform(target *core.Actor) {
 	if target == nil {
 		return
 	}

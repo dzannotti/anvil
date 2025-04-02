@@ -19,18 +19,18 @@ const (
 )
 
 type EncounterEvent struct {
-	Creatures []*Creature
-	World     World
+	Actors []*Actor
+	World  World
 }
 
 type RoundEvent struct {
-	Round     int
-	Creatures []*Creature
+	Round  int
+	Actors []*Actor
 }
 
 type TurnEvent struct {
-	Turn     int
-	Creature Creature
+	Turn  int
+	Actor Actor
 }
 
 type AttributeCalculationEvent struct {
@@ -50,21 +50,21 @@ type ExpressionResultEvent struct {
 }
 
 type DiedEvent struct {
-	Creature Creature
+	Actor Actor
 }
 
 type AttackRollEvent struct {
-	Source Creature
-	Target Creature
+	Source Actor
+	Target Actor
 }
 
 type TakeDamageEvent struct {
-	Target Creature
+	Target Actor
 	Damage int
 }
 
 type UseActionEvent struct {
-	Source Creature
-	Target Creature
+	Source Actor
+	Target Actor
 	Action Action
 }
