@@ -42,10 +42,10 @@ func main() {
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
 	attributes := stats.Attributes{Strength: 10, Dexterity: 11, Constitution: 12, Intelligence: 13, Wisdom: 14, Charisma: 15}
-	wizard := ruleset.NewPCActor(&hub, world, core.TeamPlayers, grid.Position{X: 1, Y: 1}, "Wizard", 22, attributes, stats.Proficiencies{Bonus: 2})
-	fighter := ruleset.NewPCActor(&hub, world, core.TeamPlayers, grid.Position{X: 1, Y: 2}, "Fighter", 22, attributes, stats.Proficiencies{Bonus: 2})
-	orc := ruleset.NewPCActor(&hub, world, core.TeamEnemies, grid.Position{X: 4, Y: 3}, "Orc", 22, attributes, stats.Proficiencies{Bonus: 2})
-	goblin := ruleset.NewPCActor(&hub, world, core.TeamEnemies, grid.Position{X: 4, Y: 4}, "Goblin", 22, attributes, stats.Proficiencies{Bonus: 2})
+	wizard := ruleset.NewPCActor(&hub, world, grid.Position{X: 1, Y: 1}, "Wizard", 22, attributes, stats.Proficiencies{Bonus: 2})
+	fighter := ruleset.NewPCActor(&hub, world, grid.Position{X: 1, Y: 2}, "Fighter", 22, attributes, stats.Proficiencies{Bonus: 2})
+	orc := ruleset.NewNPCActor(&hub, world, grid.Position{X: 4, Y: 3}, "Orc", 22, attributes, stats.Proficiencies{Bonus: 2})
+	goblin := ruleset.NewNPCActor(&hub, world, grid.Position{X: 4, Y: 4}, "Goblin", 22, attributes, stats.Proficiencies{Bonus: 2})
 	encounter := &core.Encounter{
 		Hub:    &hub,
 		World:  world,
