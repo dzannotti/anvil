@@ -105,21 +105,21 @@ func printWorld(w core.World) string {
 	return sb.String()
 }
 
-func printCreature(c core.Creature) string {
+func printActor(a core.Actor) string {
 	sb := strings.Builder{}
 	stats := []string{
-		fmt.Sprintf("HP: %3d/%d", c.HitPoints, c.MaxHitPoints),
+		fmt.Sprintf("HP: %3d/%d", a.HitPoints, a.MaxHitPoints),
 	}
-	sb.WriteString(fmt.Sprintf("🧝 %-20s %s", c.Name, strings.Join(stats, " ")))
+	sb.WriteString(fmt.Sprintf("🧝 %-20s %s", a.Name, strings.Join(stats, " ")))
 	return sb.String()
 }
 
-func printTeam(creatures []*core.Creature) string {
+func printTeam(a []*core.Actor) string {
 	sb := strings.Builder{}
-	sb.WriteString("🎴 " + creatures[0].Name)
+	sb.WriteString("🎴 " + a[0].Name)
 	out := []string{}
-	for _, c := range creatures {
-		out = append(out, indent(printCreature(*c)))
+	for _, c := range a {
+		out = append(out, indent(printActor(*c)))
 	}
 	sb.WriteString("\n" + strings.Join(out, "\n"))
 	return sb.String()
@@ -129,8 +129,8 @@ func printEncounter(e core.EncounterEvent) string {
 	sb := strings.Builder{}
 	sb.WriteString("🏰 Encounter Start")
 	sb.WriteString("\n" + indent(printWorld(e.World)))
-	teams := map[string][]*core.Creature{}
-	for _, c := range e.Creatures {
+	teams := map[string][]*core.Actor{}
+	for _, c := range e.Actors {
 		teams[string(c.Team)] = append(teams[string(c.Team)], c)
 	}
 	out := []string{}
@@ -148,11 +148,11 @@ func printRound(r core.RoundEvent) string {
 }
 
 func printTurn(t core.TurnEvent) string {
-	return fmt.Sprintf("🔃 Turn %d: %s", t.Turn+1, t.Creature.Name)
+	return fmt.Sprintf("🔃 Turn %d: %s", t.Turn+1, t.Actor.Name)
 }
 
 func printDied(d core.DiedEvent) string {
-	return fmt.Sprintf("☠️ %s is about to die", d.Creature.Name)
+	return fmt.Sprintf("☠️ %s is about to die", d.Actor.Name)
 }
 
 func printUseAction(u core.UseActionEvent) string {

@@ -12,15 +12,15 @@ const (
 )
 
 type BeforeAttackRollState struct {
-	Source     *Creature
-	Target     *Creature
+	Source     *Actor
+	Target     *Actor
 	Expression *expression.Expression
 	Tags       tag.Container
 }
 
 type AfterAttackRollState struct {
-	Source *Creature
-	Target *Creature
+	Source *Actor
+	Target *Actor
 	Result *expression.Expression
 	Tags   tag.Container
 }

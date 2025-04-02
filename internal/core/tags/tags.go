@@ -11,44 +11,44 @@ import (
 
 var (
 	// Defenses
-	Defense    = tag.FromString("Creature.Defense")
-	HitPoints  = tag.FromString("Creature.Defense.HitPoints")
-	ArmorClass = tag.FromString("Creature.Defense.ArmorClass")
+	Defense    = tag.FromString("Actor.Defense")
+	HitPoints  = tag.FromString("Actor.Defense.HitPoints")
+	ArmorClass = tag.FromString("Actor.Defense.ArmorClass")
 
-	Creature = tag.FromString("Creature")
+	Actor = tag.FromString("Actor")
 
 	// Resources
-	Resource        = tag.FromString("Creature.Resource")
-	Action          = tag.FromString("Creature.Resource.Action")
-	Reaction        = tag.FromString("Creature.Resource.Reaction")
-	BonusAction     = tag.FromString("Creature.Resource.BonusAction")
-	LegendaryAction = tag.FromString("Creature.Resource.LegendaryAction")
-	SorceryPoints   = tag.FromString("Creature.Resource.SorceryPoints")
-	Speed           = tag.FromString("Creature.Resource.Speed")
-	UsedSpeed       = tag.FromString("Creature.Resource.Speed.Used")
-	WalkSpeed       = tag.FromString("Creature.Resource.Speed.Walk")
-	FlySpeed        = tag.FromString("Creature.Resource.Speed.Fly")
-	SwimSpeed       = tag.FromString("Creature.Resource.Speed.Swim")
+	Resource        = tag.FromString("Actor.Resource")
+	Action          = tag.FromString("Actor.Resource.Action")
+	Reaction        = tag.FromString("Actor.Resource.Reaction")
+	BonusAction     = tag.FromString("Actor.Resource.BonusAction")
+	LegendaryAction = tag.FromString("Actor.Resource.LegendaryAction")
+	SorceryPoints   = tag.FromString("Actor.Resource.SorceryPoints")
+	Speed           = tag.FromString("Actor.Resource.Speed")
+	UsedSpeed       = tag.FromString("Actor.Resource.Speed.Used")
+	WalkSpeed       = tag.FromString("Actor.Resource.Speed.Walk")
+	FlySpeed        = tag.FromString("Actor.Resource.Speed.Fly")
+	SwimSpeed       = tag.FromString("Actor.Resource.Speed.Swim")
 
 	// Spell Slots
-	SpellSlot1 = tag.FromString("Creature.Resource.SpellSlot.1")
-	SpellSlot2 = tag.FromString("Creature.Resource.SpellSlot.2")
-	SpellSlot3 = tag.FromString("Creature.Resource.SpellSlot.3")
-	SpellSlot4 = tag.FromString("Creature.Resource.SpellSlot.4")
-	SpellSlot5 = tag.FromString("Creature.Resource.SpellSlot.5")
-	SpellSlot6 = tag.FromString("Creature.Resource.SpellSlot.6")
-	SpellSlot7 = tag.FromString("Creature.Resource.SpellSlot.7")
-	SpellSlot8 = tag.FromString("Creature.Resource.SpellSlot.8")
-	SpellSlot9 = tag.FromString("Creature.Resource.SpellSlot.9")
+	SpellSlot1 = tag.FromString("Actor.Resource.SpellSlot.1")
+	SpellSlot2 = tag.FromString("Actor.Resource.SpellSlot.2")
+	SpellSlot3 = tag.FromString("Actor.Resource.SpellSlot.3")
+	SpellSlot4 = tag.FromString("Actor.Resource.SpellSlot.4")
+	SpellSlot5 = tag.FromString("Actor.Resource.SpellSlot.5")
+	SpellSlot6 = tag.FromString("Actor.Resource.SpellSlot.6")
+	SpellSlot7 = tag.FromString("Actor.Resource.SpellSlot.7")
+	SpellSlot8 = tag.FromString("Actor.Resource.SpellSlot.8")
+	SpellSlot9 = tag.FromString("Actor.Resource.SpellSlot.9")
 
 	// Attributes
-	Attribute    = tag.FromString("Creature.Attribute")
-	Strength     = tag.FromString("Creature.Attribute.Strength")
-	Dexterity    = tag.FromString("Creature.Attribute.Dexterity")
-	Constitution = tag.FromString("Creature.Attribute.Constitution")
-	Intelligence = tag.FromString("Creature.Attribute.Intelligence")
-	Wisdom       = tag.FromString("Creature.Attribute.Wisdom")
-	Charisma     = tag.FromString("Creature.Attribute.Charisma")
+	Attribute    = tag.FromString("Actor.Attribute")
+	Strength     = tag.FromString("Actor.Attribute.Strength")
+	Dexterity    = tag.FromString("Actor.Attribute.Dexterity")
+	Constitution = tag.FromString("Actor.Attribute.Constitution")
+	Intelligence = tag.FromString("Actor.Attribute.Intelligence")
+	Wisdom       = tag.FromString("Actor.Attribute.Wisdom")
+	Charisma     = tag.FromString("Actor.Attribute.Charisma")
 
 	// Proficiencies
 	ProficiencyAcrobatics     = tag.FromString("Proficiency.Acrobatics")
@@ -106,7 +106,7 @@ var (
 
 func ToReadableTag(tag tag.Tag) string {
 	ignore := []string{
-		"creature",
+		"Actor",
 		"proficiency",
 		"damage",
 		"kind",

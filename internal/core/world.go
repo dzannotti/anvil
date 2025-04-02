@@ -27,12 +27,12 @@ func (w *World) Height() int {
 	return w.Grid.Height
 }
 
-func (w *World) AddOccupant(pos grid.Position, o *Creature) {
+func (w *World) AddOccupant(pos grid.Position, o *Actor) {
 	cell, _ := w.At(pos)
 	cell.AddOccupant(o)
 }
 
-func (w *World) RemoveOccupant(pos grid.Position, o *Creature) {
+func (w *World) RemoveOccupant(pos grid.Position, o *Actor) {
 	cell, _ := w.At(pos)
 	cell.RemoveOccupant(o)
 }
@@ -45,10 +45,10 @@ func (w World) IsValidPosition(pos grid.Position) bool {
 	return w.Grid.IsValidPosition(pos)
 }
 
-func (w World) CreaturesInRange(pos grid.Position, radius int) []*Creature {
-	creatures := make([]*Creature, 0)
+func (w World) ActorsInRange(pos grid.Position, radius int) []*Actor {
+	actors := make([]*Actor, 0)
 	for _, cell := range w.Grid.CellsInRange(pos, radius) {
-		creatures = append(creatures, cell.Occupants...)
+		actors = append(actors, cell.Occupants...)
 	}
-	return creatures
+	return actors
 }

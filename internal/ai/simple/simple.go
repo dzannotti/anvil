@@ -8,7 +8,7 @@ import (
 
 type Simple struct {
 	Encounter *core.Encounter
-	Owner     *core.Creature
+	Owner     *core.Actor
 }
 
 func (ai *Simple) Play() {
@@ -17,7 +17,7 @@ func (ai *Simple) Play() {
 	}
 }
 
-func (ai Simple) ChooseTarget() (*core.Creature, error) {
+func (ai Simple) ChooseTarget() (*core.Actor, error) {
 	enemies := ai.Enemies()
 	for i := range enemies {
 		if !enemies[i].IsDead() {
@@ -27,13 +27,13 @@ func (ai Simple) ChooseTarget() (*core.Creature, error) {
 	return nil, errors.New("no target found")
 }
 
-func (ai Simple) Enemies() []*core.Creature {
+func (ai Simple) Enemies() []*core.Actor {
 	team := core.TeamPlayers
 	if ai.Owner.Team == core.TeamPlayers {
 		team = core.TeamEnemies
 	}
-	enemies := make([]*core.Creature, 0)
-	for _, c := range ai.Encounter.Creatures {
+	enemies := make([]*core.Actor, 0)
+	for _, c := range ai.Encounter.Actors {
 		if c.Team == team {
 			enemies = append(enemies, c)
 		}
