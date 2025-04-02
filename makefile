@@ -66,6 +66,10 @@ deps:
 	@go mod download
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
+loc:
+	@echo Counting LOC...
+	@npx sloc --keys source --format cli-table --format-option no-head --exclude ".*_test.go" .
+
 help:
 	@echo Make targets:"
 	@echo   all    - Clean, lint, test, and build
@@ -76,4 +80,5 @@ help:
 	@echo   run    - Run the application
 	@echo   run-fast - Run without full make overhead
 	@echo   deps   - Install dependencies
+	@echo   loc    - Count lines of code
 	@echo   help   - Show this help message
