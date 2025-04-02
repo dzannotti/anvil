@@ -17,7 +17,7 @@ const (
 
 type Effect struct {
 	Name     string
-	Handlers map[string]func(*Effect, any, *sync.WaitGroup)
+	Handlers map[string]func(*Effect, any)
 	Priority Priority
 }
 
@@ -26,13 +26,16 @@ func (e *Effect) Evaluate(event string, state any) {
 	if exists {
 		wg := &sync.WaitGroup{}
 		wg.Add(1)
-		go handler(e, state, wg)
+		go func() {
+			defer wg.Done()
+			handler(e, state)
+		}()
 		wg.Wait()
 	}
 }
 
-func (e *Effect) WithHandler(event string, handler func(*Effect, any, *sync.WaitGroup)) {
-	e.Handlers[event] = func(e *Effect, s any, wg *sync.WaitGroup) {
-		handler(e, s, wg)
+func (e *Effect) WithHandler(event string, handler func(*Effect, any)) {
+	e.Handlers[event] = func(e *Effect, s any) {
+		handler(e, s)
 	}
 }
