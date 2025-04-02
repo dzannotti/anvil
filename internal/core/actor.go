@@ -3,12 +3,11 @@ package core
 import (
 	"anvil/internal/core/stats"
 	"anvil/internal/effect"
-	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 )
 
 type Actor struct {
-	Log           *eventbus.Hub
+	Log           LogWriter
 	Position      grid.Position
 	World         *World
 	Attributes    stats.Attributes

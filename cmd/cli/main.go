@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"sync"
 	"time"
 
 	"anvil/internal/ai"
@@ -47,7 +46,7 @@ func main() {
 	orc := ruleset.NewNPCActor(&hub, world, grid.Position{X: 4, Y: 3}, "Orc", 22, attributes, stats.Proficiencies{Bonus: 2})
 	goblin := ruleset.NewNPCActor(&hub, world, grid.Position{X: 4, Y: 4}, "Goblin", 22, attributes, stats.Proficiencies{Bonus: 2})
 	encounter := &core.Encounter{
-		Hub:    &hub,
+		Log:    &hub,
 		World:  world,
 		Actors: []*core.Actor{wizard, fighter, orc, goblin},
 	}
@@ -57,19 +56,16 @@ func main() {
 		orc:     &ai.Simple{Encounter: encounter, Owner: orc},
 		goblin:  &ai.Simple{Encounter: encounter, Owner: goblin},
 	}
-	wg := sync.WaitGroup{}
 	start := time.Now()
-	wg.Add(1)
-	go encounter.Play(func(active *core.Actor, wg *sync.WaitGroup) {
-		defer wg.Done()
+	encounter.Play(func(active *core.Actor) {
 		gameAI[active].Play()
-	}, &wg)
-	wg.Wait()
+	})
+	total := time.Since(start)
 	winner, ok := encounter.Winner()
 	if !ok {
 		fmt.Println("All dead")
 		return
 	}
 	fmt.Println("Winner:", winner)
-	fmt.Printf("%v elapsed\n", time.Since(start))
+	fmt.Printf("%v elapsed\n", total)
 }
