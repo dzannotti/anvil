@@ -1,8 +1,6 @@
 package expression
 
-import (
-	mapset "github.com/deckarep/golang-set/v2"
-)
+import "slices"
 
 func (e *Expression) EvaluateGroup() *Expression {
 	out := Expression{rng: defaultRoller{}}
@@ -19,11 +17,14 @@ func (e *Expression) EvaluateGroup() *Expression {
 }
 
 func (e Expression) uniqueTags() []string {
-	set := mapset.NewSet[string]()
+	set := make([]string, 0)
 	for _, term := range e.Terms {
-		set.Add(term.Tags.ID())
+		if slices.Contains(set, term.Tags.ID()) {
+			continue
+		}
+		set = append(set, term.Tags.ID())
 	}
-	return set.ToSlice()
+	return set
 }
 
 func (e Expression) groupTermsBy() [][]Term {
