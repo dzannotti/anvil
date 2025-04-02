@@ -1,7 +1,6 @@
 package core
 
 import (
-	"anvil/internal/eventbus"
 	"slices"
 	"sync"
 )
@@ -11,25 +10,28 @@ type Encounter struct {
 	Turn            int
 	InitiativeOrder []*Actor
 	Actors          []*Actor
-	Hub             *eventbus.Hub
+	Log             LogWriter
 	World           *World
 }
 
-type Act = func(active *Actor, wg *sync.WaitGroup)
+type Act = func(active *Actor)
 
 func (e *Encounter) playTurn(act Act) {
-	e.Hub.Start(TurnEventType, TurnEvent{Turn: e.Turn, Actor: *e.ActiveActor()})
-	defer e.Hub.End()
+	e.Log.Start(TurnEventType, TurnEvent{Turn: e.Turn, Actor: *e.ActiveActor()})
+	defer e.Log.End()
 	turnWG := sync.WaitGroup{}
 	turnWG.Add(1)
 	e.ActiveActor().StartTurn()
-	go act(e.ActiveActor(), &turnWG)
+	go func() {
+		defer turnWG.Done()
+		act(e.ActiveActor())
+	}()
 	turnWG.Wait()
 }
 
 func (e *Encounter) playRound(act Act) {
-	e.Hub.Start(RoundEventType, RoundEvent{Round: e.Round, Actors: e.Actors})
-	defer e.Hub.End()
+	e.Log.Start(RoundEventType, RoundEvent{Round: e.Round, Actors: e.Actors})
+	defer e.Log.End()
 	e.Turn = 0
 	for i := range e.InitiativeOrder {
 		e.Turn = i
@@ -40,13 +42,12 @@ func (e *Encounter) playRound(act Act) {
 	}
 }
 
-func (e *Encounter) Play(act Act, wg *sync.WaitGroup) {
+func (e *Encounter) Play(act Act) {
 	e.Round = 0
 	e.Turn = 0
 	e.InitiativeOrder = slices.Clone(e.Actors)
-	e.Hub.Start(EncounterEventType, EncounterEvent{Actors: e.Actors, World: *e.World})
-	defer e.Hub.End()
-	defer wg.Done()
+	e.Log.Start(EncounterEventType, EncounterEvent{Actors: e.Actors, World: *e.World})
+	defer e.Log.End()
 	for !e.IsOver() {
 		e.playRound(act)
 		e.Round = e.Round + 1

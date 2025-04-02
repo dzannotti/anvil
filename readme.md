@@ -1,5 +1,8 @@
 # Anvil
 
+- [x] fix concurrency
+- [ ] aiutils
+- [ ] AIActions
 - [ ] Armor class Modifier (dex)?
 - [ ] attribute modifiers in rolls
 - [ ] proficiency modifier

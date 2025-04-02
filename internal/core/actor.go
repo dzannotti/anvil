@@ -2,13 +2,11 @@ package core
 
 import (
 	"anvil/internal/core/stats"
-	"anvil/internal/effect"
-	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 )
 
 type Actor struct {
-	Log           *eventbus.Hub
+	Log           LogWriter
 	Position      grid.Position
 	World         *World
 	Attributes    stats.Attributes
@@ -18,7 +16,7 @@ type Actor struct {
 	MaxHitPoints  int
 	Actions       []Action
 	Team          TeamID
-	Effects       effect.Container
+	Effects       EffectContainer
 }
 
 func (a *Actor) StartTurn() {
