@@ -3,13 +3,13 @@
 - [x] fix concurrency
 - [x] aiutils
 - [x] AIActions
+- [ ] death
 - [ ] Armor class Modifier (dex)?
 - [ ] attribute modifiers in rolls
 - [ ] proficiency modifier
 - [ ] items/weapons
 - [ ] weapon attack (unarmed/natural/weapon)
 - [ ] Fighting style defense
-- [ ] death
 - [ ] crit
 - [ ] undead fortitude
 - [ ] saving throws implementation

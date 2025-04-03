@@ -9,7 +9,7 @@ import (
 )
 
 func newActor(hub *eventbus.Hub, world *core.World, team core.TeamID, pos grid.Position, name string, hitPoints int, attributes stats.Attributes, proficiencies stats.Proficiencies) *core.Actor {
-	c := &core.Actor{
+	a := &core.Actor{
 		Log:           hub,
 		Position:      pos,
 		World:         world,
@@ -20,9 +20,10 @@ func newActor(hub *eventbus.Hub, world *core.World, team core.TeamID, pos grid.P
 		Attributes:    attributes,
 		Proficiencies: proficiencies,
 	}
-	world.AddOccupant(pos, c)
-	c.AddAction(base.NewAttackAction(c))
-	return c
+	world.AddOccupant(pos, a)
+	a.AddAction(base.NewAttackAction(a))
+	a.AddEffect(base.NewDeathEffect(a))
+	return a
 }
 
 func NewPCActor(hub *eventbus.Hub, world *core.World, pos grid.Position, name string, hitPoints int, attributes stats.Attributes, proficiencies stats.Proficiencies) *core.Actor {

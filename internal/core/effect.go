@@ -48,19 +48,31 @@ func (e *Effect) withHandler(event string, handler func(*Effect, any)) {
 }
 
 func (e *Effect) WithBeforeAttackRoll(handler func(*Effect, *BeforeAttackRollState)) {
-	e.Handlers.get()[BeforeAttackRollStateType] = func(e *Effect, state any) {
+	e.Handlers.get()[BeforeAttackRoll] = func(e *Effect, state any) {
 		handler(e, state.(*BeforeAttackRollState))
 	}
 }
 
 func (e *Effect) WithAfterAttackRollState(handler func(*Effect, *AfterAttackRollState)) {
-	e.Handlers.get()[AfterAttackRollStateType] = func(e *Effect, state any) {
+	e.Handlers.get()[AfterAttackRoll] = func(e *Effect, state any) {
 		handler(e, state.(*AfterAttackRollState))
 	}
 }
 
 func (e *Effect) WithAttributeCalculationState(handler func(*Effect, *AttributeCalculationState)) {
-	e.Handlers.get()[AttributeCalculationStateType] = func(e *Effect, state any) {
+	e.Handlers.get()[AttributeCalculation] = func(e *Effect, state any) {
 		handler(e, state.(*AttributeCalculationState))
+	}
+}
+
+func (e *Effect) WithBeforeTakeDamage(handler func(*Effect, *BeforeTakeDamageState)) {
+	e.Handlers.get()[BeforeTakeDamage] = func(e *Effect, state any) {
+		handler(e, state.(*BeforeTakeDamageState))
+	}
+}
+
+func (e *Effect) WithAfterTakeDamage(handler func(*Effect, *AfterTakeDamageState)) {
+	e.Handlers.get()[AfterTakeDamage] = func(e *Effect, state any) {
+		handler(e, state.(*AfterTakeDamageState))
 	}
 }
