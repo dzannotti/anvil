@@ -15,7 +15,7 @@ func (a *Actor) Die() {
 }
 
 func (a *Actor) TakeDamage(damage int) {
-	expr := expression.FromDamageScalar(damage, "FIXME", tag.ContainerFromTag(tags.ItemWeaponNatural))
+	expr := expression.FromDamageScalar(damage, "FIXME", tag.ContainerFromTag(tags.NaturalWeapon))
 	crit := false
 	before := BeforeTakeDamageState{Expression: &expr, Source: a, Critical: &crit}
 	a.Evaluate(BeforeTakeDamage, &before)
@@ -33,10 +33,10 @@ func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 	a.Log.Start(AttackRollEventType, AttackRollEvent{Source: *a, Target: *target})
 	defer a.Log.End()
 	before := BeforeAttackRollState{Source: a, Target: target, Expression: &expr, Tags: tc}
-	a.Effects.Evaluate(BeforeAttackRoll, before)
+	a.Effects.Evaluate(BeforeAttackRoll, &before)
 	expr.Evaluate()
 	after := AfterAttackRollState{Source: a, Target: target, Result: &expr, Tags: tc}
-	a.Effects.Evaluate(AfterAttackRoll, after)
+	a.Effects.Evaluate(AfterAttackRoll, &after)
 	a.Log.Add(ExpressionResultEventType, ExpressionResultEvent{Expression: expr})
 	value := after.Result.Value
 	crit := after.Result.IsCritical()

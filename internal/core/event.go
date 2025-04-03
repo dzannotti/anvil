@@ -36,7 +36,7 @@ type TurnEvent struct {
 
 type AttributeCalculationEvent struct {
 	Attribute  tag.Tag
-	Expression expression.Expression
+	Expression *expression.Expression
 }
 
 type CheckResultEvent struct {

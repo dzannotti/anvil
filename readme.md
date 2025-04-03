@@ -5,8 +5,8 @@
 - [x] AIActions
 - [x] death
 - [x] actual pc/npc values
-- [ ] Armor class Modifier (dex)?
-- [ ] attribute modifiers in rolls
+- [x] attribute modifiers in rolls
+- [ ] Armor class Modifier
 - [ ] proficiency modifier
 - [ ] items/weapons
 - [ ] weapon attack (unarmed/natural/weapon)

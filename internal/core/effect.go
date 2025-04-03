@@ -76,3 +76,21 @@ func (e *Effect) WithAfterTakeDamage(handler func(*Effect, *AfterTakeDamageState
 		handler(e, state.(*AfterTakeDamageState))
 	}
 }
+
+func (e *Effect) WithBeforeDamageRoll(handler func(*Effect, *BeforeDamageRollState)) {
+	e.Handlers.get()[BeforeDamageRoll] = func(e *Effect, state any) {
+		handler(e, state.(*BeforeDamageRollState))
+	}
+}
+
+func (e *Effect) WithAfterDamageRoll(handler func(*Effect, *AfterDamageRollState)) {
+	e.Handlers.get()[AfterDamageRoll] = func(e *Effect, state any) {
+		handler(e, state.(*AfterDamageRollState))
+	}
+}
+
+func (e *Effect) WithSavingThrow(handler func(*Effect, *SavingThrowState)) {
+	e.Handlers.get()[SavingThrow] = func(e *Effect, state any) {
+		handler(e, state.(*SavingThrowState))
+	}
+}

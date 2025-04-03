@@ -84,17 +84,19 @@ var (
 	Melee  = tag.FromString("melee")
 	Ranged = tag.FromString("ranged")
 
-	// Item
-	ItemWeapon           = tag.FromString("Item.Weapon")
-	ItemWeaponNatural    = tag.FromString("Item.Weapon.Natural")
-	ItemWeaponMartial    = tag.FromString("Item.Weapon.Martial")
-	ItemWeaponMartialAxe = tag.FromString("Item.Weapon.Martial.Axe")
+	Finesse = tag.FromString("Item.Weapon.Finesse")
 
-	ItemArmorNatural = tag.FromString("Item.Armor.Natural")
-	ItemArmorLight   = tag.FromString("Item.Armor.Light")
-	ItemArmorMedium  = tag.FromString("Item.Armor.Medium")
-	ItemArmorHeavy   = tag.FromString("Item.Armor.Heavy")
-	ItemArmorShield  = tag.FromString("Item.Armor.Shield")
+	// Item
+	Weapon        = tag.FromString("Item.Weapon")
+	NaturalWeapon = tag.FromString("Item.Weapon.Natural")
+	MartialWeapon = tag.FromString("Item.Weapon.Martial")
+	MartialAxe    = tag.FromString("Item.Weapon.Martial.Axe")
+
+	NaturalArmor = tag.FromString("Item.Armor.Natural")
+	LightArmor   = tag.FromString("Item.Armor.Light")
+	MediumArmor  = tag.FromString("Item.Armor.Medium")
+	HeavyArmor   = tag.FromString("Item.Armor.Heavy")
+	Shield       = tag.FromString("Item.Armor.Shield")
 
 	// Condition
 	Condition   = tag.FromString("Condition")
@@ -106,7 +108,7 @@ var (
 
 func ToReadableTag(tag tag.Tag) string {
 	ignore := []string{
-		"Actor",
+		"actor",
 		"proficiency",
 		"damage",
 		"kind",
