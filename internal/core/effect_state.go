@@ -11,6 +11,9 @@ const (
 	AttributeCalculation = "AttributeCalculation"
 	BeforeTakeDamage     = "BeforeTakeDamage"
 	AfterTakeDamage      = "AfterTakeDamage"
+	BeforeDamageRoll     = "BeforeDamageRoll"
+	AfterDamageRoll      = "AfterDamageRoll"
+	SavingThrow          = "SavingThrow"
 )
 
 type BeforeAttackRollState struct {
@@ -43,4 +46,26 @@ type AfterTakeDamageState struct {
 	Source          *Actor
 	Critical        *bool
 	EffectiveDamage int
+}
+
+type BeforeDamageRollState struct {
+	Expression *expression.Expression
+	Source     *Actor
+	Critical   *bool
+	Tags       tag.Container
+}
+
+type AfterDamageRollState struct {
+	Result          *expression.Expression
+	Source          *Actor
+	Critical        *bool
+	Tags            tag.Container
+	EffectiveDamage int
+}
+
+type SavingThrowState struct {
+	Expression      *expression.Expression
+	Source          *Actor
+	Attribute       tag.Tag
+	DifficultyClass int
 }

@@ -23,6 +23,7 @@ func newActor(hub *eventbus.Hub, world *core.World, team core.TeamID, pos grid.P
 	world.AddOccupant(pos, a)
 	a.AddAction(base.NewAttackAction(a))
 	a.AddEffect(base.NewDeathEffect(a))
+	a.AddEffect(base.NewAttributeModifierEffect(a))
 	return a
 }
 

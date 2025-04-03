@@ -210,7 +210,7 @@ func printAttributeCalculation(e core.AttributeCalculationEvent) string {
 	}
 	sb := strings.Builder{}
 	sb.WriteString(emoji[e.Attribute])
-	sb.WriteString("\n")
-	sb.WriteString(printExpression(e.Expression))
+	sb.WriteString(" ")
+	sb.WriteString(printExpression(*e.Expression))
 	return sb.String()
 }
