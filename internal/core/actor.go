@@ -32,6 +32,10 @@ func (a *Actor) AddAction(action ...Action) {
 	a.Actions = append(a.Actions, action...)
 }
 
+func (a *Actor) AddEffect(effect ...*Effect) {
+	a.Effects.Add(effect...)
+}
+
 func (a Actor) IsDead() bool {
 	return a.HitPoints == 0
 }

@@ -6,8 +6,8 @@ type EffectContainer struct {
 	effects []*Effect
 }
 
-func (c *EffectContainer) Add(effect *Effect) {
-	c.effects = append(c.effects, effect)
+func (c *EffectContainer) Add(effect ...*Effect) {
+	c.effects = append(c.effects, effect...)
 	slices.SortFunc(c.effects, func(a, b *Effect) int {
 		return int(a.Priority) - int(b.Priority)
 	})

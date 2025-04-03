@@ -6,9 +6,11 @@ import (
 )
 
 const (
-	BeforeAttackRollStateType     = "BeforeAttackRollState"
-	AfterAttackRollStateType      = "AfterAttackRollState"
-	AttributeCalculationStateType = "AttributeCalculationState"
+	BeforeAttackRoll     = "BeforeAttackRoll"
+	AfterAttackRoll      = "AfterAttackRoll"
+	AttributeCalculation = "AttributeCalculation"
+	BeforeTakeDamage     = "BeforeTakeDamage"
+	AfterTakeDamage      = "AfterTakeDamage"
 )
 
 type BeforeAttackRollState struct {
@@ -28,4 +30,17 @@ type AfterAttackRollState struct {
 type AttributeCalculationState struct {
 	Expression *expression.Expression
 	Attribute  tag.Tag
+}
+
+type BeforeTakeDamageState struct {
+	Expression *expression.Expression
+	Source     *Actor
+	Critical   *bool
+}
+
+type AfterTakeDamageState struct {
+	Result          *expression.Expression
+	Source          *Actor
+	Critical        *bool
+	EffectiveDamage int
 }
