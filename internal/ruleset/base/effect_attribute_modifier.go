@@ -20,15 +20,20 @@ func NewAttributeModifierEffect(_ *core.Actor) *core.Effect {
 		}
 		e.AddScalar(strMod, "Attribute Modifier (Strength)", dex.Terms...)
 	}
-	fx := &core.Effect{Name: "AttributeModifier", Priority: core.PriorityLast}
+
+	fx := &core.Effect{Name: "AttributeModifier", Priority: core.PriorityBase}
+
 	fx.WithBeforeAttackRoll(func(_ *core.Effect, s *core.BeforeAttackRollState) {
 		applyModifier(s.Source, s.Expression, s.Tags)
 	})
+
 	fx.WithBeforeDamageRoll(func(_ *core.Effect, s *core.BeforeDamageRollState) {
 		applyModifier(s.Source, s.Expression, s.Tags)
 	})
+
 	fx.WithSavingThrow(func(_ *core.Effect, s *core.SavingThrowState) {
 		applyModifier(s.Source, s.Expression, tag.ContainerFromTag(s.Attribute))
 	})
+
 	return fx
 }

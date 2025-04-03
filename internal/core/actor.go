@@ -3,6 +3,7 @@ package core
 import (
 	"anvil/internal/core/stats"
 	"anvil/internal/grid"
+	"anvil/internal/tag"
 )
 
 type Actor struct {
@@ -34,6 +35,14 @@ func (a *Actor) AddAction(action ...Action) {
 
 func (a *Actor) AddEffect(effect ...*Effect) {
 	a.Effects.Add(effect...)
+}
+
+func (a *Actor) RemoveEffect(effect *Effect) {
+	a.Effects.Remove(effect)
+}
+
+func (a *Actor) AddProficiency(t tag.Tag) {
+	a.Proficiencies.Add(t)
 }
 
 func (a Actor) IsDead() bool {

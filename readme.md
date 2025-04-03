@@ -6,16 +6,15 @@
 - [x] death
 - [x] actual pc/npc values
 - [x] attribute modifiers in rolls
-- [ ] Armor class Modifier
-- [ ] proficiency modifier
+- [x] Armor class Modifier
+- [x] proficiency modifier
+- [x] action use is on grid cell (targets listed below)
 - [ ] items/weapons
 - [ ] weapon attack (unarmed/natural/weapon)
 - [ ] Fighting style defense
 - [ ] crit
 - [ ] undead fortitude
 - [ ] saving throws implementation
-- [ ] action use is on grid cell (targets listed below)
-- [ ] attribute follow same as armor class structure?
 - [ ] resources
 - [ ] move based on resources
 - [ ] existing attacks using resources

@@ -3,36 +3,39 @@ package ruleset
 import (
 	"anvil/internal/core"
 	"anvil/internal/core/stats"
+	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 	"anvil/internal/ruleset/base"
 )
 
-func newActor(hub *eventbus.Hub, world *core.World, team core.TeamID, pos grid.Position, name string, hitPoints int, attributes stats.Attributes, proficiencies stats.Proficiencies) *core.Actor {
+func newActor(h *eventbus.Hub, w *core.World, t core.TeamID, pos grid.Position, name string, hitPoints int, at stats.Attributes, p stats.Proficiencies) *core.Actor {
 	a := &core.Actor{
-		Log:           hub,
+		Log:           h,
 		Position:      pos,
-		World:         world,
+		World:         w,
 		Name:          name,
-		Team:          team,
+		Team:          t,
 		HitPoints:     hitPoints,
 		MaxHitPoints:  hitPoints,
-		Attributes:    attributes,
-		Proficiencies: proficiencies,
+		Attributes:    at,
+		Proficiencies: p,
 	}
-	world.AddOccupant(pos, a)
+	w.AddOccupant(pos, a)
 	a.AddAction(base.NewAttackAction(a))
 	a.AddEffect(base.NewDeathEffect(a))
 	a.AddEffect(base.NewAttributeModifierEffect(a))
+	a.AddEffect(base.NewProficiencyModifierEffect(a))
 	return a
 }
 
-func NewPCActor(hub *eventbus.Hub, world *core.World, pos grid.Position, name string, hitPoints int, attributes stats.Attributes, proficiencies stats.Proficiencies) *core.Actor {
-	c := newActor(hub, world, core.TeamPlayers, pos, name, hitPoints, attributes, proficiencies)
-	return c
+func NewPCActor(h *eventbus.Hub, w *core.World, pos grid.Position, name string, hitPoints int, at stats.Attributes, p stats.Proficiencies) *core.Actor {
+	a := newActor(h, w, core.TeamPlayers, pos, name, hitPoints, at, p)
+	return a
 }
 
-func NewNPCActor(hub *eventbus.Hub, world *core.World, pos grid.Position, name string, hitPoints int, attributes stats.Attributes, proficiencies stats.Proficiencies) *core.Actor {
-	c := newActor(hub, world, core.TeamEnemies, pos, name, hitPoints, attributes, proficiencies)
-	return c
+func NewNPCActor(h *eventbus.Hub, w *core.World, pos grid.Position, name string, hitPoints int, at stats.Attributes, p stats.Proficiencies) *core.Actor {
+	a := newActor(h, w, core.TeamEnemies, pos, name, hitPoints, at, p)
+	a.AddProficiency(tags.NaturalWeapon)
+	return a
 }

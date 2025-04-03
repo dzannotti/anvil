@@ -30,3 +30,7 @@ func (a *Actor) Attribute(t tag.Tag) *expression.Expression {
 	s.Expression.Evaluate()
 	return s.Expression
 }
+
+func (a *Actor) Proficiency(tags tag.Container) int {
+	return a.Proficiencies.Value(tags)
+}
