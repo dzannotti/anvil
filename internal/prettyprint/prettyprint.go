@@ -111,7 +111,8 @@ func printWorld(w core.World) string {
 func printActor(a core.Actor) string {
 	sb := strings.Builder{}
 	stats := []string{
-		fmt.Sprintf("HP: %3d/%d", a.HitPoints, a.MaxHitPoints),
+		fmt.Sprintf("HP: %3d/%-3d", a.HitPoints, a.MaxHitPoints),
+		fmt.Sprintf("AC: %3d", a.ArmorClass().Value),
 	}
 	sb.WriteString(fmt.Sprintf("🧝 %-20s %s", a.Name, strings.Join(stats, " ")))
 	return sb.String()
