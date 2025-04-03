@@ -3,7 +3,8 @@
 - [x] fix concurrency
 - [x] aiutils
 - [x] AIActions
-- [ ] death
+- [x] death
+- [x] actual pc/npc values
 - [ ] Armor class Modifier (dex)?
 - [ ] attribute modifiers in rolls
 - [ ] proficiency modifier
