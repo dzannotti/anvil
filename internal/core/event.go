@@ -6,17 +6,18 @@ import (
 )
 
 const (
-	EncounterEventType            = "encounter"
-	RoundEventType                = "round"
-	TurnEventType                 = "turn"
-	AttributeCalculationEventType = "attributeCalculation"
-	CheckResultEventType          = "checkResult"
-	ExpressionResultEventType     = "expressionResult"
-	ConfirmEventType              = "confirm"
-	DeathEventType                = "death"
-	AttackRollEventType           = "attackRoll"
-	TakeDamageEventType           = "takeDamage"
-	UseActionEventType            = "useAction"
+	EncounterType            = "encounter"
+	RoundType                = "round"
+	TurnType                 = "turn"
+	AttributeCalculationType = "attributeCalculation"
+	CheckResultType          = "checkResult"
+	ExpressionResultType     = "expressionResult"
+	ConfirmType              = "confirm"
+	DeathType                = "death"
+	AttackRollType           = "attackRoll"
+	TakeDamageType           = "takeDamage"
+	UseActionType            = "useAction"
+	DamageRollType           = "damageRoll"
 )
 
 type EncounterEvent struct {
@@ -73,4 +74,10 @@ type UseActionEvent struct {
 	Source Actor
 	Target Actor
 	Action Action
+}
+
+type DamageRollEvent struct {
+	Source       Actor
+	Target       Actor
+	DamageSource []DamageSource
 }

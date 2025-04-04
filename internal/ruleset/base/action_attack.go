@@ -1,44 +1,66 @@
 package base
 
 import (
+	"slices"
+
 	"anvil/internal/core"
 	"anvil/internal/core/shapes"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
-	"slices"
 )
 
+type ScoringFunc = func(pos grid.Position) float32
+
 type AttackAction struct {
-	Owner *core.Actor
+	Owner        *core.Actor
+	name         string
+	scorer       ScoringFunc
+	DamageSource []core.DamageSource
 }
 
-func NewAttackAction(owner *core.Actor) AttackAction {
-	return AttackAction{
-		Owner: owner,
+func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource) AttackAction {
+	a := AttackAction{
+		Owner:        owner,
+		name:         name,
+		DamageSource: ds,
 	}
+	a.scorer = a.Score
+	return a
+}
+
+func (a *AttackAction) WithScorer(s ScoringFunc) {
+	a.scorer = s
 }
 
 func (a AttackAction) Name() string {
-	return "Attack"
+	return a.name
+}
+
+func (a AttackAction) AIAction(pos grid.Position) *core.AIAction {
+	return &core.AIAction{
+		Action:   a,
+		Position: []grid.Position{pos},
+		Score:    a.scorer(pos),
+	}
 }
 
 func (a AttackAction) Perform(pos []grid.Position) {
 	target, _ := a.Owner.World.ActorAt(pos[0])
-	a.Owner.Log.Start(core.UseActionEventType, core.UseActionEvent{Action: a, Source: *a.Owner, Target: *target})
+	a.Owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: *a.Owner, Target: *target})
 	defer a.Owner.Log.End()
 	result := a.Owner.AttackRoll(target, tag.Container{})
 	if result.Success {
-		target.TakeDamage(5)
+		dmg := a.Owner.DamageRoll(a.DamageSource, result.Critical)
+		target.TakeDamage(dmg.Value)
 	}
 }
 
-func (a AttackAction) AIAction(pos grid.Position) *core.AIAction {
+func (a AttackAction) Score(pos grid.Position) float32 {
 	target, _ := a.Owner.World.ActorAt(pos)
-	return &core.AIAction{
-		Action:   a,
-		Position: []grid.Position{pos},
-		Score:    0.5 + (1-target.HitPointsNormalized())*0.5,
+	if target == nil {
+		return 0
 	}
+	return 0.5 + (1-target.HitPointsNormalized())*0.5
 }
 
 func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {

@@ -1,12 +1,13 @@
 package tags
 
 import (
-	"anvil/internal/tag"
 	"slices"
 	"strings"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	"anvil/internal/tag"
 )
 
 var (
@@ -81,8 +82,8 @@ var (
 	Poison      = tag.FromString("Damage.Kind.Poison")
 	Radiant     = tag.FromString("Damage.Kind.Radiant")
 
-	Melee  = tag.FromString("melee")
-	Ranged = tag.FromString("ranged")
+	Melee  = tag.FromString("Melee")
+	Ranged = tag.FromString("Ranged")
 
 	Finesse = tag.FromString("Item.Weapon.Finesse")
 

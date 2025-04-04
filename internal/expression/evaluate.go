@@ -8,6 +8,9 @@ import (
 
 func (e *Expression) Evaluate() *Expression {
 	e.Value = 0
+	if e.rng == nil {
+		e.rng = defaultRoller{}
+	}
 	for i := range e.Terms {
 		e.evaluateTerm(&e.Terms[i])
 		e.Value += e.Terms[i].Value
