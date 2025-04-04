@@ -53,13 +53,13 @@ func (e *Effect) WithBeforeAttackRoll(handler func(*Effect, *BeforeAttackRollSta
 	}
 }
 
-func (e *Effect) WithAfterAttackRollState(handler func(*Effect, *AfterAttackRollState)) {
+func (e *Effect) WithAfterAttackRoll(handler func(*Effect, *AfterAttackRollState)) {
 	e.Handlers.get()[AfterAttackRoll] = func(e *Effect, state any) {
 		handler(e, state.(*AfterAttackRollState))
 	}
 }
 
-func (e *Effect) WithAttributeCalculationState(handler func(*Effect, *AttributeCalculationState)) {
+func (e *Effect) WithAttributeCalculation(handler func(*Effect, *AttributeCalculationState)) {
 	e.Handlers.get()[AttributeCalculation] = func(e *Effect, state any) {
 		handler(e, state.(*AttributeCalculationState))
 	}
