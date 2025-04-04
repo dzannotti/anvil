@@ -11,6 +11,7 @@
 - [x] action use is on grid cell (targets listed below)
 - [x] items/weapons
 - [x] weapon attack (unarmed/natural/weapon)
+- [x] chain mail
 - [ ] Fighting style defense
 - [ ] crit
 - [ ] undead fortitude
