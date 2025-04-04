@@ -12,6 +12,7 @@ import (
 	"anvil/internal/grid"
 	"anvil/internal/prettyprint"
 	"anvil/internal/ruleset"
+	"anvil/internal/ruleset/item/weapon"
 	"anvil/internal/ruleset/monster/undead/zombie"
 )
 
@@ -42,7 +43,9 @@ func main() {
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
 	wizard := ruleset.NewPCActor(&hub, world, grid.Position{X: 2, Y: 2}, "Wizard", 8, stats.Attributes{Strength: 10, Dexterity: 15, Constitution: 14, Intelligence: 16, Wisdom: 12, Charisma: 8}, stats.Proficiencies{Bonus: 2})
-	fighter := ruleset.NewPCActor(&hub, world, grid.Position{X: 3, Y: 2}, "Fighter", 12, stats.Attributes{Strength: 16, Dexterity: 9, Constitution: 15, Intelligence: 11, Wisdom: 13, Charisma: 14}, stats.Proficiencies{Bonus: 2})
+	wizard.Equip(weapon.NewDagger())
+	fighter := ruleset.NewPCActor(&hub, world, grid.Position{X: 3, Y: 2}, "Guard", 12, stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10}, stats.Proficiencies{Bonus: 2})
+	fighter.Equip(weapon.NewGreatAxe())
 	mob1 := zombie.New(&hub, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
 	mob2 := zombie.New(&hub, world, grid.Position{X: 7, Y: 6}, "Zombie 2")
 	mob3 := zombie.New(&hub, world, grid.Position{X: 6, Y: 6}, "Zombie 3")

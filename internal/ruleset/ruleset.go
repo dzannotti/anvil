@@ -22,7 +22,6 @@ func newActor(h *eventbus.Hub, w *core.World, t core.TeamID, pos grid.Position, 
 		Proficiencies: p,
 	}
 	w.AddOccupant(pos, a)
-	a.AddAction(base.NewAttackAction(a))
 	a.AddEffect(base.NewDeathEffect(a))
 	a.AddEffect(base.NewAttributeModifierEffect(a))
 	a.AddEffect(base.NewProficiencyModifierEffect(a))

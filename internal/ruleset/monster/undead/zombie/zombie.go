@@ -3,10 +3,19 @@ package zombie
 import (
 	"anvil/internal/core"
 	"anvil/internal/core/stats"
+	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 	"anvil/internal/ruleset"
+	"anvil/internal/ruleset/base"
+	"anvil/internal/tag"
 )
+
+func newSlamAction(owner *core.Actor) core.Action {
+	return base.NewAttackAction(owner, "Slam", []core.DamageSource{
+		{Times: 1, Sides: 6, Source: "Slam", Tags: tag.ContainerFromTags([]tag.Tag{tags.Bludgeoning})},
+	})
+}
 
 func New(hub *eventbus.Hub, world *core.World, pos grid.Position, name string) *core.Actor {
 	attributes := stats.Attributes{
@@ -19,5 +28,6 @@ func New(hub *eventbus.Hub, world *core.World, pos grid.Position, name string) *
 	}
 	proficiencies := stats.Proficiencies{Bonus: 2}
 	npc := ruleset.NewNPCActor(hub, world, pos, name, 22, attributes, proficiencies)
+	npc.AddAction(newSlamAction(npc))
 	return npc
 }

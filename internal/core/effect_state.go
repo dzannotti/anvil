@@ -56,11 +56,10 @@ type BeforeDamageRollState struct {
 }
 
 type AfterDamageRollState struct {
-	Result          *expression.Expression
-	Source          *Actor
-	Critical        *bool
-	Tags            tag.Container
-	EffectiveDamage int
+	Result   *expression.Expression
+	Source   *Actor
+	Critical *bool
+	Tags     tag.Container
 }
 
 type SavingThrowState struct {

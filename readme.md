@@ -9,8 +9,8 @@
 - [x] Armor class Modifier
 - [x] proficiency modifier
 - [x] action use is on grid cell (targets listed below)
-- [ ] items/weapons
-- [ ] weapon attack (unarmed/natural/weapon)
+- [x] items/weapons
+- [x] weapon attack (unarmed/natural/weapon)
 - [ ] Fighting style defense
 - [ ] crit
 - [ ] undead fortitude

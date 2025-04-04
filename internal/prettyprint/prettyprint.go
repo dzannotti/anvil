@@ -21,10 +21,10 @@ func shouldPrintEnd() bool {
 	}
 
 	stoppers := []string{
-		core.ExpressionResultEventType,
-		core.CheckResultEventType,
-		core.AttributeCalculationEventType,
-		core.ConfirmEventType,
+		core.ExpressionResultType,
+		core.CheckResultType,
+		core.AttributeCalculationType,
+		core.ConfirmType,
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
@@ -58,28 +58,30 @@ func Print(out io.Writer, ev eventbus.Message) {
 
 func printMessage(ev eventbus.Message) string {
 	switch ev.Kind {
-	case core.EncounterEventType:
+	case core.EncounterType:
 		return printEncounter(ev.Data.(core.EncounterEvent))
-	case core.RoundEventType:
+	case core.RoundType:
 		return printRound(ev.Data.(core.RoundEvent))
-	case core.TurnEventType:
+	case core.TurnType:
 		return printTurn(ev.Data.(core.TurnEvent))
-	case core.DeathEventType:
+	case core.DeathType:
 		return printDeath(ev.Data.(core.DeathEvent))
-	case core.UseActionEventType:
+	case core.UseActionType:
 		return printUseAction(ev.Data.(core.UseActionEvent))
-	case core.TakeDamageEventType:
+	case core.TakeDamageType:
 		return printTakeDamage(ev.Data.(core.TakeDamageEvent))
-	case core.ExpressionResultEventType:
+	case core.ExpressionResultType:
 		return printExpressionResult(ev.Data.(core.ExpressionResultEvent))
-	case core.CheckResultEventType:
+	case core.CheckResultType:
 		return printCheckResult(ev.Data.(core.CheckResultEvent))
-	case core.AttackRollEventType:
+	case core.AttackRollType:
 		return printAttackRoll(ev.Data.(core.AttackRollEvent))
-	case core.AttributeCalculationEventType:
+	case core.AttributeCalculationType:
 		return printAttributeCalculation(ev.Data.(core.AttributeCalculationEvent))
-	case core.ConfirmEventType:
+	case core.ConfirmType:
 		return printConfirm(ev.Data.(core.ConfirmEvent))
+	case core.DamageRollType:
+		return printDamageRoll(ev.Data.(core.DamageRollEvent))
 	}
 	return "unknown event " + ev.Kind
 }
@@ -213,4 +215,8 @@ func printAttributeCalculation(e core.AttributeCalculationEvent) string {
 	sb.WriteString(" ")
 	sb.WriteString(printExpression(*e.Expression))
 	return sb.String()
+}
+
+func printDamageRoll(e core.DamageRollEvent) string {
+	return fmt.Sprintf("🎲 %s is rolling damage", e.Source.Name)
 }

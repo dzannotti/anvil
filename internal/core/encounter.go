@@ -17,7 +17,7 @@ type Encounter struct {
 type Act = func(active *Actor)
 
 func (e *Encounter) playTurn(act Act) {
-	e.Log.Start(TurnEventType, TurnEvent{Turn: e.Turn, Actor: *e.ActiveActor()})
+	e.Log.Start(TurnType, TurnEvent{Turn: e.Turn, Actor: *e.ActiveActor()})
 	defer e.Log.End()
 	turnWG := sync.WaitGroup{}
 	turnWG.Add(1)
@@ -30,7 +30,7 @@ func (e *Encounter) playTurn(act Act) {
 }
 
 func (e *Encounter) playRound(act Act) {
-	e.Log.Start(RoundEventType, RoundEvent{Round: e.Round, Actors: e.Actors})
+	e.Log.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
 	defer e.Log.End()
 	e.Turn = 0
 	for i := range e.InitiativeOrder {
@@ -49,7 +49,7 @@ func (e *Encounter) Play(act Act) string {
 		a.Encounter = e
 	}
 	e.InitiativeOrder = slices.Clone(e.Actors)
-	e.Log.Start(EncounterEventType, EncounterEvent{Actors: e.Actors, World: *e.World})
+	e.Log.Start(EncounterType, EncounterEvent{Actors: e.Actors, World: *e.World})
 	defer e.Log.End()
 	for !e.IsOver() {
 		e.playRound(act)

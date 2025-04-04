@@ -14,11 +14,11 @@ func NewAttributeModifierEffect(_ *core.Actor) *core.Effect {
 		dex := src.Attribute(tags.Dexterity)
 		strMod := stats.AttributeModifier(str.Value)
 		dexMod := stats.AttributeModifier(dex.Value)
-		if tc.MatchTag(tags.Finesse) {
-			e.AddScalar(dexMod, "Attribute Modifier (Dexterity)", str.Terms...)
+		if tc.MatchTag(tags.Finesse) || tc.MatchTag(tags.Ranged) {
+			e.AddScalar(dexMod, "Attribute Modifier (Dexterity)", dex.Terms...)
 			return
 		}
-		e.AddScalar(strMod, "Attribute Modifier (Strength)", dex.Terms...)
+		e.AddScalar(strMod, "Attribute Modifier (Strength)", str.Terms...)
 	}
 
 	fx := &core.Effect{Name: "AttributeModifier", Priority: core.PriorityBase}
