@@ -10,61 +10,42 @@ import (
 	"anvil/internal/tag"
 )
 
-type ScoringFunc = func(pos grid.Position) float32
-
 type AttackAction struct {
-	Owner        *core.Actor
-	name         string
-	scorer       ScoringFunc
+	BaseAction
+	reach        int
 	DamageSource []core.DamageSource
-	tags         tag.Container
 }
 
-func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, t ...tag.Tag) AttackAction {
+func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, reach int, t ...tag.Tag) AttackAction {
 	a := AttackAction{
-		Owner:        owner,
-		name:         name,
+		BaseAction: BaseAction{
+			owner: owner,
+			name:  name,
+			cost:  map[tag.Tag]int{tags.Action: 1},
+			tags:  tag.ContainerFromTag(t...),
+		},
+		reach:        reach,
 		DamageSource: ds,
-		tags:         tag.ContainerFromTag(t...),
 	}
-	a.tags.Add(tag.ContainerFromTag(tags.Melee, tags.Attack))
-	a.scorer = a.Score
+	a.BaseAction.tags.Add(tag.ContainerFromTag(tags.Melee, tags.Attack))
+	a.WithScorer(a.Score)
 	return a
 }
 
-func (a AttackAction) Tags() tag.Container {
-	return a.tags
-}
-
-func (a *AttackAction) WithScorer(s ScoringFunc) {
-	a.scorer = s
-}
-
-func (a AttackAction) Name() string {
-	return a.name
-}
-
-func (a AttackAction) AIAction(pos grid.Position) *core.AIAction {
-	return &core.AIAction{
-		Action:   a,
-		Position: []grid.Position{pos},
-		Score:    a.scorer(pos),
-	}
-}
-
 func (a AttackAction) Perform(pos []grid.Position) {
-	target, _ := a.Owner.World.ActorAt(pos[0])
-	a.Owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: *a.Owner, Target: *target})
-	defer a.Owner.Log.End()
-	result := a.Owner.AttackRoll(target, tag.Container{})
+	a.Commit()
+	target, _ := a.owner.World.ActorAt(pos[0])
+	a.owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: *a.owner, Target: *target})
+	defer a.owner.Log.End()
+	result := a.owner.AttackRoll(target, tag.Container{})
 	if result.Success {
-		dmg := a.Owner.DamageRoll(a.DamageSource, result.Critical)
+		dmg := a.owner.DamageRoll(a.DamageSource, result.Critical)
 		target.TakeDamage(dmg.Value)
 	}
 }
 
 func (a AttackAction) Score(pos grid.Position) float32 {
-	target, _ := a.Owner.World.ActorAt(pos)
+	target, _ := a.owner.World.ActorAt(pos)
 	if target == nil {
 		return 0
 	}
@@ -72,18 +53,21 @@ func (a AttackAction) Score(pos grid.Position) float32 {
 }
 
 func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {
-	reach := 10
+	if !a.CanAfford() {
+		return []grid.Position{}
+	}
+	reach := a.reach
 	shape := shapes.Sphere(from, reach)
 	valid := make([]grid.Position, 0)
-	enemies := a.Owner.Enemies()
+	enemies := a.owner.Enemies()
 	for _, pos := range shape {
-		if !a.Owner.World.IsValidPosition(pos) {
+		if !a.owner.World.IsValidPosition(pos) {
 			continue
 		}
 		if pos == from {
 			continue
 		}
-		other, ok := a.Owner.World.ActorAt(pos)
+		other, ok := a.owner.World.ActorAt(pos)
 		if !ok {
 			continue
 		}

@@ -23,5 +23,5 @@ func (w Weapon) Tags() tag.Container {
 }
 
 func (w Weapon) OnEquip(a *core.Actor) {
-	a.AddAction(base.NewAttackAction(a, fmt.Sprintf("Attack with %s", w.name), w.damage))
+	a.AddAction(base.NewAttackAction(a, fmt.Sprintf("Attack with %s", w.name), w.damage, 1))
 }
