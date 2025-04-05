@@ -5,6 +5,7 @@ import (
 
 	"anvil/internal/core"
 	"anvil/internal/core/shapes"
+	"anvil/internal/core/tags"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
 )
@@ -16,16 +17,23 @@ type AttackAction struct {
 	name         string
 	scorer       ScoringFunc
 	DamageSource []core.DamageSource
+	tags         tag.Container
 }
 
-func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource) AttackAction {
+func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, t ...tag.Tag) AttackAction {
 	a := AttackAction{
 		Owner:        owner,
 		name:         name,
 		DamageSource: ds,
+		tags:         tag.ContainerFromTag(t...),
 	}
+	a.tags.Add(tag.ContainerFromTag(tags.Melee, tags.Attack))
 	a.scorer = a.Score
 	return a
+}
+
+func (a AttackAction) Tags() tag.Container {
+	return a.tags
 }
 
 func (a *AttackAction) WithScorer(s ScoringFunc) {

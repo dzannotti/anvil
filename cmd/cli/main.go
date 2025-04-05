@@ -8,6 +8,7 @@ import (
 	"anvil/internal/ai"
 	"anvil/internal/core"
 	"anvil/internal/core/stats"
+	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 	"anvil/internal/prettyprint"
@@ -16,6 +17,7 @@ import (
 	"anvil/internal/ruleset/item/armor"
 	"anvil/internal/ruleset/item/weapon"
 	"anvil/internal/ruleset/monster/undead/zombie"
+	"anvil/internal/tag"
 )
 
 func setupWorld(world *core.World) {
@@ -44,9 +46,18 @@ func main() {
 	})
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
-	wizard := ruleset.NewPCActor(&hub, world, grid.Position{X: 2, Y: 2}, "Wizard", 8, stats.Attributes{Strength: 10, Dexterity: 15, Constitution: 14, Intelligence: 16, Wisdom: 12, Charisma: 8}, stats.Proficiencies{Bonus: 2})
+	wres := core.Resources{Max: map[tag.Tag]int{
+		tags.WalkSpeed:  5,
+		tags.SpellSlot1: 1,
+	}}
+
+	wizard := ruleset.NewPCActor(&hub, world, grid.Position{X: 2, Y: 2}, "Wizard", 8, stats.Attributes{Strength: 10, Dexterity: 15, Constitution: 14, Intelligence: 16, Wisdom: 12, Charisma: 8}, stats.Proficiencies{Bonus: 2}, wres)
 	wizard.Equip(weapon.NewDagger())
-	cedric := ruleset.NewPCActor(&hub, world, grid.Position{X: 3, Y: 2}, "Cedric", 12, stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10}, stats.Proficiencies{Bonus: 2})
+
+	cres := core.Resources{Max: map[tag.Tag]int{
+		tags.WalkSpeed: 5,
+	}}
+	cedric := ruleset.NewPCActor(&hub, world, grid.Position{X: 3, Y: 2}, "Cedric", 12, stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10}, stats.Proficiencies{Bonus: 2}, cres)
 	cedric.Equip(weapon.NewGreatAxe())
 	cedric.Equip(armor.NewChainMail())
 	cedric.AddEffect(fighter.NewFightingStyleDefense())
