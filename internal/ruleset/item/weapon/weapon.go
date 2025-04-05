@@ -12,6 +12,7 @@ type Weapon struct {
 	name   string
 	damage []core.DamageSource
 	tags   tag.Container
+	reach  int
 }
 
 func (w Weapon) Name() string {
@@ -23,5 +24,5 @@ func (w Weapon) Tags() tag.Container {
 }
 
 func (w Weapon) OnEquip(a *core.Actor) {
-	a.AddAction(base.NewAttackAction(a, fmt.Sprintf("Attack with %s", w.name), w.damage, 1))
+	a.AddAction(base.NewAttackAction(a, fmt.Sprintf("Attack with %s", w.name), w.damage, w.reach))
 }
