@@ -17,7 +17,7 @@
 - [x] undead fortitude
 - [x] saving throws implementation
 - [x] resources
-- [ ] existing attacks using resources
+- [x] existing attacks using resources
 - [ ] move based on resources
 - [ ] revise AI to do something 'till it can do no more
 - [ ] conditions
