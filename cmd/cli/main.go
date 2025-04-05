@@ -12,6 +12,7 @@ import (
 	"anvil/internal/grid"
 	"anvil/internal/prettyprint"
 	"anvil/internal/ruleset"
+	"anvil/internal/ruleset/fighter"
 	"anvil/internal/ruleset/item/armor"
 	"anvil/internal/ruleset/item/weapon"
 	"anvil/internal/ruleset/monster/undead/zombie"
@@ -45,23 +46,24 @@ func main() {
 	setupWorld(world)
 	wizard := ruleset.NewPCActor(&hub, world, grid.Position{X: 2, Y: 2}, "Wizard", 8, stats.Attributes{Strength: 10, Dexterity: 15, Constitution: 14, Intelligence: 16, Wisdom: 12, Charisma: 8}, stats.Proficiencies{Bonus: 2})
 	wizard.Equip(weapon.NewDagger())
-	fighter := ruleset.NewPCActor(&hub, world, grid.Position{X: 3, Y: 2}, "Guard", 12, stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10}, stats.Proficiencies{Bonus: 2})
-	fighter.Equip(weapon.NewGreatAxe())
-	fighter.Equip(armor.NewChainMail())
+	cedric := ruleset.NewPCActor(&hub, world, grid.Position{X: 3, Y: 2}, "Cedric", 12, stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10}, stats.Proficiencies{Bonus: 2})
+	cedric.Equip(weapon.NewGreatAxe())
+	cedric.Equip(armor.NewChainMail())
+	cedric.AddEffect(fighter.NewFightingStyleDefense())
 	mob1 := zombie.New(&hub, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
-	mob2 := zombie.New(&hub, world, grid.Position{X: 7, Y: 6}, "Zombie 2")
+	mob2 := zombie.New(&hub, world, grid.Position{X: 7, Y: 7}, "Zombie 2")
 	mob3 := zombie.New(&hub, world, grid.Position{X: 6, Y: 6}, "Zombie 3")
 	encounter := &core.Encounter{
 		Log:    &hub,
 		World:  world,
-		Actors: []*core.Actor{wizard, fighter, mob1, mob2, mob3},
+		Actors: []*core.Actor{wizard, cedric, mob1, mob2, mob3},
 	}
 	gameAI := map[*core.Actor]ai.AI{
-		wizard:  &ai.Simple{Encounter: encounter, Owner: wizard},
-		fighter: &ai.Simple{Encounter: encounter, Owner: fighter},
-		mob1:    &ai.Simple{Encounter: encounter, Owner: mob1},
-		mob2:    &ai.Simple{Encounter: encounter, Owner: mob2},
-		mob3:    &ai.Simple{Encounter: encounter, Owner: mob3},
+		wizard: &ai.Simple{Encounter: encounter, Owner: wizard},
+		cedric: &ai.Simple{Encounter: encounter, Owner: cedric},
+		mob1:   &ai.Simple{Encounter: encounter, Owner: mob1},
+		mob2:   &ai.Simple{Encounter: encounter, Owner: mob2},
+		mob3:   &ai.Simple{Encounter: encounter, Owner: mob3},
 	}
 	start := time.Now()
 	winner := encounter.Play(func(active *core.Actor) {

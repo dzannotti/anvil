@@ -5,15 +5,21 @@ import (
 
 	"anvil/internal/core"
 	"anvil/internal/ruleset/base"
+	"anvil/internal/tag"
 )
 
 type Weapon struct {
 	name   string
 	damage []core.DamageSource
+	tags   tag.Container
 }
 
 func (w Weapon) Name() string {
 	return w.name
+}
+
+func (w Weapon) Tags() tag.Container {
+	return w.tags
 }
 
 func (w Weapon) OnEquip(a *core.Actor) {

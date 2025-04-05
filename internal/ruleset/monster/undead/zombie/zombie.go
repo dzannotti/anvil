@@ -13,7 +13,7 @@ import (
 
 func newSlamAction(owner *core.Actor) core.Action {
 	return base.NewAttackAction(owner, "Slam", []core.DamageSource{
-		{Times: 1, Sides: 6, Source: "Slam", Tags: tag.ContainerFromTags([]tag.Tag{tags.Bludgeoning})},
+		{Times: 1, Sides: 6, Source: "Slam", Tags: tag.ContainerFromTag(tags.Bludgeoning)},
 	})
 }
 

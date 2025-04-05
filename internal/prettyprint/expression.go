@@ -1,13 +1,14 @@
 package prettyprint
 
 import (
-	"anvil/internal/core/tags"
-	"anvil/internal/expression"
-	"anvil/internal/tag"
 	"fmt"
 	"strings"
 
 	"github.com/adam-lavrik/go-imath/ix"
+
+	"anvil/internal/core/tags"
+	"anvil/internal/expression"
+	"anvil/internal/tag"
 )
 
 func printValue(value int, first bool) string {
@@ -131,7 +132,7 @@ func printTerm(term expression.Term, indent string, last, first bool) []string {
 		if last {
 			newIndent += "    "
 		} else {
-			newIndent += "│   "
+			newIndent += " │   "
 		}
 		result = append(result, printTerms(term.Terms, newIndent)...)
 	}

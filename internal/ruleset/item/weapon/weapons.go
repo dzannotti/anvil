@@ -9,13 +9,13 @@ import (
 func NewDagger() Weapon {
 	return Weapon{
 		name:   "Dagger",
-		damage: []core.DamageSource{{Times: 1, Sides: 4, Source: "Dagger", Tags: tag.ContainerFromTags([]tag.Tag{tags.Piercing})}},
+		damage: []core.DamageSource{{Times: 1, Sides: 4, Source: "Dagger", Tags: tag.ContainerFromTag(tags.Piercing)}},
 	}
 }
 
 func NewGreatAxe() Weapon {
 	return Weapon{
 		name:   "Great Axe",
-		damage: []core.DamageSource{{Times: 2, Sides: 6, Source: "Great Axe", Tags: tag.ContainerFromTags([]tag.Tag{tags.Slashing})}},
+		damage: []core.DamageSource{{Times: 2, Sides: 6, Source: "Great Axe", Tags: tag.ContainerFromTag(tags.Slashing)}},
 	}
 }

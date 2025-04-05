@@ -50,10 +50,10 @@ func TestContainer_From(t *testing.T) {
 		{
 			name: "creates valid container from slice of tag",
 			setup: func() tag.Container {
-				return tag.ContainerFromTags([]tag.Tag{
+				return tag.ContainerFromTag(
 					tag.FromString("ability.damage.fire"),
 					tag.FromString("ability.damage.ice"),
-				})
+				)
 			},
 			expected: []tag.Tag{
 				tag.FromString("ability.damage.fire"),

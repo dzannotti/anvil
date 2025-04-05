@@ -3,9 +3,10 @@ package armor
 import (
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
+	"anvil/internal/tag"
 )
 
-type ChainMail struct{}
+type ChainMail struct{ tags tag.Container }
 
 func newChainMailEffect() *core.Effect {
 	fx := &core.Effect{Name: "ChainMail", Priority: core.PriorityBaseOverride}
@@ -21,11 +22,15 @@ func newChainMailEffect() *core.Effect {
 }
 
 func NewChainMail() *ChainMail {
-	return &ChainMail{}
+	return &ChainMail{tags: tag.ContainerFromTag(tags.MediumArmor)}
 }
 
-func (c *ChainMail) Name() string {
+func (c ChainMail) Name() string {
 	return "Chain Mail"
+}
+
+func (c ChainMail) Tags() tag.Container {
+	return c.tags
 }
 
 func (c *ChainMail) OnEquip(a *core.Actor) {
