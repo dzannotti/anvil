@@ -20,10 +20,11 @@ type Actor struct {
 	Team          TeamID
 	Effects       EffectContainer
 	Equipped      []Item
+	Resources     Resources
 }
 
 func (a *Actor) StartTurn() {
-
+	a.Resources.Reset()
 }
 
 func (a *Actor) Evaluate(event string, state any) {

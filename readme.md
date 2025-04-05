@@ -16,9 +16,9 @@
 - [x] crit
 - [x] undead fortitude
 - [x] saving throws implementation
-- [ ] resources
+- [x] resources
+- [x] existing attacks using resources
 - [ ] move based on resources
-- [ ] existing attacks using resources
 - [ ] revise AI to do something 'till it can do no more
 - [ ] conditions
 - [ ] death saving throws for PC

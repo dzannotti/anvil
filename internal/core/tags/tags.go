@@ -85,10 +85,15 @@ var (
 	Melee  = tag.FromString("Melee")
 	Ranged = tag.FromString("Ranged")
 
-	Finesse = tag.FromString("Item.Weapon.Finesse")
+	// Action
+	Attack = tag.FromString("Attack")
+	Move   = tag.FromString("Move")
+	Dodge  = tag.FromString("Dodge")
+	Help   = tag.FromString("Help")
 
 	// Item
 	Weapon        = tag.FromString("Item.Weapon")
+	Finesse       = tag.FromString("Item.Weapon.Finesse")
 	NaturalWeapon = tag.FromString("Item.Weapon.Natural")
 	MartialWeapon = tag.FromString("Item.Weapon.Martial")
 	MartialAxe    = tag.FromString("Item.Weapon.Martial.Axe")

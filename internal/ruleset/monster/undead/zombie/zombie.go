@@ -15,7 +15,7 @@ import (
 func newSlamAction(owner *core.Actor) core.Action {
 	return base.NewAttackAction(owner, "Slam", []core.DamageSource{
 		{Times: 1, Sides: 6, Source: "Slam", Tags: tag.ContainerFromTag(tags.Bludgeoning)},
-	})
+	}, 10)
 }
 
 func New(hub *eventbus.Hub, world *core.World, pos grid.Position, name string) *core.Actor {
@@ -28,7 +28,10 @@ func New(hub *eventbus.Hub, world *core.World, pos grid.Position, name string) *
 		Charisma:     5,
 	}
 	proficiencies := stats.Proficiencies{Bonus: 2}
-	npc := ruleset.NewNPCActor(hub, world, pos, name, 22, attributes, proficiencies)
+	resources := core.Resources{Max: map[tag.Tag]int{
+		tags.WalkSpeed: 4,
+	}}
+	npc := ruleset.NewNPCActor(hub, world, pos, name, 22, attributes, proficiencies, resources)
 	npc.AddAction(newSlamAction(npc))
 	npc.AddEffect(shared.NewUndeadFortitudeEffect())
 	return npc
