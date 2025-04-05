@@ -21,7 +21,7 @@ func (tc Container) ID() string {
 }
 
 func (tc Container) Clone() Container {
-	return ContainerFromTags(tc.tags)
+	return ContainerFromTag(tc.tags...)
 }
 
 func (tc Container) IsEmpty() bool {

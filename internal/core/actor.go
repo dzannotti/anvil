@@ -19,7 +19,7 @@ type Actor struct {
 	Actions       []Action
 	Team          TeamID
 	Effects       EffectContainer
-	Items         []Item
+	Equipped      []Item
 }
 
 func (a *Actor) StartTurn() {
@@ -55,6 +55,6 @@ func (a Actor) CanAct() bool {
 }
 
 func (a *Actor) Equip(item Item) {
-	a.Items = append(a.Items, item)
+	a.Equipped = append(a.Equipped, item)
 	item.OnEquip(a)
 }

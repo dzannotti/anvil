@@ -12,6 +12,7 @@ func (a *Actor) ArmorClass() *expression.Expression {
 	dex := a.Attribute(tags.Dexterity)
 	expr.AddScalar(stats.AttributeModifier(dex.Value), "Attribute Modifier", dex.Terms...)
 	s := AttributeCalculationState{
+		Source:     a,
 		Expression: &expr,
 		Attribute:  tags.ArmorClass,
 	}

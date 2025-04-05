@@ -31,6 +31,7 @@ type AfterAttackRollState struct {
 }
 
 type AttributeCalculationState struct {
+	Source     *Actor
 	Expression *expression.Expression
 	Attribute  tag.Tag
 }

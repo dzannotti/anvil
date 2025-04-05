@@ -8,7 +8,7 @@ import (
 	"anvil/internal/tag"
 )
 
-func NewAttributeModifierEffect(_ *core.Actor) *core.Effect {
+func NewAttributeModifierEffect() *core.Effect {
 	applyModifier := func(src *core.Actor, e *expression.Expression, tc tag.Container) {
 		str := src.Attribute(tags.Strength)
 		dex := src.Attribute(tags.Dexterity)

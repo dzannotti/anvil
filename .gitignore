@@ -8,8 +8,8 @@ tmp/
 *.coverprofile
 *.test
 *.prof
-.vscode/
 *.swp
 *.swo
+.vscode
 .DS_Store
 .Thumbs.db

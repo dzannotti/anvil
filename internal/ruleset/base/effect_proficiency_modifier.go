@@ -15,7 +15,7 @@ var saveMap = map[tag.Tag]tag.Tag{
 	tags.Charisma:     tags.ProficiencySaveCharisma,
 }
 
-func NewProficiencyModifierEffect(_ *core.Actor) *core.Effect {
+func NewProficiencyModifierEffect() *core.Effect {
 	fx := &core.Effect{Name: "Proficiency Modifier", Priority: core.PriorityBase}
 
 	fx.WithBeforeAttackRoll(func(_ *core.Effect, s *core.BeforeAttackRollState) {

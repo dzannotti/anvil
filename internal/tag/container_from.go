@@ -17,13 +17,7 @@ func ContainerFromStrings(values []string) Container {
 	return Container{tags: tags}
 }
 
-func ContainerFromTag(value Tag) Container {
-	return Container{
-		tags: []Tag{value},
-	}
-}
-
-func ContainerFromTags(values []Tag) Container {
+func ContainerFromTag(values ...Tag) Container {
 	tc := Container{}
 	for _, value := range values {
 		tc.AddTag(value)

@@ -12,7 +12,7 @@
 - [x] items/weapons
 - [x] weapon attack (unarmed/natural/weapon)
 - [x] chain mail
-- [ ] Fighting style defense
+- [x] Fighting style defense
 - [ ] crit
 - [ ] undead fortitude
 - [ ] saving throws implementation
