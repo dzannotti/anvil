@@ -20,6 +20,7 @@ func newActor(h *eventbus.Hub, w *core.World, t core.TeamID, pos grid.Position, 
 		MaxHitPoints:  hitPoints,
 		Attributes:    at,
 		Proficiencies: p,
+		Resources:     r,
 	}
 	w.AddOccupant(pos, a)
 	a.AddEffect(base.NewDeathEffect())

@@ -54,9 +54,9 @@ func (r Resources) Remaining(t tag.Tag) int {
 }
 
 func (r Resources) remainingSpeed(t tag.Tag) int {
-	max := r.Max[t]
+	m := r.Max[t]
 	total := r.maxSpeed() - r.Current[tags.UsedSpeed]
-	remaining := ix.Min(max-r.Current[tags.UsedSpeed], total)
+	remaining := ix.Min(m-r.Current[tags.UsedSpeed], total)
 	if remaining <= 0 {
 		return 0
 	}
@@ -64,14 +64,14 @@ func (r Resources) remainingSpeed(t tag.Tag) int {
 }
 
 func (r Resources) maxSpeed() int {
-	max := 0
+	m := 0
 	for k, v := range r.Max {
 		if !k.Match(tags.Speed) {
 			continue
 		}
-		if v > max {
-			max = v
+		if v > m {
+			m = v
 		}
 	}
-	return max
+	return m
 }

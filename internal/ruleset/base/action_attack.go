@@ -11,14 +11,14 @@ import (
 )
 
 type AttackAction struct {
-	BaseAction
+	Action
 	reach        int
 	DamageSource []core.DamageSource
 }
 
 func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, reach int, t ...tag.Tag) AttackAction {
 	a := AttackAction{
-		BaseAction: BaseAction{
+		Action: Action{
 			owner: owner,
 			name:  name,
 			cost:  map[tag.Tag]int{tags.Action: 1},
@@ -27,7 +27,7 @@ func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, rea
 		reach:        reach,
 		DamageSource: ds,
 	}
-	a.BaseAction.tags.Add(tag.ContainerFromTag(tags.Melee, tags.Attack))
+	a.tags.Add(tag.ContainerFromTag(tags.Melee, tags.Attack))
 	a.WithScorer(a.Score)
 	return a
 }

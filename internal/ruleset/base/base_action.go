@@ -8,7 +8,7 @@ import (
 
 type ScoringFunc = func(pos grid.Position) float32
 
-type BaseAction struct {
+type Action struct {
 	owner  *core.Actor
 	name   string
 	tags   tag.Container
@@ -16,23 +16,23 @@ type BaseAction struct {
 	scorer ScoringFunc
 }
 
-func (a BaseAction) Name() string {
+func (a Action) Name() string {
 	return a.name
 }
 
-func (a BaseAction) Tags() tag.Container {
+func (a Action) Tags() tag.Container {
 	return a.tags
 }
 
-func (a BaseAction) Cost() map[tag.Tag]int {
+func (a Action) Cost() map[tag.Tag]int {
 	return a.cost
 }
 
-func (a BaseAction) CanAfford() bool {
+func (a Action) CanAfford() bool {
 	return a.owner.Resources.CanAfford(a.cost)
 }
 
-func (a BaseAction) Commit() {
+func (a Action) Commit() {
 	if !a.CanAfford() {
 		panic("Attempt to commit action without affording cost")
 	}
