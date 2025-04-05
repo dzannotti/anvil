@@ -107,7 +107,7 @@ var (
 	Unconscious = tag.FromString("Condition.Unconscious")
 )
 
-func ToReadableTag(tag tag.Tag) string {
+func ToReadable(tag tag.Tag) string {
 	ignore := []string{
 		"actor",
 		"proficiency",

@@ -22,7 +22,7 @@ func (a *Actor) ArmorClass() *expression.Expression {
 }
 
 func (a *Actor) Attribute(t tag.Tag) *expression.Expression {
-	expr := expression.FromScalar(a.Attributes.Value(t), tags.ToReadableTag(t))
+	expr := expression.FromScalar(a.Attributes.Value(t), tags.ToReadable(t))
 	s := AttributeCalculationState{
 		Expression: &expr,
 		Attribute:  t,

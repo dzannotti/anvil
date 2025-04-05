@@ -23,7 +23,7 @@ func (a *Actor) TakeDamage(damage int) {
 	effective := a.HitPoints - ix.Max(a.HitPoints-res.Value, 0)
 	a.HitPoints = ix.Max(a.HitPoints-effective, 0)
 	a.Log.Start(TakeDamageType, TakeDamageEvent{Target: *a, Damage: damage})
-	after := AfterTakeDamageState{Result: res, Source: a, Critical: &crit}
+	after := AfterTakeDamageState{Result: res, Source: a, EffectiveDamage: effective, Critical: &crit}
 	a.Effects.Evaluate(AfterTakeDamage, &after)
 	a.Log.End()
 }

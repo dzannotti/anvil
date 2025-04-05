@@ -25,7 +25,7 @@ func shouldPrintEnd() bool {
 		core.CheckResultType,
 		core.AttributeCalculationType,
 		core.ConfirmType,
-		core.AttributeChangedType
+		core.AttributeChangedType,
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
@@ -233,9 +233,9 @@ func printEffect(e core.EffectEvent) string {
 }
 
 func printAttributeChange(e core.AttributeChangeEvent) string {
-	return fmt.Sprintf("🔀 %s %s changed from %d %d", e.Source.Name, tags.ToReadableTag(e.Attribute), e.OldValue, e.Value)
+	return fmt.Sprintf("🔀 %s %s changed from %d to %d", e.Source.Name, tags.ToReadable(e.Attribute), e.OldValue, e.Value)
 }
 
 func printSavingThrow(e core.SavingThrowEvent) string {
-	return fmt.Sprintf("🍥 %s rolls a %s saving throw against DC %d", e.Source.Name, tags.ToReadableTag(e.Attribute), e.DifficultyClass)
+	return fmt.Sprintf("🍥 %s rolls a %s saving throw against DC %d", e.Source.Name, tags.ToReadable(e.Attribute), e.DifficultyClass)
 }
