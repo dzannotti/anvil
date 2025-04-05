@@ -13,7 +13,9 @@ const (
 	AfterTakeDamage      = "AfterTakeDamage"
 	BeforeDamageRoll     = "BeforeDamageRoll"
 	AfterDamageRoll      = "AfterDamageRoll"
-	SavingThrow          = "SavingThrow"
+	BeforeSavingThrow    = "BeforeSavingThrow"
+	AfterSavingThrow     = "AfterSavingThrow"
+	AttributeChanged     = "AttributeChanged"
 )
 
 type BeforeAttackRollState struct {
@@ -63,9 +65,24 @@ type AfterDamageRollState struct {
 	Tags     tag.Container
 }
 
-type SavingThrowState struct {
+type BeforeSavingThrowState struct {
 	Expression      *expression.Expression
 	Source          *Actor
 	Attribute       tag.Tag
 	DifficultyClass int
+}
+
+type AfterSavingThrowState struct {
+	Result          *expression.Expression
+	Source          *Actor
+	Attribute       tag.Tag
+	Critical        *bool
+	DifficultyClass int
+}
+
+type AttributeChangedState struct {
+	Source    *Actor
+	Attribute tag.Tag
+	OldValue  int
+	Value     int
 }

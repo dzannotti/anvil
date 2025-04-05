@@ -14,8 +14,8 @@
 - [x] chain mail
 - [x] Fighting style defense
 - [x] crit
-- [ ] undead fortitude
-- [ ] saving throws implementation
+- [x] undead fortitude
+- [x] saving throws implementation
 - [ ] resources
 - [ ] move based on resources
 - [ ] existing attacks using resources

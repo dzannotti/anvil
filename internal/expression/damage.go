@@ -1,11 +1,12 @@
 package expression
 
 import (
-	"anvil/internal/tag"
 	"math"
 	"strings"
 
 	"github.com/adam-lavrik/go-imath/ix"
+
+	"anvil/internal/tag"
 )
 
 func (e *Expression) HalveDamage(tag tag.Tag, source string) {
@@ -56,4 +57,13 @@ func (e *Expression) MaxDice(source string) {
 		terms = append(terms, newTerm)
 	}
 	e.Terms = terms
+}
+
+func (e Expression) IsDamageType(t tag.Tag) bool {
+	for _, term := range e.Terms {
+		if term.Tags.MatchTag(t) {
+			return true
+		}
+	}
+	return false
 }

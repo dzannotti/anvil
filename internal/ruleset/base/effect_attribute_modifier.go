@@ -31,7 +31,7 @@ func NewAttributeModifierEffect() *core.Effect {
 		applyModifier(s.Source, s.Expression, s.Tags)
 	})
 
-	fx.WithSavingThrow(func(_ *core.Effect, s *core.SavingThrowState) {
+	fx.WithBeforeSavingThrow(func(_ *core.Effect, s *core.BeforeSavingThrowState) {
 		applyModifier(s.Source, s.Expression, tag.ContainerFromTag(s.Attribute))
 	})
 
