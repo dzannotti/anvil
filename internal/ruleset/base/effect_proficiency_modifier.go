@@ -25,7 +25,7 @@ func NewProficiencyModifierEffect() *core.Effect {
 		}
 	})
 
-	fx.WithSavingThrow(func(_ *core.Effect, s *core.SavingThrowState) {
+	fx.WithBeforeSavingThrow(func(_ *core.Effect, s *core.BeforeSavingThrowState) {
 		t, ok := saveMap[s.Attribute]
 		if !ok {
 			return

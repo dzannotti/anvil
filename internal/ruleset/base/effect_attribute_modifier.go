@@ -31,8 +31,13 @@ func NewAttributeModifierEffect() *core.Effect {
 		applyModifier(s.Source, s.Expression, s.Tags)
 	})
 
-	fx.WithSavingThrow(func(_ *core.Effect, s *core.SavingThrowState) {
-		applyModifier(s.Source, s.Expression, tag.ContainerFromTag(s.Attribute))
+	fx.WithBeforeSavingThrow(func(_ *core.Effect, s *core.BeforeSavingThrowState) {
+		if s.Attribute.MatchExact(tags.HitPoints) {
+			return
+		}
+		attr := s.Source.Attribute(s.Attribute)
+		mod := stats.AttributeModifier(attr.Value)
+		s.Expression.AddScalar(mod, "Attribute Modifier ("+tags.ToReadable(s.Attribute)+")", attr.Terms...)
 	})
 
 	return fx

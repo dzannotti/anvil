@@ -8,6 +8,7 @@ import (
 	"anvil/internal/grid"
 	"anvil/internal/ruleset"
 	"anvil/internal/ruleset/base"
+	"anvil/internal/ruleset/shared"
 	"anvil/internal/tag"
 )
 
@@ -29,5 +30,6 @@ func New(hub *eventbus.Hub, world *core.World, pos grid.Position, name string) *
 	proficiencies := stats.Proficiencies{Bonus: 2}
 	npc := ruleset.NewNPCActor(hub, world, pos, name, 22, attributes, proficiencies)
 	npc.AddAction(newSlamAction(npc))
+	npc.AddEffect(shared.NewUndeadFortitudeEffect())
 	return npc
 }

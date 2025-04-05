@@ -25,6 +25,7 @@ func shouldPrintEnd() bool {
 		core.CheckResultType,
 		core.AttributeCalculationType,
 		core.ConfirmType,
+		core.AttributeChangedType,
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
@@ -82,6 +83,12 @@ func printMessage(ev eventbus.Message) string {
 		return printConfirm(ev.Data.(core.ConfirmEvent))
 	case core.DamageRollType:
 		return printDamageRoll(ev.Data.(core.DamageRollEvent))
+	case core.EffectType:
+		return printEffect(ev.Data.(core.EffectEvent))
+	case core.AttributeChangedType:
+		return printAttributeChange(ev.Data.(core.AttributeChangeEvent))
+	case core.SavingThrowType:
+		return printSavingThrow(ev.Data.(core.SavingThrowEvent))
 	}
 	return "unknown event " + ev.Kind
 }
@@ -219,4 +226,16 @@ func printAttributeCalculation(e core.AttributeCalculationEvent) string {
 
 func printDamageRoll(e core.DamageRollEvent) string {
 	return fmt.Sprintf("🎲 %s is rolling damage", e.Source.Name)
+}
+
+func printEffect(e core.EffectEvent) string {
+	return fmt.Sprintf("⚡ %s triggered", e.Effect.Name)
+}
+
+func printAttributeChange(e core.AttributeChangeEvent) string {
+	return fmt.Sprintf("🔀 %s %s changed from %d to %d", e.Source.Name, tags.ToReadable(e.Attribute), e.OldValue, e.Value)
+}
+
+func printSavingThrow(e core.SavingThrowEvent) string {
+	return fmt.Sprintf("🍥 %s rolls a %s saving throw against DC %d", e.Source.Name, tags.ToReadable(e.Attribute), e.DifficultyClass)
 }

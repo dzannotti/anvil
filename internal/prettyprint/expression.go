@@ -94,7 +94,7 @@ func formatTags(term expression.Term) string {
 	}
 	termTags := strings.Builder{}
 	for _, t := range term.Tags.Strings() {
-		termTags.WriteString(tags.ToReadableTag(tag.FromString(t)))
+		termTags.WriteString(tags.ToReadable(tag.FromString(t)))
 	}
 	return fmt.Sprintf(" (%s)", termTags.String())
 }

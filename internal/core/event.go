@@ -18,6 +18,9 @@ const (
 	TakeDamageType           = "takeDamage"
 	UseActionType            = "useAction"
 	DamageRollType           = "damageRoll"
+	EffectType               = "effect"
+	AttributeChangedType     = "attributeChanged"
+	SavingThrowType          = "SavingThrow"
 )
 
 type EncounterEvent struct {
@@ -80,4 +83,24 @@ type DamageRollEvent struct {
 	Source       Actor
 	Target       Actor
 	DamageSource []DamageSource
+}
+
+type EffectEvent struct {
+	Source *Actor
+	Effect *Effect
+}
+
+type AttributeChangeEvent struct {
+	Source    *Actor
+	Attribute tag.Tag
+	Reason    string
+	OldValue  int
+	Value     int
+}
+
+type SavingThrowEvent struct {
+	Expression      *expression.Expression
+	Source          *Actor
+	Attribute       tag.Tag
+	DifficultyClass int
 }
