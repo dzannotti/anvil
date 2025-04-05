@@ -62,5 +62,5 @@ func (e Expression) IsCritical() bool {
 	if e.Terms[0].IsCritical != 0 {
 		return e.Terms[0].IsCritical == 1
 	}
-	return e.Terms[0].Values[0] == e.Terms[0].Sides
+	return e.Terms[0].Value == e.Terms[0].Sides
 }
