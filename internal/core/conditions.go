@@ -36,7 +36,7 @@ func (c *Conditions) Match(t tag.Tag) bool {
 func (c *Conditions) Add(t tag.Tag, src *Effect) {
 	c.init()
 	if src == nil {
-		panic("Attempted to add a condition with no source")
+		panic("attempted to add a condition with no source")
 	}
 	c.Sources[t] = append(c.Sources[t], src)
 }
