@@ -27,8 +27,7 @@ func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, rea
 		reach:  reach,
 		damage: ds,
 	}
-	a.tags.Add(tag.ContainerFromTag(tags.Melee, tags.Attack))
-	a.WithScorer(a.Score)
+	a.tags.Add(tag.ContainerFromTag(tags.Attack))
 	return a
 }
 
@@ -44,10 +43,10 @@ func (a AttackAction) Perform(pos []grid.Position) {
 	}
 }
 
-func (a AttackAction) Score(pos grid.Position) float32 {
+func (a AttackAction) ScoreAt(pos grid.Position) *core.ScoredAction {
 	target, _ := a.owner.World.ActorAt(pos)
 	if target == nil {
-		return 0
+		return nil
 	}
 	avgDmg := a.AverageDamage(a.damage)
 	damageRatio := float32(avgDmg) / float32(target.HitPoints)
@@ -55,14 +54,11 @@ func (a AttackAction) Score(pos grid.Position) float32 {
 		damageRatio = 1.0
 	}
 	lowHPPriority := (1 - target.HitPointsNormalized()) * 0.5
-	return damageRatio + lowHPPriority
-}
-
-func (a AttackAction) AIAction(pos grid.Position) *core.AIAction {
-	return &core.AIAction{
-		Action:   a,
+	score := damageRatio + lowHPPriority
+	return &core.ScoredAction{
+		Action:   &a,
 		Position: []grid.Position{pos},
-		Score:    a.scorer(pos),
+		Score:    score,
 	}
 }
 

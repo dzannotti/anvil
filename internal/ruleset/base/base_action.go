@@ -7,14 +7,11 @@ import (
 	"math"
 )
 
-type ScoringFunc = func(pos grid.Position) float32
-
 type Action struct {
-	owner  *core.Actor
-	name   string
-	tags   tag.Container
-	cost   map[tag.Tag]int
-	scorer ScoringFunc
+	owner *core.Actor
+	name  string
+	tags  tag.Container
+	cost  map[tag.Tag]int
 }
 
 func (a Action) Name() string {
@@ -47,12 +44,8 @@ func (a Action) Commit() {
 	}
 }
 
-func (a *Action) WithScorer(s ScoringFunc) {
-	a.scorer = s
-}
-
-func (a Action) AIAction(_ grid.Position) *core.AIAction {
-	panic("should not call base AIAction as action returned will be base")
+func (a Action) ScoreAt(_ grid.Position) *core.ScoredAction {
+	panic("you shouldn't call base ScoreAt - we cannot score here")
 }
 
 func (a Action) AverageDamage(ds []core.DamageSource) int {
