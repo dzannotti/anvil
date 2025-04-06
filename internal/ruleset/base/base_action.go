@@ -33,8 +33,8 @@ func (a Action) CanAfford() bool {
 	return a.owner.Resources.CanAfford(a.cost)
 }
 
-func (a Action) Perform(p []grid.Position) {}
-func (a Action) ValidPositions(from grid.Position) []grid.Position {
+func (a Action) Perform(_ []grid.Position) {}
+func (a Action) ValidPositions(_ grid.Position) []grid.Position {
 	return []grid.Position{}
 }
 
@@ -51,7 +51,7 @@ func (a *Action) WithScorer(s ScoringFunc) {
 	a.scorer = s
 }
 
-func (a Action) AIAction(pos grid.Position) *core.AIAction {
+func (a Action) AIAction(_ grid.Position) *core.AIAction {
 	panic("should not call base AIAction as action returned will be base")
 }
 
