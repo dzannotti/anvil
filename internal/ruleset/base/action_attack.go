@@ -39,7 +39,7 @@ func (a AttackAction) Perform(pos []grid.Position) {
 	result := a.owner.AttackRoll(target, tag.Container{})
 	if result.Success {
 		dmg := a.owner.DamageRoll(a.damage, result.Critical)
-		target.TakeDamage(dmg.Value)
+		target.TakeDamage(*dmg)
 	}
 }
 

@@ -197,7 +197,11 @@ func printUseAction(u core.UseActionEvent) string {
 }
 
 func printTakeDamage(d core.TakeDamageEvent) string {
-	return fmt.Sprintf("🩸 %s takes %d damage (%d HP left)", d.Target.Name, d.Damage, d.Target.HitPoints)
+	sb := strings.Builder{}
+	sb.WriteString(fmt.Sprintf("🩸 %s takes %d damage (%d HP left)", d.Target.Name, d.Damage.Value, d.Target.HitPoints))
+	sb.WriteString("\n")
+	sb.WriteString(indent(printExpression(d.Damage, true)))
+	return sb.String()
 }
 
 func printExpressionResult(e core.ExpressionResultEvent) string {

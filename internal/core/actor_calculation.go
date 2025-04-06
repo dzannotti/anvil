@@ -66,15 +66,15 @@ func (a *Actor) SaveThrow(t tag.Tag, dc int) CheckResult {
 	return CheckResult{Value: expr.Value, Against: dc, Critical: crit, Success: ok}
 }
 
-func (a *Actor) TakeDamage(damage int) {
-	expr := expression.FromDamageScalar(damage, "FIXME", tag.ContainerFromTag(tags.NaturalWeapon))
+func (a *Actor) TakeDamage(damage expression.Expression) {
 	crit := false
+	expr := expression.FromDamageResult(damage)
 	before := BeforeTakeDamageState{Expression: &expr, Source: a, Critical: &crit}
 	a.Evaluate(BeforeTakeDamage, &before)
-	res := before.Expression.Evaluate()
+	res := expr.Evaluate()
 	effective := a.HitPoints - ix.Max(a.HitPoints-res.Value, 0)
 	a.HitPoints = ix.Max(a.HitPoints-effective, 0)
-	a.Log.Start(TakeDamageType, TakeDamageEvent{Target: *a, Damage: damage})
+	a.Log.Start(TakeDamageType, TakeDamageEvent{Target: *a, Damage: expr})
 	after := AfterTakeDamageState{Result: res, Source: a, EffectiveDamage: effective, Critical: &crit}
 	a.Effects.Evaluate(AfterTakeDamage, &after)
 	a.Log.End()
@@ -96,7 +96,7 @@ func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 	a.Log.Add(AttributeCalculationType, AttributeCalculationEvent{Attribute: tags.ArmorClass, Expression: targetAC})
 	ok := value >= targetAC.Value
 	a.Log.Add(CheckResultType, CheckResultEvent{Value: value, Against: targetAC.Value, Critical: crit, Success: ok})
-	return CheckResult{Value: value, Against: expr.Value, Critical: crit, Success: ok}
+	return CheckResult{Value: value, Against: targetAC.Value, Critical: crit, Success: ok}
 }
 
 func (a *Actor) DamageRoll(ds []DamageSource, crit bool) *expression.Expression {
@@ -108,10 +108,9 @@ func (a *Actor) DamageRoll(ds []DamageSource, crit bool) *expression.Expression 
 	defer a.Log.End()
 	before := BeforeDamageRollState{Source: a, Expression: &expr, Critical: &crit}
 	a.Effects.Evaluate(BeforeDamageRoll, &before)
-	expr.EvaluateGroup()
-	a.Log.Add(ExpressionResultType, ExpressionResultEvent{Expression: expr})
-	after := AfterDamageRollState{Source: a, Result: &expr, Critical: &crit}
+	res := expr.EvaluateGroup()
+	a.Log.Add(ExpressionResultType, ExpressionResultEvent{Expression: *res})
+	after := AfterDamageRollState{Source: a, Result: res, Critical: &crit}
 	a.Effects.Evaluate(AfterDamageRoll, &after)
-
-	return &expr
+	return res
 }

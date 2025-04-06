@@ -21,10 +21,7 @@ func (c *Conditions) Has(t tag.Tag, src *Effect) bool {
 	if src == nil {
 		return len(c.Conditions[t]) > 0
 	}
-	if slices.Contains(c.Conditions[t], src) {
-		return true
-	}
-	return false
+	return slices.Contains(c.Conditions[t], src)
 }
 
 func (c *Conditions) Match(t tag.Tag) bool {

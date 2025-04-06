@@ -72,7 +72,7 @@ type AttackRollEvent struct {
 
 type TakeDamageEvent struct {
 	Target Actor
-	Damage int
+	Damage expression.Expression
 }
 
 type UseActionEvent struct {
