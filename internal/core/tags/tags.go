@@ -105,11 +105,12 @@ var (
 	Shield       = tag.FromString("Item.Armor.Shield")
 
 	// Condition
-	Condition   = tag.FromString("Condition")
-	Poisoned    = tag.FromString("Condition.Poisoned")
-	Dead        = tag.FromString("Condition.Dead")
-	Stable      = tag.FromString("Condition.Stable")
-	Unconscious = tag.FromString("Condition.Unconscious")
+	Condition     = tag.FromString("Condition")
+	Poisoned      = tag.FromString("Condition.Poisoned")
+	Stable        = tag.FromString("Condition.Stable")
+	Incapacitated = tag.FromString("Condition.Incapacitated")
+	Unconscious   = tag.FromString("Condition.Incapacitated.Unconscious")
+	Dead          = tag.FromString("Condition.Incapacitated.Unconscious.Dead")
 )
 
 func ToReadable(tag tag.Tag) string {

@@ -16,6 +16,10 @@ const (
 	BeforeSavingThrow    = "BeforeSavingThrow"
 	AfterSavingThrow     = "AfterSavingThrow"
 	AttributeChanged     = "AttributeChanged"
+	ConditionAdded       = "ConditionAdded"
+	ConditionRemoved     = "ConditionRemoved"
+	TurnStarted          = "TurnStarted"
+	TurnEnded            = "TurnEnded"
 )
 
 type BeforeAttackRollState struct {
@@ -85,4 +89,14 @@ type AttributeChangedState struct {
 	Attribute tag.Tag
 	OldValue  int
 	Value     int
+}
+
+type ConditionChangedState struct {
+	Source    *Actor
+	Condition tag.Tag
+	From      *Effect
+}
+
+type TurnState struct {
+	Source *Actor
 }

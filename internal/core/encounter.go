@@ -26,6 +26,7 @@ func (e *Encounter) playTurn(act Act) {
 		defer turnWG.Done()
 		act(e.ActiveActor())
 	}()
+	e.ActiveActor().EndTurn()
 	turnWG.Wait()
 }
 

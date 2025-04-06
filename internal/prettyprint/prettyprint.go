@@ -26,6 +26,8 @@ func shouldPrintEnd() bool {
 		core.AttributeCalculationType,
 		core.ConfirmType,
 		core.AttributeChangedType,
+		core.SpendResourceType,
+		core.ConditionChangedType,
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
@@ -89,6 +91,10 @@ func printMessage(ev eventbus.Message) string {
 		return printAttributeChange(ev.Data.(core.AttributeChangeEvent))
 	case core.SavingThrowType:
 		return printSavingThrow(ev.Data.(core.SavingThrowEvent))
+	case core.SpendResourceType:
+		return printSpendResource(ev.Data.(core.SpendResourceEvent))
+	case core.ConditionChangedType:
+		return printConditionChanged(ev.Data.(core.ConditionChangedEvent))
 	}
 	return "unknown event " + ev.Kind
 }
@@ -127,14 +133,21 @@ func printActor(a core.Actor) string {
 	return sb.String()
 }
 
-func printTeam(a []*core.Actor) string {
+func printActors(a []*core.Actor) string {
 	sb := strings.Builder{}
-	sb.WriteString("🎴 " + a[0].Name)
 	out := []string{}
 	for _, c := range a {
-		out = append(out, indent(printActor(*c)))
+		out = append(out, printActor(*c))
 	}
-	sb.WriteString("\n" + strings.Join(out, "\n"))
+	sb.WriteString(strings.Join(out, "\n"))
+	return sb.String()
+}
+
+func printTeam(a []*core.Actor) string {
+	sb := strings.Builder{}
+	sb.WriteString("🎴 " + string(a[0].Team))
+	sb.WriteString("\n")
+	sb.WriteString(indent(printActors(a)))
 	return sb.String()
 }
 
@@ -157,7 +170,11 @@ func printEncounter(e core.EncounterEvent) string {
 }
 
 func printRound(r core.RoundEvent) string {
-	return fmt.Sprintf("🔄 Round %d", r.Round+1)
+	sb := strings.Builder{}
+	sb.WriteString(fmt.Sprintf("🔄 Round %d", r.Round+1))
+	sb.WriteString("\n")
+	sb.WriteString(indent(printActors(r.Actors)))
+	return sb.String()
 }
 
 func printTurn(t core.TurnEvent) string {
@@ -238,4 +255,22 @@ func printAttributeChange(e core.AttributeChangeEvent) string {
 
 func printSavingThrow(e core.SavingThrowEvent) string {
 	return fmt.Sprintf("🍥 %s rolls a %s saving throw against DC %d", e.Source.Name, tags.ToReadable(e.Attribute), e.DifficultyClass)
+}
+
+func printSpendResource(e core.SpendResourceEvent) string {
+	return fmt.Sprintf("🧾 Spent %d %s", e.Amount, tags.ToReadable(e.Resource))
+}
+
+func printConditionChanged(e core.ConditionChangedEvent) string {
+	emoji := "➕"
+	text := "gains condition"
+	if !e.Added {
+		emoji = "➖"
+		text = "loses condition"
+	}
+	from := ""
+	if e.From != nil {
+		from = fmt.Sprintf("from %s", e.From.Name)
+	}
+	return fmt.Sprintf("%s %s %s %s %s", emoji, e.Source.Name, text, tags.ToReadable(e.Condition), from)
 }
