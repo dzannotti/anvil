@@ -52,6 +52,7 @@ func (a *Actor) SaveThrow(t tag.Tag, dc int) CheckResult {
 	expr := expression.FromD20("Base")
 	before := BeforeSavingThrowState{Expression: &expr, Source: a, Attribute: t, DifficultyClass: dc}
 	a.Log.Start(SavingThrowType, SavingThrowEvent{Expression: &expr, Source: a, Attribute: t, DifficultyClass: dc})
+	defer a.Log.End()
 	a.Evaluate(BeforeSavingThrow, &before)
 	expr.Evaluate()
 	after := AfterSavingThrowState{Result: &expr, Source: a, Attribute: t, DifficultyClass: dc}

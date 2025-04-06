@@ -12,8 +12,8 @@ import (
 
 type AttackAction struct {
 	Action
-	reach        int
-	DamageSource []core.DamageSource
+	reach  int
+	damage []core.DamageSource
 }
 
 func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, reach int, t ...tag.Tag) AttackAction {
@@ -24,11 +24,10 @@ func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, rea
 			cost:  map[tag.Tag]int{tags.Action: 1},
 			tags:  tag.ContainerFromTag(t...),
 		},
-		reach:        reach,
-		DamageSource: ds,
+		reach:  reach,
+		damage: ds,
 	}
-	a.tags.Add(tag.ContainerFromTag(tags.Melee, tags.Attack))
-	a.WithScorer(a.Score)
+	a.tags.Add(tag.ContainerFromTag(tags.Attack))
 	return a
 }
 
@@ -39,25 +38,35 @@ func (a AttackAction) Perform(pos []grid.Position) {
 	defer a.owner.Log.End()
 	result := a.owner.AttackRoll(target, tag.Container{})
 	if result.Success {
-		dmg := a.owner.DamageRoll(a.DamageSource, result.Critical)
+		dmg := a.owner.DamageRoll(a.damage, result.Critical)
 		target.TakeDamage(dmg.Value)
 	}
 }
 
-func (a AttackAction) Score(pos grid.Position) float32 {
+func (a AttackAction) ScoreAt(pos grid.Position) *core.ScoredAction {
 	target, _ := a.owner.World.ActorAt(pos)
 	if target == nil {
-		return 0
+		return nil
 	}
-	return 0.5 + (1-target.HitPointsNormalized())*0.5
+	avgDmg := a.AverageDamage(a.damage)
+	damageRatio := float32(avgDmg) / float32(target.HitPoints)
+	if damageRatio > 1.0 {
+		damageRatio = 1.0
+	}
+	lowHPPriority := (1 - target.HitPointsNormalized()) * 0.5
+	score := damageRatio + lowHPPriority
+	return &core.ScoredAction{
+		Action:   &a,
+		Position: []grid.Position{pos},
+		Score:    score,
+	}
 }
 
 func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {
 	if !a.CanAfford() {
 		return []grid.Position{}
 	}
-	reach := a.reach
-	shape := shapes.Sphere(from, reach)
+	shape := shapes.Sphere(from, a.reach)
 	valid := make([]grid.Position, 0)
 	enemies := a.owner.Enemies()
 	for _, pos := range shape {

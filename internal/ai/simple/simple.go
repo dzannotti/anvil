@@ -1,7 +1,6 @@
 package simple
 
 import (
-	"anvil/internal/ai/aiutils"
 	"anvil/internal/core"
 )
 
@@ -14,7 +13,7 @@ func (ai *Simple) Play() {
 	if !ai.Owner.CanAct() {
 		return
 	}
-	a := aiutils.BestAIChoice(ai.Owner)
+	a := ai.Owner.BestScoredAction()
 	if a != nil {
 		a.Action.Perform(a.Position)
 	}

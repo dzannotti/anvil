@@ -15,12 +15,12 @@ func NewUndeadFortitudeEffect() *core.Effect {
 			return
 		}
 		s.Source.Log.Start(core.EffectType, core.EffectEvent{Source: s.Source, Effect: fx})
+		defer s.Source.Log.End()
 		dc := 5 + s.EffectiveDamage
 		st := s.Source.SaveThrow(tags.Constitution, dc)
 		if st.Success {
 			s.Source.ModifyAttribute(tags.HitPoints, 1, "Undead Fortitude")
 		}
-		defer s.Source.Log.End()
 	})
 
 	return fx

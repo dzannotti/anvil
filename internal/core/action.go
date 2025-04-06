@@ -7,8 +7,14 @@ import (
 
 type Action interface {
 	Name() string
-	AIAction(pos grid.Position) *AIAction
+	ScoreAt(pos grid.Position) *ScoredAction
 	Perform(pos []grid.Position)
 	ValidPositions(from grid.Position) []grid.Position
 	Tags() tag.Container
+}
+
+type ScoredAction struct {
+	Position []grid.Position
+	Action   Action
+	Score    float32
 }

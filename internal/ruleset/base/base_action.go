@@ -4,16 +4,14 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
+	"math"
 )
 
-type ScoringFunc = func(pos grid.Position) float32
-
 type Action struct {
-	owner  *core.Actor
-	name   string
-	tags   tag.Container
-	cost   map[tag.Tag]int
-	scorer ScoringFunc
+	owner *core.Actor
+	name  string
+	tags  tag.Container
+	cost  map[tag.Tag]int
 }
 
 func (a Action) Name() string {
@@ -32,6 +30,11 @@ func (a Action) CanAfford() bool {
 	return a.owner.Resources.CanAfford(a.cost)
 }
 
+func (a Action) Perform(_ []grid.Position) {}
+func (a Action) ValidPositions(_ grid.Position) []grid.Position {
+	return []grid.Position{}
+}
+
 func (a Action) Commit() {
 	if !a.CanAfford() {
 		panic("Attempt to commit action without affording cost")
@@ -41,14 +44,15 @@ func (a Action) Commit() {
 	}
 }
 
-func (a *AttackAction) WithScorer(s ScoringFunc) {
-	a.scorer = s
+func (a Action) ScoreAt(_ grid.Position) *core.ScoredAction {
+	panic("you shouldn't call base ScoreAt - we cannot score here")
 }
 
-func (a AttackAction) AIAction(pos grid.Position) *core.AIAction {
-	return &core.AIAction{
-		Action:   a,
-		Position: []grid.Position{pos},
-		Score:    a.scorer(pos),
+func (a Action) AverageDamage(ds []core.DamageSource) int {
+	avg := 0
+	for _, d := range ds {
+		roll := float64(d.Sides+1) / 2.0
+		avg += int(math.Floor(float64(d.Times) * roll))
 	}
+	return avg
 }
