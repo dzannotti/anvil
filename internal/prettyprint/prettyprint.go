@@ -262,7 +262,7 @@ func printSavingThrow(e core.SavingThrowEvent) string {
 }
 
 func printSpendResource(e core.SpendResourceEvent) string {
-	return fmt.Sprintf("🧾 Spent %d %s", e.Amount, tags.ToReadable(e.Resource))
+	return fmt.Sprintf("🧾 %s spent %d %s", e.Source.Name, e.Amount, tags.ToReadable(e.Resource))
 }
 
 func printConditionChanged(e core.ConditionChangedEvent) string {
