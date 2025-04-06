@@ -18,7 +18,7 @@ func (a Actor) BestScoredActionAt(pos grid.Position) *ScoredAction {
 		}
 		for _, pos := range action.ValidPositions(pos) {
 			scored := action.ScoreAt(pos)
-			if scored.Score < 0.01 {
+			if scored == nil || scored.Score < 0.01 {
 				continue
 			}
 			if best == nil || scored.Score > best.Score {
