@@ -66,8 +66,7 @@ func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {
 	if !a.CanAfford() {
 		return []grid.Position{}
 	}
-	reach := a.reach
-	shape := shapes.Sphere(from, reach)
+	shape := shapes.Sphere(from, a.reach)
 	valid := make([]grid.Position, 0)
 	enemies := a.owner.Enemies()
 	for _, pos := range shape {
