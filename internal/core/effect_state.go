@@ -49,10 +49,10 @@ type BeforeTakeDamageState struct {
 }
 
 type AfterTakeDamageState struct {
-	Result          *expression.Expression
-	Source          *Actor
-	Critical        *bool
-	EffectiveDamage int
+	Result       *expression.Expression
+	Source       *Actor
+	Critical     *bool
+	ActualDamage int
 }
 
 type BeforeDamageRollState struct {

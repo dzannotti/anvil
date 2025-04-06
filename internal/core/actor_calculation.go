@@ -72,10 +72,10 @@ func (a *Actor) TakeDamage(damage expression.Expression) {
 	before := BeforeTakeDamageState{Expression: &expr, Source: a, Critical: &crit}
 	a.Evaluate(BeforeTakeDamage, &before)
 	res := expr.Evaluate()
-	effective := a.HitPoints - ix.Max(a.HitPoints-res.Value, 0)
-	a.HitPoints = ix.Max(a.HitPoints-effective, 0)
+	actual := a.HitPoints - ix.Max(a.HitPoints-res.Value, 0)
+	a.HitPoints = ix.Max(a.HitPoints-actual, 0)
 	a.Log.Start(TakeDamageType, TakeDamageEvent{Target: *a, Damage: expr})
-	after := AfterTakeDamageState{Result: res, Source: a, EffectiveDamage: effective, Critical: &crit}
+	after := AfterTakeDamageState{Result: res, Source: a, ActualDamage: actual, Critical: &crit}
 	a.Effects.Evaluate(AfterTakeDamage, &after)
 	a.Log.End()
 }
