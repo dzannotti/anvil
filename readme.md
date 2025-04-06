@@ -18,6 +18,7 @@
 - [x] saving throws implementation
 - [x] resources
 - [x] existing attacks using resources
+- [x] score based on damage
 - [ ] move based on resources
 - [ ] revise AI to do something 'till it can do no more
 - [ ] conditions
