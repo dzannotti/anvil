@@ -11,10 +11,12 @@ func TestConditions_Add(t *testing.T) {
 	testTag := tag.FromString("test")
 	effect := &Effect{Name: "test"}
 
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Expected conditions to panic when source is nil")
+		}
+	}()
 	c.Add(testTag, nil)
-	if len(c.Sources[testTag]) != 0 {
-		t.Error("Expected no effect to be added when source is nil")
-	}
 
 	c.Add(testTag, effect)
 	if len(c.Sources[testTag]) != 1 {
