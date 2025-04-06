@@ -12,21 +12,21 @@ func TestConditions_Add(t *testing.T) {
 	effect := &Effect{Name: "test"}
 
 	c.Add(testTag, nil)
-	if len(c.Conditions[testTag]) != 0 {
+	if len(c.Sources[testTag]) != 0 {
 		t.Error("Expected no effect to be added when source is nil")
 	}
 
 	c.Add(testTag, effect)
-	if len(c.Conditions[testTag]) != 1 {
+	if len(c.Sources[testTag]) != 1 {
 		t.Error("Expected one effect to be added")
 	}
-	if c.Conditions[testTag][0] != effect {
+	if c.Sources[testTag][0] != effect {
 		t.Error("Expected added effect to match source")
 	}
 
 	effect2 := &Effect{Name: "test2"}
 	c.Add(testTag, effect2)
-	if len(c.Conditions[testTag]) != 2 {
+	if len(c.Sources[testTag]) != 2 {
 		t.Error("Expected two effects")
 	}
 }
@@ -47,7 +47,7 @@ func TestConditions_Remove(t *testing.T) {
 	if !removed {
 		t.Error("Expected true when removing existing effect")
 	}
-	if len(c.Conditions[testTag]) != 0 {
+	if len(c.Sources[testTag]) != 0 {
 		t.Error("Expected effect to be removed")
 	}
 
@@ -59,7 +59,7 @@ func TestConditions_Remove(t *testing.T) {
 	if !removed {
 		t.Error("Expected true when removing all effects")
 	}
-	if len(c.Conditions[testTag]) != 0 {
+	if len(c.Sources[testTag]) != 0 {
 		t.Error("Expected all effects to be removed")
 	}
 }
