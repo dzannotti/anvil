@@ -31,3 +31,12 @@ func FromDamageDice(times int, sides int, source string, tags tag.Container, ter
 	e.AddDamageDice(times, sides, source, tags, terms...)
 	return e
 }
+
+func FromDamageResult(res Expression) Expression {
+	e := Expression{rng: defaultRoller{}}
+	e.Terms = append(e.Terms, res.Terms...)
+	for i := range e.Terms {
+		e.Terms[i].Terms = make([]Term, 0)
+	}
+	return e
+}

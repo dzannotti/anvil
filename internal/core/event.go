@@ -20,7 +20,9 @@ const (
 	DamageRollType           = "damageRoll"
 	EffectType               = "effect"
 	AttributeChangedType     = "attributeChanged"
-	SavingThrowType          = "SavingThrow"
+	SavingThrowType          = "savingThrow"
+	SpendResourceType        = "spendResource"
+	ConditionChangedType     = "conditionChanged"
 )
 
 type EncounterEvent struct {
@@ -70,7 +72,7 @@ type AttackRollEvent struct {
 
 type TakeDamageEvent struct {
 	Target Actor
-	Damage int
+	Damage expression.Expression
 }
 
 type UseActionEvent struct {
@@ -103,4 +105,17 @@ type SavingThrowEvent struct {
 	Source          *Actor
 	Attribute       tag.Tag
 	DifficultyClass int
+}
+
+type SpendResourceEvent struct {
+	Source   *Actor
+	Resource tag.Tag
+	Amount   int
+}
+
+type ConditionChangedEvent struct {
+	Source    *Actor
+	Condition tag.Tag
+	From      *Effect
+	Added     bool
 }

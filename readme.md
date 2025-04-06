@@ -19,12 +19,12 @@
 - [x] resources
 - [x] existing attacks using resources
 - [x] score based on damage
+- [x] conditions
 - [ ] move based on resources
 - [ ] revise AI to do something 'till it can do no more
-- [ ] conditions
 - [ ] death saving throws for PC
 - [ ] fire ball
-- [ ] ability check?
+- [ ] ability check
 - [ ] attacks of opportunity
 - [ ] finesse
 - [ ] unarmed strike
@@ -38,6 +38,8 @@
 - [ ] action that uses start/end turn
 - [ ] web
 - [ ] dash
+- [ ] dodge
+- [ ] help
 - [ ] vulnerability
 - [ ] resistances
 - [ ] up casting
