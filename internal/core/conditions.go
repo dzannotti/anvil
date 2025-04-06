@@ -25,18 +25,18 @@ func (c *Conditions) Has(t tag.Tag, src *Effect) bool {
 }
 
 func (c *Conditions) Match(t tag.Tag) bool {
-	tags := make([]tag.Tag, 0)
 	for tag := range c.Conditions {
-		tags = append(tags, tag)
+		if tag.Match(t) {
+			return true
+		}
 	}
-	container := tag.ContainerFromTag(tags...)
-	return container.MatchTag(t)
+	return false
 }
 
 func (c *Conditions) Add(t tag.Tag, src *Effect) {
 	c.init()
 	if src == nil {
-		return
+		panic("Attempted to add a condition with no source")
 	}
 	c.Conditions[t] = append(c.Conditions[t], src)
 }
