@@ -35,8 +35,8 @@ func (a MoveAction) Perform(pos []grid.Position) {
 	src.Log.Start(core.MoveType, core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
 	defer src.Log.End()
 	for _, node := range path.Path[1:] {
-		src.Resources.Consume(tags.Speed, 1)
-		src.Log.Add(core.SpendResourceType, core.SpendResourceEvent{Source: src, Resource: tags.Speed, Amount: 1})
+		src.Resources.Consume(tags.WalkSpeed, 1)
+		src.Log.Add(core.SpendResourceType, core.SpendResourceEvent{Source: src, Resource: tags.WalkSpeed, Amount: 1})
 		src.Log.Start(core.MoveStepType, core.MoveStepEvent{World: world, Source: src, From: src.Position, To: node})
 		// TODO: Implement AOO here
 		world.RemoveOccupant(src.Position, src)
@@ -101,7 +101,10 @@ func (a MoveAction) estimateOpportunityAttackDamageAt(_ grid.Position) float64 {
 }
 
 func (a MoveAction) shortMovePenalty(dst grid.Position) float32 {
-	path, _ := a.owner.World.Navigation.FindPath(a.owner.Position, dst)
+	path, ok := a.owner.World.Navigation.FindPath(a.owner.Position, dst)
+	if !ok {
+		return 0
+	}
 	pathLength := float32(len(path.Path) - 1)
 	minMoveThreshold := 2
 	shortMovementThreshold := float32(minMoveThreshold)
@@ -109,7 +112,7 @@ func (a MoveAction) shortMovePenalty(dst grid.Position) float32 {
 		shortMovePenalty := 0.05 * (1.0 - pathLength/shortMovementThreshold)
 		return shortMovePenalty
 	}
-	return float32(0)
+	return 0
 }
 
 func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
