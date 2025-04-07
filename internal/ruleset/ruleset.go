@@ -27,6 +27,7 @@ func newActor(h *eventbus.Hub, w *core.World, t core.TeamID, pos grid.Position, 
 	a.AddEffect(base.NewAttributeModifierEffect())
 	a.AddEffect(base.NewProficiencyModifierEffect())
 	a.AddEffect(base.NewCritEffect())
+	a.AddAction(base.NewMoveAction(a))
 	a.Resources.Reset()
 	return a
 }
