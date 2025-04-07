@@ -52,20 +52,11 @@ func (a MoveAction) ScoreAt(dest grid.Position) *core.ScoredAction {
 	if src.Position == dest {
 		return nil
 	}
-	speed := src.Resources.Remaining(tags.WalkSpeed)
 	lookAhead := 4
+	speed := src.Resources.Remaining(tags.WalkSpeed)
 	enemies := world.ActorsInRange(dest, speed*lookAhead, func(other *core.Actor) bool { return other.Team != src.Team })
 
-	distNow := math.MaxInt
-	distThen := math.MaxInt
-	for _, enemy := range enemies {
-		if path, ok := world.Navigation.FindPath(src.Position, enemy.Position); ok && path.Cost < distNow {
-			distNow = path.Cost
-		}
-		if path, ok := world.Navigation.FindPath(dest, enemy.Position); ok && path.Cost < distThen {
-			distThen = path.Cost
-		}
-	}
+	distNow, distThen := a.closestAt(dest, enemies)
 
 	if distThen >= distNow {
 		return nil
@@ -101,27 +92,13 @@ func (a MoveAction) ScoreAt(dest grid.Position) *core.ScoredAction {
 	}
 }
 
-func (a MoveAction) TargetCountAt(pos grid.Position) int {
+func (a MoveAction) TargetCountAt(_ grid.Position) int {
 	return 0
 }
 
-func (a MoveAction) estimateOpportunityAttackDamageAt(dst grid.Position) float64 {
+func (a MoveAction) estimateOpportunityAttackDamageAt(_ grid.Position) float64 {
 	// TODO: Implement AOO here
 	return 0.0
-}
-
-func (a MoveAction) closestAt(pos grid.Position, enemies []*core.Actor) int {
-	min := math.MaxInt
-	for _, e := range enemies {
-		path, ok := a.owner.World.Navigation.FindPath(pos, e.Position)
-		if !ok {
-			continue
-		}
-		if path.Cost < min {
-			min = path.Cost
-		}
-	}
-	return min
 }
 
 func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
@@ -146,4 +123,20 @@ func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
 		valid = append(valid, pos)
 	}
 	return valid
+}
+
+func (a MoveAction) closestAt(dst grid.Position, enemies []*core.Actor) (int, int) {
+	src := a.owner
+	world := src.World
+	distNow := math.MaxInt
+	distThen := math.MaxInt
+	for _, enemy := range enemies {
+		if path, ok := world.Navigation.FindPath(src.Position, enemy.Position); ok && path.Cost < distNow {
+			distNow = path.Cost
+		}
+		if path, ok := world.Navigation.FindPath(dst, enemy.Position); ok && path.Cost < distThen {
+			distThen = path.Cost
+		}
+	}
+	return distNow, distThen
 }

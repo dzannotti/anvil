@@ -35,7 +35,7 @@ func (a Actor) IsDead() bool {
 }
 
 func (a Actor) CanAct() bool {
-	return !a.Conditions.Match(tags.Incapacitated)
+	return !a.HasCondition(tags.Incapacitated, nil)
 }
 
 func (a Actor) TargetCountAt(pos grid.Position) int {

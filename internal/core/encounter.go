@@ -55,9 +55,6 @@ func (e *Encounter) Play(act Act) string {
 	for !e.IsOver() {
 		e.playRound(act)
 		e.Round = e.Round + 1
-		if e.Round > 2 {
-			break
-		}
 	}
 	winner, _ := e.Winner()
 	return winner

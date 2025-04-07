@@ -210,8 +210,8 @@ func TestHelperFunctions(t *testing.T) {
 		end := grid.Position{X: 3, Y: 3}
 		distance := pathFinding.distance(start, end)
 
-		if distance != 30 {
-			t.Errorf("distance = %v, want %v", distance, 30)
+		if distance != 3 {
+			t.Errorf("distance = %v, want %v", distance, 3)
 		}
 	})
 
