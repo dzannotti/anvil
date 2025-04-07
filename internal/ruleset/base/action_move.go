@@ -46,23 +46,23 @@ func (a MoveAction) Perform(pos []grid.Position) {
 	}
 }
 
-func (a MoveAction) ScoreAt(dest grid.Position) *core.ScoredAction {
+func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 	src := a.owner
 	world := src.World
-	if src.Position == dest {
+	if src.Position == dst {
 		return nil
 	}
 	lookAhead := 4
 	speed := src.Resources.Remaining(tags.WalkSpeed)
-	enemies := world.ActorsInRange(dest, speed*lookAhead, func(other *core.Actor) bool { return other.Team != src.Team })
+	enemies := world.ActorsInRange(dst, speed*lookAhead, func(other *core.Actor) bool { return other.Team != src.Team })
 
-	distNow, distThen := a.closestAt(dest, enemies)
+	distNow, distThen := a.closestAt(dst, enemies)
 
 	if distThen >= distNow {
 		return nil
 	}
 
-	targetCount := src.TargetCountAt(dest)
+	targetCount := src.TargetCountAt(dst)
 	currentTargetCount := src.TargetCountAt(src.Position)
 
 	if currentTargetCount > 0 && targetCount <= currentTargetCount {
@@ -75,11 +75,10 @@ func (a MoveAction) ScoreAt(dest grid.Position) *core.ScoredAction {
 
 	score := distWeight*0.3 + targetWeight*0.6
 
-	// Avoid movement spam
-	score -= 0.05
+	score -= a.shortMovePenalty(dst)
 
 	// AOO penalty
-	score -= float32(a.estimateOpportunityAttackDamageAt(dest)) * 1.1
+	score -= float32(a.estimateOpportunityAttackDamageAt(dst)) * 1.1
 
 	if score < 0.01 {
 		return nil
@@ -87,7 +86,7 @@ func (a MoveAction) ScoreAt(dest grid.Position) *core.ScoredAction {
 
 	return &core.ScoredAction{
 		Action:   a,
-		Position: []grid.Position{dest},
+		Position: []grid.Position{dst},
 		Score:    score,
 	}
 }
@@ -99,6 +98,18 @@ func (a MoveAction) TargetCountAt(_ grid.Position) int {
 func (a MoveAction) estimateOpportunityAttackDamageAt(_ grid.Position) float64 {
 	// TODO: Implement AOO here
 	return 0.0
+}
+
+func (a MoveAction) shortMovePenalty(dst grid.Position) float32 {
+	path, _ := a.owner.World.Navigation.FindPath(a.owner.Position, dst)
+	pathLength := float32(len(path.Path) - 1)
+	minMoveThreshold := 2
+	shortMovementThreshold := float32(minMoveThreshold)
+	if pathLength <= shortMovementThreshold {
+		shortMovePenalty := 0.05 * (1.0 - pathLength/shortMovementThreshold)
+		return shortMovePenalty
+	}
+	return float32(0)
 }
 
 func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
