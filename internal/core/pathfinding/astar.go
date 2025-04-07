@@ -75,7 +75,7 @@ func (pf *Pathfinding) neighbours(node *Node) []*Node {
 		{X: -1, Y: 1},  // down left
 		{X: -1, Y: -1}, // up left
 	}
-	neighbours := make([]*Node, 0)
+	neighbours := make([]*Node, 0, len(offset))
 	for _, offset := range offset {
 		pos := offset.Add(node.Position)
 		neighbour, ok := pf.grid.At(pos)
