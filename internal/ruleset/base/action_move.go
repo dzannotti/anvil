@@ -32,7 +32,7 @@ func (a MoveAction) Perform(pos []grid.Position) {
 	if !ok {
 		panic("attempted to move to unreachable location - this should never happen")
 	}
-	src.Log.Start(core.MoveEventType, core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
+	src.Log.Start(core.MoveType, core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
 	defer src.Log.End()
 	for _, node := range path.Path[1:] {
 		src.Resources.Consume(tags.Speed, 1)
@@ -48,36 +48,48 @@ func (a MoveAction) Perform(pos []grid.Position) {
 
 func (a MoveAction) ScoreAt(dest grid.Position) *core.ScoredAction {
 	src := a.owner
+	world := src.World
 	if src.Position == dest {
 		return nil
 	}
-	speed := a.owner.Resources.Remaining(tags.WalkSpeed)
-	lookAheadMoves := 4
+	speed := src.Resources.Remaining(tags.WalkSpeed)
+	lookAhead := 4
+	enemies := world.ActorsInRange(dest, speed*lookAhead, func(other *core.Actor) bool { return other.Team != src.Team })
 
-	enemiesInRange := src.World.ActorsInRange(dest, speed*lookAheadMoves, func(other *core.Actor) bool { return other.Team != src.Team })
-
-	score := float32(len(enemiesInRange)) * 0.3
-
-	// reward getting closer to targets
-	distNow := a.closestAt(src.Position, enemiesInRange)
-	distThen := a.closestAt(dest, enemiesInRange)
-
-	if distThen < distNow {
-		// reward the improvement (relative change)
-		compression := float32(distNow-distThen) / float32(distNow)
-		score += compression * 0.4
+	distNow := math.MaxInt
+	distThen := math.MaxInt
+	for _, enemy := range enemies {
+		if path, ok := world.Navigation.FindPath(src.Position, enemy.Position); ok && path.Cost < distNow {
+			distNow = path.Cost
+		}
+		if path, ok := world.Navigation.FindPath(dest, enemy.Position); ok && path.Cost < distThen {
+			distThen = path.Cost
+		}
 	}
 
-	if distThen > 0 {
-		// the closer you are, the higher the bonus
-		score += (1 / float32(distThen)) * 0.6
+	if distThen >= distNow {
+		return nil
 	}
 
-	// avoid movement spam
+	targetCount := src.TargetCountAt(dest)
+	currentTargetCount := src.TargetCountAt(src.Position)
+
+	if currentTargetCount > 0 && targetCount <= currentTargetCount {
+		return nil
+	}
+
+	compression := float32(distNow-distThen) / float32(distNow)
+	distWeight := compression * 0.5
+	targetWeight := float32(targetCount) / float32(len(enemies))
+
+	score := distWeight*0.3 + targetWeight*0.6
+
+	// Avoid movement spam
 	score -= 0.05
 
-	// aoo penalty
+	// AOO penalty
 	score -= float32(a.estimateOpportunityAttackDamageAt(dest)) * 1.1
+
 	if score < 0.01 {
 		return nil
 	}
@@ -87,6 +99,10 @@ func (a MoveAction) ScoreAt(dest grid.Position) *core.ScoredAction {
 		Position: []grid.Position{dest},
 		Score:    score,
 	}
+}
+
+func (a MoveAction) TargetCountAt(pos grid.Position) int {
+	return 0
 }
 
 func (a MoveAction) estimateOpportunityAttackDamageAt(dst grid.Position) float64 {

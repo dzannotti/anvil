@@ -28,6 +28,7 @@ func shouldPrintEnd() bool {
 		core.AttributeChangedType,
 		core.SpendResourceType,
 		core.ConditionChangedType,
+		core.MoveStepType,
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
@@ -95,8 +96,10 @@ func printMessage(ev eventbus.Message) string {
 		return printSpendResource(ev.Data.(core.SpendResourceEvent))
 	case core.ConditionChangedType:
 		return printConditionChanged(ev.Data.(core.ConditionChangedEvent))
-	case core.MoveEventType:
+	case core.MoveType:
 		return printMove(ev.Data.(core.MoveEvent))
+	case core.MoveStepType:
+		return printMoveStep(ev.Data.(core.MoveStepEvent))
 	}
 	return "unknown event " + ev.Kind
 }
@@ -295,4 +298,8 @@ func printMove(e core.MoveEvent) string {
 	sb.WriteString("\n")
 	sb.WriteString(indent(printWorld(*e.World, e.Path.Path)))
 	return sb.String()
+}
+
+func printMoveStep(e core.MoveStepEvent) string {
+	return fmt.Sprintf("🚶 %s about to step from %s to %s", e.Source.Name, printPosition(e.From), printPosition(e.To))
 }

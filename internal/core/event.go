@@ -25,7 +25,7 @@ const (
 	SavingThrowType          = "savingThrow"
 	SpendResourceType        = "spendResource"
 	ConditionChangedType     = "conditionChanged"
-	MoveEventType            = "moveEvent"
+	MoveType                 = "moveEvent"
 	MoveStepType             = "moveStep"
 )
 
