@@ -69,7 +69,7 @@ func (a MoveAction) ScoreAt(dest grid.Position) *core.ScoredAction {
 		return nil
 	}
 
-	compression := float32(distNow-distThen) / float32(distNow)
+	compression := float32(distNow-distThen) / float32(distNow+0.001)
 	distWeight := compression * 0.5
 	targetWeight := float32(targetCount) / float32(len(enemies))
 
@@ -125,7 +125,7 @@ func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
 	return valid
 }
 
-func (a MoveAction) closestAt(dst grid.Position, enemies []*core.Actor) (int, int) {
+func (a MoveAction) closestAt(dst grid.Position, enemies []*core.Actor) (float32, float32) {
 	src := a.owner
 	world := src.World
 	distNow := math.MaxInt
