@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	MoveDiagonalCost = 10
-	MoveStraightCost = 10
+	MoveDiagonalCost = 1
+	MoveStraightCost = 1
 )
 
 func (pf *Pathfinding) FindPath(start grid.Position, end grid.Position) (*Result, bool) {

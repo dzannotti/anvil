@@ -45,10 +45,14 @@ func (w World) IsValidPosition(pos grid.Position) bool {
 	return w.Grid.IsValidPosition(pos)
 }
 
-func (w World) ActorsInRange(pos grid.Position, radius int) []*Actor {
+func (w World) ActorsInRange(pos grid.Position, radius int, filter func(*Actor) bool) []*Actor {
 	actors := make([]*Actor, 0)
 	for _, cell := range w.Grid.CellsInRange(pos, radius) {
-		actors = append(actors, cell.Occupants...)
+		other, ok := cell.Occupant()
+		if !ok || !filter(other) {
+			continue
+		}
+		actors = append(actors, other)
 	}
 	return actors
 }

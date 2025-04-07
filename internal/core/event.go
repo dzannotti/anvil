@@ -1,7 +1,9 @@
 package core
 
 import (
+	"anvil/internal/core/pathfinding"
 	"anvil/internal/expression"
+	"anvil/internal/grid"
 	"anvil/internal/tag"
 )
 
@@ -23,6 +25,8 @@ const (
 	SavingThrowType          = "savingThrow"
 	SpendResourceType        = "spendResource"
 	ConditionChangedType     = "conditionChanged"
+	MoveType                 = "moveEvent"
+	MoveStepType             = "moveStep"
 )
 
 type EncounterEvent struct {
@@ -118,4 +122,19 @@ type ConditionChangedEvent struct {
 	Condition tag.Tag
 	From      *Effect
 	Added     bool
+}
+
+type MoveEvent struct {
+	World  *World
+	Source *Actor
+	From   grid.Position
+	To     grid.Position
+	Path   *pathfinding.Result
+}
+
+type MoveStepEvent struct {
+	World  *World
+	Source *Actor
+	From   grid.Position
+	To     grid.Position
 }

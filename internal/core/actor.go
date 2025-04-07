@@ -69,18 +69,6 @@ func (a *Actor) RemoveCondition(t tag.Tag, src *Effect) {
 	a.Log.Add(ConditionChangedType, ConditionChangedEvent{Source: a, From: src, Condition: t, Added: false})
 }
 
-func (a *Actor) HasCondition(t tag.Tag, src *Effect) bool {
-	return a.Conditions.Has(t, src)
-}
-
-func (a Actor) IsDead() bool {
-	return a.HasCondition(tags.Dead, nil)
-}
-
-func (a Actor) CanAct() bool {
-	return !a.Conditions.Match(tags.Incapacitated)
-}
-
 func (a *Actor) Equip(item Item) {
 	a.Equipped = append(a.Equipped, item)
 	item.OnEquip(a)

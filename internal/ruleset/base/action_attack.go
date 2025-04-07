@@ -90,3 +90,7 @@ func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {
 	}
 	return valid
 }
+
+func (a AttackAction) TargetCountAt(at grid.Position) int {
+	return len(a.ValidPositions(at))
+}
