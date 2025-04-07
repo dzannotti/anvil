@@ -86,10 +86,12 @@ var (
 	Ranged = tag.FromString("Ranged")
 
 	// Action
-	Attack = tag.FromString("Attack")
-	Move   = tag.FromString("Move")
-	Dodge  = tag.FromString("Dodge")
-	Help   = tag.FromString("Help")
+	Attack       = tag.FromString("Attack")
+	WeaponAttack = tag.FromString("Attack.Weapon")
+	SpellAttack  = tag.FromString("Attack.Spell")
+	Move         = tag.FromString("Move")
+	Dodge        = tag.FromString("Dodge")
+	Help         = tag.FromString("Help")
 
 	// Item
 	Weapon        = tag.FromString("Item.Weapon")

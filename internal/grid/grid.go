@@ -36,12 +36,12 @@ func (g Grid[cell]) IsValidPosition(pos Position) bool {
 }
 
 func (g Grid[cell]) CellsInRange(origin Position, radius int) []*cell {
-	cells := make([]*cell, 0)
+	size := (2*radius + 1) * (2*radius + 1)
+	cells := make([]*cell, 0, size)
 	for x := -radius; x <= radius; x++ {
 		for y := -radius; y <= radius; y++ {
 			pos := origin.Add(Position{X: x, Y: y})
-			cell, _ := g.At(pos)
-			if cell != nil {
+			if cell, ok := g.At(pos); ok {
 				cells = append(cells, cell)
 			}
 		}

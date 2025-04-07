@@ -5,20 +5,17 @@ import (
 )
 
 func (a Actor) BestScoredAction() *ScoredAction {
-	return a.BestScoredActionAt(a.Position, func(Action, int) bool { return true })
+	return a.BestScoredActionAt(a.Position)
 }
 
-func (a Actor) BestScoredActionAt(pos grid.Position, filter func(Action, int) bool) *ScoredAction {
-	return a.BestScoredActionAtWhere(pos, func(_ Action, depth int) bool { return depth < 5 }, 0)
-}
-
-func (a Actor) BestScoredActionAtWhere(pos grid.Position, filter func(Action, int) bool, depth int) *ScoredAction {
+func (a Actor) BestScoredActionAt(pos grid.Position, filter ...func(Action) bool) *ScoredAction {
 	var best *ScoredAction
+	// TODO: make this concurrent
 	for _, action := range a.Actions {
-		if !filter(action, depth) {
-			continue
-		}
 		for _, pos := range action.ValidPositions(pos) {
+			if len(filter) > 0 && filter[0](action) {
+				continue
+			}
 			scored := action.ScoreAt(pos)
 			if scored == nil || scored.Score < 0.01 {
 				continue
@@ -31,3 +28,42 @@ func (a Actor) BestScoredActionAtWhere(pos grid.Position, filter func(Action, in
 
 	return best
 }
+
+/*
+
+func EvaluateBestTargetSetParallel(action core.Action, src *core.Actor) ([]grid.Position, float32) {
+	targetSets := action.ValidTargetSets(src.Position)
+	if len(targetSets) == 0 {
+		return nil, 0
+	}
+
+	results := make(chan scoredResult, len(targetSets))
+	var wg sync.WaitGroup
+
+	for _, targets := range targetSets {
+		wg.Add(1)
+		go func(targets []grid.Position) {
+			defer wg.Done()
+			score := action.ScoreAt(targets)
+			if score >= 0.01 { // skip junk scores
+				results <- scoredResult{targets, score}
+			}
+		}(targets)
+	}
+
+	wg.Wait()
+	close(results)
+
+	var bestTargets []grid.Position
+	var bestScore float32
+
+	for res := range results {
+		if res.score > bestScore {
+			bestScore = res.score
+			bestTargets = res.targets
+		}
+	}
+
+	return bestTargets, bestScore
+}
+*/

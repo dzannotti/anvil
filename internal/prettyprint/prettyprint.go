@@ -95,11 +95,17 @@ func printMessage(ev eventbus.Message) string {
 		return printSpendResource(ev.Data.(core.SpendResourceEvent))
 	case core.ConditionChangedType:
 		return printConditionChanged(ev.Data.(core.ConditionChangedEvent))
+	case core.MoveEventType:
+		return printMove(ev.Data.(core.MoveEvent))
 	}
 	return "unknown event " + ev.Kind
 }
 
-func printWorld(w core.World) string {
+func printPosition(pos grid.Position) string {
+	return fmt.Sprintf("(%d, %d)", pos.X, pos.Y)
+}
+
+func printWorld(w core.World, path []grid.Position) string {
 	sb := strings.Builder{}
 	sb.WriteString("🌍 World\n")
 	for y := range w.Height() {
@@ -114,6 +120,10 @@ func printWorld(w core.World) string {
 			if cell.IsOccupied() {
 				occupant, _ := cell.Occupant()
 				sb.WriteString(occupant.Name[0:1])
+				continue
+			}
+			if slices.Contains(path, pos) {
+				sb.WriteString("*")
 				continue
 			}
 			sb.WriteString(".")
@@ -154,7 +164,7 @@ func printTeam(a []*core.Actor) string {
 func printEncounter(e core.EncounterEvent) string {
 	sb := strings.Builder{}
 	sb.WriteString("🏰 Encounter Start")
-	sb.WriteString("\n" + indent(printWorld(e.World)))
+	sb.WriteString("\n" + indent(printWorld(e.World, []grid.Position{})))
 	teams := map[string][]*core.Actor{}
 	for _, c := range e.Actors {
 		teams[string(c.Team)] = append(teams[string(c.Team)], c)
@@ -277,4 +287,12 @@ func printConditionChanged(e core.ConditionChangedEvent) string {
 		from = fmt.Sprintf("from %s", e.From.Name)
 	}
 	return fmt.Sprintf("%s %s %s %s %s", emoji, e.Source.Name, text, tags.ToReadable(e.Condition), from)
+}
+
+func printMove(e core.MoveEvent) string {
+	sb := strings.Builder{}
+	sb.WriteString(fmt.Sprintf("🚶 %s wants to move from %s to %s", e.Source.Name, printPosition(e.From), printPosition(e.To)))
+	sb.WriteString("\n")
+	sb.WriteString(indent(printWorld(*e.World, e.Path.Path)))
+	return sb.String()
 }
