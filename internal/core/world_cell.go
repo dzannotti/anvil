@@ -1,8 +1,9 @@
 package core
 
 import (
-	"anvil/internal/grid"
 	"slices"
+
+	"anvil/internal/grid"
 )
 
 type WorldCell struct {
@@ -22,7 +23,7 @@ func (c *WorldCell) RemoveOccupant(actor *Actor) {
 
 func (c *WorldCell) Occupant() (*Actor, bool) {
 	if len(c.Occupants) == 0 {
-		return &Actor{}, false
+		return nil, false
 	}
 	return c.Occupants[0], true
 }

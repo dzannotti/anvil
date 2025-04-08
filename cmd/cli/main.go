@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"runtime"
+	"runtime/pprof"
 	"time"
 
 	"anvil/internal/ai"
@@ -11,7 +14,6 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
-	"anvil/internal/prettyprint"
 	"anvil/internal/ruleset"
 	"anvil/internal/ruleset/fighter"
 	"anvil/internal/ruleset/item/armor"
@@ -44,9 +46,21 @@ func setupWorld(world *core.World) {
 }
 
 func main() {
+	runtime.GOMAXPROCS(1)
 	hub := eventbus.Hub{}
+	f, err := os.Create("cpu.prof")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	if err := pprof.StartCPUProfile(f); err != nil {
+		log.Fatal(err)
+	}
+	defer pprof.StopCPUProfile()
+
 	hub.Subscribe(func(msg eventbus.Message) {
-		prettyprint.Print(os.Stdout, msg)
+		//prettyprint.Print(os.Stdout, msg)
 	})
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
@@ -90,6 +104,7 @@ func main() {
 		fmt.Println("All dead")
 		return
 	}
+	time.Sleep(2 * time.Second)
 	fmt.Println("Winner:", winner)
 	fmt.Printf("%v elapsed\n", total)
 }

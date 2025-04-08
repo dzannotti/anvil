@@ -1,10 +1,12 @@
 package pathfinding
 
 import (
-	"anvil/internal/grid"
+	"container/heap"
 	"slices"
 
 	"github.com/adam-lavrik/go-imath/ix"
+
+	"anvil/internal/grid"
 )
 
 const (
@@ -12,39 +14,60 @@ const (
 	MoveStraightCost = 1
 )
 
-func (pf *Pathfinding) FindPath(start grid.Position, end grid.Position) (*Result, bool) {
+var pathfindingOffsets = []grid.Position{
+	{X: 0, Y: -1},  // up
+	{X: 0, Y: 1},   // down
+	{X: 1, Y: 0},   // right
+	{X: -1, Y: 0},  // left
+	{X: 1, Y: -1},  // up right
+	{X: 1, Y: 1},   // down right
+	{X: -1, Y: 1},  // down left
+	{X: -1, Y: -1}, // up left
+}
+
+func (pf *Pathfinding) FindPath(start, end grid.Position) (*Result, bool) {
 	pf.reset()
-	open := make([]*Node, 0, 1024)
-	closed := make([]*Node, 0, 1024)
 	startNode, _ := pf.grid.At(start)
 	endNode, _ := pf.grid.At(end)
-	open = append(open, startNode)
+
+	openPQ := make(PriorityQueue, 0, 1024)
+	heap.Init(&openPQ)
+	heap.Push(&openPQ, startNode)
+
+	openSet := map[*Node]struct{}{startNode: {}}
+	closedSet := map[*Node]struct{}{}
+
 	startNode.GCost = 0
 	startNode.HCost = pf.distance(start, end)
-	for len(open) > 0 {
-		current := pf.lowestFCost(open)
+
+	for openPQ.Len() > 0 {
+		current := heap.Pop(&openPQ).(*Node)
+		delete(openSet, current)
+		closedSet[current] = struct{}{}
+
 		if current == endNode {
 			return pf.calculatePath(endNode), true
 		}
-		open = slices.DeleteFunc(open, func(n *Node) bool {
-			return n == current
-		})
-		closed = append(closed, current)
+
 		for _, neighbour := range pf.neighbours(current) {
-			if slices.Contains(closed, neighbour) {
+			if _, closed := closedSet[neighbour]; closed {
 				continue
 			}
-			tentativeGCost := current.GCost + pf.distance(current.Position, neighbour.Position)
-			if tentativeGCost < neighbour.GCost {
+
+			tentativeG := current.GCost + pf.distance(current.Position, neighbour.Position)
+			if tentativeG < neighbour.GCost {
 				neighbour.Parent = current
-				neighbour.GCost = tentativeGCost
+				neighbour.GCost = tentativeG
 				neighbour.HCost = pf.distance(neighbour.Position, end)
-				if !slices.Contains(open, neighbour) {
-					open = append(open, neighbour)
+
+				if _, open := openSet[neighbour]; !open {
+					heap.Push(&openPQ, neighbour)
+					openSet[neighbour] = struct{}{}
 				}
 			}
 		}
 	}
+
 	return nil, false
 }
 
@@ -57,7 +80,7 @@ func (pf *Pathfinding) reset() {
 	}
 }
 
-func (pf *Pathfinding) distance(a grid.Position, b grid.Position) int {
+func (pf *Pathfinding) distance(a, b grid.Position) int {
 	xd := ix.Abs(a.X - b.X)
 	yd := ix.Abs(a.Y - b.Y)
 	remaining := ix.Abs(xd - yd)
@@ -65,51 +88,28 @@ func (pf *Pathfinding) distance(a grid.Position, b grid.Position) int {
 }
 
 func (pf *Pathfinding) neighbours(node *Node) []*Node {
-	offset := []grid.Position{
-		{X: 0, Y: -1},  // up
-		{X: 0, Y: 1},   // down
-		{X: 1, Y: 0},   // right
-		{X: -1, Y: 0},  // left
-		{X: 1, Y: -1},  // up right
-		{X: 1, Y: 1},   // down right
-		{X: -1, Y: 1},  // down left
-		{X: -1, Y: -1}, // up left
-	}
-	neighbours := make([]*Node, 0, len(offset))
-	for _, offset := range offset {
+	neighbours := make([]*Node, 0, len(pathfindingOffsets))
+	for _, offset := range pathfindingOffsets {
 		pos := offset.Add(node.Position)
 		neighbour, ok := pf.grid.At(pos)
-		if !ok {
+		if !ok || !neighbour.Walkable {
 			continue
 		}
-		if !neighbour.Walkable {
-			continue
-		}
-		// For diagonal moves, check if both adjacent cells are walkable
+
+		// Diagonal movement check
 		dx := pos.X - node.Position.X
 		dy := pos.Y - node.Position.Y
 		if dx != 0 && dy != 0 {
-			horizontalPos := node.Position.Add(grid.Position{X: dx, Y: 0})
-			verticalPos := node.Position.Add(grid.Position{X: 0, Y: dy})
-			horizontalNode, ok := pf.grid.At(horizontalPos)
-			if !ok || !horizontalNode.Walkable {
-				continue
-			}
-			verticalNode, ok := pf.grid.At(verticalPos)
-			if !ok || !verticalNode.Walkable {
+			horizontal, okH := pf.grid.At(node.Position.Add(grid.Position{X: dx, Y: 0}))
+			vertical, okV := pf.grid.At(node.Position.Add(grid.Position{X: 0, Y: dy}))
+			if !okH || !okV || !horizontal.Walkable || !vertical.Walkable {
 				continue
 			}
 		}
+
 		neighbours = append(neighbours, neighbour)
 	}
 	return neighbours
-}
-
-func (pf *Pathfinding) lowestFCost(nodes []*Node) *Node {
-	slices.SortFunc(nodes, func(a, b *Node) int {
-		return a.FCost() - b.FCost()
-	})
-	return nodes[0]
 }
 
 func (pf *Pathfinding) calculatePath(end *Node) *Result {

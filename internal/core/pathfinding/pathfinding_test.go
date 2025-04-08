@@ -1,8 +1,9 @@
 package pathfinding
 
 import (
-	"anvil/internal/grid"
 	"testing"
+
+	"anvil/internal/grid"
 )
 
 func TestBasicPathFinding(t *testing.T) {
@@ -241,37 +242,6 @@ func TestHelperFunctions(t *testing.T) {
 
 		if len(neighbors) != 3 {
 			t.Errorf("number of neighbors = %v, want 3", len(neighbors))
-		}
-	})
-
-	t.Run("should get lowest fCost node", func(t *testing.T) {
-		pathFinding := New(5, 5)
-		nodes := []*Node{
-			{
-				Position: grid.Position{X: 0, Y: 0},
-				GCost:    20,
-				HCost:    30,
-			},
-			{
-				Position: grid.Position{X: 1, Y: 1},
-				GCost:    10,
-				HCost:    10,
-			},
-			{
-				Position: grid.Position{X: 2, Y: 2},
-				GCost:    30,
-				HCost:    20,
-			},
-		}
-
-		lowestNode := pathFinding.lowestFCost(nodes)
-		expectedPos := grid.Position{X: 1, Y: 1}
-
-		if lowestNode.Position != expectedPos {
-			t.Errorf("lowest fCost node position = %v, want %v", lowestNode.Position, expectedPos)
-		}
-		if lowestNode.FCost() != 20 {
-			t.Errorf("lowest fCost = %v, want 20", lowestNode.FCost())
 		}
 	})
 }
