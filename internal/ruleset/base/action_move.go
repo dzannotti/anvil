@@ -67,7 +67,6 @@ func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 	compression := float32(distNow-distThen) / (float32(distNow) + 0.001)
 	distWeight := compression * 0.5
 	score = score + distWeight*0.3
-
 	targetCount := src.TargetCountAt(dst)
 	currentTargetCount := src.TargetCountAt(src.Position)
 
@@ -78,8 +77,6 @@ func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 	targetWeight := float32(targetCount) / float32(len(enemies))
 
 	score = score + targetWeight*0.6
-
-	score -= a.shortMovePenalty(dst)
 
 	// AOO penalty
 	score -= float32(a.estimateOpportunityAttackDamageAt(dst)) * 1.1
@@ -102,21 +99,6 @@ func (a MoveAction) TargetCountAt(_ grid.Position) int {
 func (a MoveAction) estimateOpportunityAttackDamageAt(_ grid.Position) float64 {
 	// TODO: Implement AOO here
 	return 0.0
-}
-
-func (a MoveAction) shortMovePenalty(dst grid.Position) float32 {
-	path, ok := a.owner.World.FindPath(a.owner.Position, dst)
-	if !ok {
-		return 0
-	}
-	pathLength := float32(len(path.Path) - 1)
-	minMoveThreshold := 2
-	shortMovementThreshold := float32(minMoveThreshold)
-	if pathLength <= shortMovementThreshold {
-		shortMovePenalty := 0.05 * (1.0 - pathLength/shortMovementThreshold)
-		return shortMovePenalty
-	}
-	return 0
 }
 
 func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {

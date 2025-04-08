@@ -17,10 +17,10 @@ func (a Actor) BestScoredAction() *ScoredAction {
 func (a Actor) bestScoredActionAt(pos grid.Position, filter ...func(Action) bool) *ScoredAction {
 	var best *ScoredAction
 	for _, action := range a.Actions {
+		if len(filter) > 0 && filter[0](action) {
+			continue
+		}
 		for _, pos := range action.ValidPositions(pos) {
-			if len(filter) > 0 && filter[0](action) {
-				continue
-			}
 			scored := action.ScoreAt(pos)
 			if scored == nil || scored.Score < 0.01 {
 				continue
@@ -30,9 +30,26 @@ func (a Actor) bestScoredActionAt(pos grid.Position, filter ...func(Action) bool
 			}
 		}
 	}
-
 	return best
 }
+
+/*
+func debugScores(a Action, sa []*ScoredAction, top int) {
+	table := tablewriter.NewWriter(os.Stdout)
+	fmt.Println(a.Name())
+	table.SetHeader([]string{"Pos", "Score"})
+	for _, a := range sa[:top] {
+		if a == nil {
+			continue
+		}
+		v := []string{
+			fmt.Sprintf("%d %d", a.Position[0].X, a.Position[0].Y),
+			fmt.Sprintf("%.3f", a.Score),
+		}
+		table.Append(v)
+	}
+	table.Render()
+}*/
 
 func (a *Actor) bestScoredActionAtAsync(pos grid.Position, filter ...func(Action) bool) *ScoredAction {
 	scoredCh := make(chan *ScoredAction, 1024)
