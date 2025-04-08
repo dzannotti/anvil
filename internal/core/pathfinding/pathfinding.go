@@ -90,11 +90,19 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 			}
 
 			moveCost := cost * 10
+			if isDiagonal {
+				moveCost = moveCost + 1
+			}
+
 			neighborIdx := idx(neighborPos)
 			tentativeG := gCost[currentIdx] + moveCost
 
 			if tentativeG < gCost[neighborIdx] {
 				gCost[neighborIdx] = tentativeG
+				if isDiagonal {
+					gCost[neighborIdx] = gCost[neighborIdx] - 1
+				}
+
 				cameFrom[neighborIdx] = &current.pos
 
 				open.Push(&node{
