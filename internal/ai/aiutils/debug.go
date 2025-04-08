@@ -13,9 +13,8 @@ func debugValidPositions(a *core.Actor, valid []grid.Position) {
 	for y := range a.World.Height() {
 		for x := 0; x < a.World.Width(); x++ {
 			pos := grid.Position{X: x, Y: y}
-			nav, _ := a.World.Navigation.At(pos)
 			cell, _ := a.World.At(pos)
-			if !nav.Walkable {
+			if cell.Tile == core.Wall {
 				sb.WriteString("#")
 				continue
 			}

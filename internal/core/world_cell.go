@@ -6,8 +6,16 @@ import (
 	"anvil/internal/grid"
 )
 
+type TerrainType int
+
+const (
+	Normal TerrainType = iota
+	Wall
+)
+
 type WorldCell struct {
 	Position  grid.Position
+	Tile      TerrainType
 	Occupants []*Actor
 }
 

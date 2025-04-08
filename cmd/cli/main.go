@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"runtime"
 	"runtime/pprof"
 	"time"
 
@@ -23,30 +22,20 @@ import (
 )
 
 func setupWorld(world *core.World) {
+	walls := make([]grid.Position, 0, 25)
 	for x := 0; x < world.Width(); x++ {
-		cell, _ := world.Navigation.At(grid.Position{X: x, Y: 0})
-		cell.Walkable = false
+		walls = append(walls, grid.Position{X: x, Y: 0}, grid.Position{X: x, Y: world.Height() - 1})
+		if x > 0 && x < world.Height()-2 {
+			walls = append(walls, grid.Position{X: x, Y: world.Height() - x})
+		}
 	}
-	for x := 0; x < world.Width(); x++ {
-		cell, _ := world.Navigation.At(grid.Position{X: x, Y: world.Height() - 1})
-		cell.Walkable = false
-	}
-	for y := 0; y < world.Height(); y++ {
-		cell, _ := world.Navigation.At(grid.Position{X: 0, Y: y})
-		cell.Walkable = false
-	}
-	for y := 0; y < world.Height(); y++ {
-		cell, _ := world.Navigation.At(grid.Position{X: world.Width() - 1, Y: y})
-		cell.Walkable = false
-	}
-	for x := world.Width() - 1; x > 2; x-- {
-		cell, _ := world.Navigation.At(grid.Position{X: x, Y: world.Height() - x})
-		cell.Walkable = false
+	for _, p := range walls {
+		cell, _ := world.At(p)
+		cell.Tile = core.Wall
 	}
 }
 
 func main() {
-	runtime.GOMAXPROCS(1)
 	hub := eventbus.Hub{}
 	f, err := os.Create("cpu.prof")
 	if err != nil {
@@ -104,7 +93,6 @@ func main() {
 		fmt.Println("All dead")
 		return
 	}
-	time.Sleep(2 * time.Second)
 	fmt.Println("Winner:", winner)
 	fmt.Printf("%v elapsed\n", total)
 }
