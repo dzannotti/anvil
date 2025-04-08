@@ -13,8 +13,11 @@ func (ai *Simple) Play() {
 	if !ai.Owner.CanAct() {
 		return
 	}
-	a := ai.Owner.BestScoredAction()
-	if a != nil {
+	for {
+		a := ai.Owner.BestScoredAction()
+		if a == nil {
+			break
+		}
 		a.Action.Perform(a.Position)
 	}
 }

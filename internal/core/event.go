@@ -31,7 +31,7 @@ const (
 
 type EncounterEvent struct {
 	Actors []*Actor
-	World  World
+	World  *World
 }
 
 type RoundEvent struct {
@@ -41,7 +41,7 @@ type RoundEvent struct {
 
 type TurnEvent struct {
 	Turn  int
-	Actor Actor
+	Actor *Actor
 }
 
 type AttributeCalculationEvent struct {
@@ -57,37 +57,37 @@ type CheckResultEvent struct {
 }
 
 type ConfirmEvent struct {
-	Actor   Actor
+	Actor   *Actor
 	Confirm bool
 }
 
 type DeathEvent struct {
-	Actor Actor
+	Actor *Actor
 }
 
 type ExpressionResultEvent struct {
-	Expression expression.Expression
+	Expression *expression.Expression
 }
 
 type AttackRollEvent struct {
-	Source Actor
-	Target Actor
+	Source *Actor
+	Target *Actor
 }
 
 type TakeDamageEvent struct {
-	Target Actor
-	Damage expression.Expression
+	Target *Actor
+	Damage *expression.Expression
 }
 
 type UseActionEvent struct {
-	Source Actor
-	Target Actor
+	Source *Actor
+	Target *Actor
 	Action Action
 }
 
 type DamageRollEvent struct {
-	Source       Actor
-	Target       Actor
+	Source       *Actor
+	Target       *Actor
 	DamageSource []DamageSource
 }
 

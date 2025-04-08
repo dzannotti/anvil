@@ -108,7 +108,7 @@ func printPosition(pos grid.Position) string {
 	return fmt.Sprintf("(%d, %d)", pos.X, pos.Y)
 }
 
-func printWorld(w core.World, path []grid.Position) string {
+func printWorld(w *core.World, path []grid.Position) string {
 	sb := strings.Builder{}
 	sb.WriteString("🌍 World\n")
 	for y := range w.Height() {
@@ -136,7 +136,7 @@ func printWorld(w core.World, path []grid.Position) string {
 	return sb.String()
 }
 
-func printActor(a core.Actor) string {
+func printActor(a *core.Actor) string {
 	sb := strings.Builder{}
 	stats := []string{
 		fmt.Sprintf("HP: %3d/%-3d", a.HitPoints, a.MaxHitPoints),
@@ -150,7 +150,7 @@ func printActors(a []*core.Actor) string {
 	sb := strings.Builder{}
 	out := []string{}
 	for _, c := range a {
-		out = append(out, printActor(*c))
+		out = append(out, printActor(c))
 	}
 	sb.WriteString(strings.Join(out, "\n"))
 	return sb.String()
@@ -254,7 +254,7 @@ func printAttributeCalculation(e core.AttributeCalculationEvent) string {
 	sb := strings.Builder{}
 	sb.WriteString(emoji[e.Attribute])
 	sb.WriteString(" ")
-	sb.WriteString(printExpression(*e.Expression))
+	sb.WriteString(printExpression(e.Expression))
 	return sb.String()
 }
 
@@ -296,7 +296,7 @@ func printMove(e core.MoveEvent) string {
 	sb := strings.Builder{}
 	sb.WriteString(fmt.Sprintf("🚶 %s wants to move from %s to %s", e.Source.Name, printPosition(e.From), printPosition(e.To)))
 	sb.WriteString("\n")
-	sb.WriteString(indent(printWorld(*e.World, e.Path.Path)))
+	sb.WriteString(indent(printWorld(e.World, e.Path.Path)))
 	return sb.String()
 }
 

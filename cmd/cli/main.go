@@ -37,6 +37,10 @@ func setupWorld(world *core.World) {
 		cell, _ := world.Navigation.At(grid.Position{X: world.Width() - 1, Y: y})
 		cell.Walkable = false
 	}
+	for x := world.Width() - 1; x > 2; x-- {
+		cell, _ := world.Navigation.At(grid.Position{X: x, Y: world.Height() - x})
+		cell.Walkable = false
+	}
 }
 
 func main() {
@@ -46,13 +50,13 @@ func main() {
 	})
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
-	wres := core.Resources{Max: map[tag.Tag]int{
+	/*wres := core.Resources{Max: map[tag.Tag]int{
 		tags.WalkSpeed:  5,
 		tags.SpellSlot1: 1,
 	}}
 
 	wizard := ruleset.NewPCActor(&hub, world, grid.Position{X: 2, Y: 2}, "Wizard", 8, stats.Attributes{Strength: 10, Dexterity: 15, Constitution: 14, Intelligence: 16, Wisdom: 12, Charisma: 8}, stats.Proficiencies{Bonus: 2}, wres)
-	wizard.Equip(weapon.NewDagger())
+	wizard.Equip(weapon.NewDagger())*/
 
 	cres := core.Resources{Max: map[tag.Tag]int{
 		tags.WalkSpeed: 5,

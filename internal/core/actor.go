@@ -75,7 +75,7 @@ func (a *Actor) Equip(item Item) {
 }
 
 func (a *Actor) Die() {
-	a.Log.Start(DeathType, DeathEvent{Actor: *a})
+	a.Log.Start(DeathType, DeathEvent{Actor: a})
 	defer a.Log.End()
 	a.AddCondition(tags.Dead, &Effect{Name: "Dead"})
 	a.Log.Add(ConfirmType, ConfirmEvent{Confirm: true})

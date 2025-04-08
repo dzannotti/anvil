@@ -33,7 +33,7 @@ func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, rea
 
 func (a AttackAction) Perform(pos []grid.Position) {
 	target, _ := a.owner.World.ActorAt(pos[0])
-	a.owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: *a.owner, Target: *target})
+	a.owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: a.owner, Target: target})
 	defer a.owner.Log.End()
 	a.Commit()
 	result := a.owner.AttackRoll(target, a.tags)

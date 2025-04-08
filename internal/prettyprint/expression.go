@@ -149,7 +149,7 @@ func printTerms(terms []expression.Term, indent string) []string {
 	return lines
 }
 
-func printExpression(exp expression.Expression, start ...bool) string {
+func printExpression(exp *expression.Expression, start ...bool) string {
 	lines := make([]string, 1)
 	space := ""
 	if len(start) > 0 && start[0] {
