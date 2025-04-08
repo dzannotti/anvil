@@ -14,8 +14,8 @@ const (
 
 func (pf *Pathfinding) FindPath(start grid.Position, end grid.Position) (*Result, bool) {
 	pf.reset()
-	open := []*Node{}
-	closed := []*Node{}
+	open := make([]*Node, 0, 1024)
+	closed := make([]*Node, 0, 1024)
 	startNode, _ := pf.grid.At(start)
 	endNode, _ := pf.grid.At(end)
 	open = append(open, startNode)
@@ -75,7 +75,7 @@ func (pf *Pathfinding) neighbours(node *Node) []*Node {
 		{X: -1, Y: 1},  // down left
 		{X: -1, Y: -1}, // up left
 	}
-	neighbours := make([]*Node, 0)
+	neighbours := make([]*Node, 0, len(offset))
 	for _, offset := range offset {
 		pos := offset.Add(node.Position)
 		neighbour, ok := pf.grid.At(pos)

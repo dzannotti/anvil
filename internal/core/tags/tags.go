@@ -99,6 +99,7 @@ var (
 	NaturalWeapon = tag.FromString("Item.Weapon.Natural")
 	MartialWeapon = tag.FromString("Item.Weapon.Martial")
 	MartialAxe    = tag.FromString("Item.Weapon.Martial.Axe")
+	SimpleWeapon  = tag.FromString("Item.Weapon.Simple")
 
 	NaturalArmor = tag.FromString("Item.Armor.Natural")
 	LightArmor   = tag.FromString("Item.Armor.Light")

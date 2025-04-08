@@ -17,7 +17,7 @@ func (e *Expression) EvaluateGroup() *Expression {
 }
 
 func (e Expression) uniqueTags() []string {
-	set := make([]string, 0)
+	set := make([]string, 0, len(e.Terms))
 	for _, term := range e.Terms {
 		tags := e.primaryTags(term.Tags)
 		if slices.Contains(set, tags.ID()) {

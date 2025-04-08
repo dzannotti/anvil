@@ -15,7 +15,7 @@ import (
 func newSlamAction(owner *core.Actor) core.Action {
 	return base.NewAttackAction(owner, "Slam", []core.DamageSource{
 		{Times: 1, Sides: 6, Source: "Slam", Tags: tag.ContainerFromTag(tags.Bludgeoning)},
-	}, 1, tags.Melee)
+	}, 1, tag.ContainerFromTag(tags.Melee, tags.NaturalWeapon))
 }
 
 func New(hub *eventbus.Hub, world *core.World, pos grid.Position, name string) *core.Actor {
