@@ -135,7 +135,7 @@ func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
 			continue
 		}
 		path, ok := a.owner.World.FindPath(from, pos)
-		if !ok || path.Cost > speed {
+		if !ok || path.Speed > speed {
 			continue
 		}
 		valid = append(valid, pos)
@@ -149,11 +149,11 @@ func (a MoveAction) closestAt(dst grid.Position, enemies []*core.Actor) (int, in
 	distNow := math.MaxInt
 	distThen := math.MaxInt
 	for _, enemy := range enemies {
-		if path, ok := world.FindPath(src.Position, enemy.Position); ok && path.Cost < distNow {
-			distNow = path.Cost
+		if path, ok := world.FindPath(src.Position, enemy.Position); ok && path.Speed < distNow {
+			distNow = path.Speed
 		}
-		if path, ok := world.FindPath(dst, enemy.Position); ok && path.Cost < distThen {
-			distThen = path.Cost
+		if path, ok := world.FindPath(dst, enemy.Position); ok && path.Speed < distThen {
+			distThen = path.Speed
 		}
 	}
 	return distNow, distThen

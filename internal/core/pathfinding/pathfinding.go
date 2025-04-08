@@ -11,8 +11,9 @@ import (
 )
 
 type Result struct {
-	Path []grid.Position
-	Cost int
+	Path  []grid.Position
+	Cost  int
+	Speed int
 }
 
 type node struct {
@@ -142,7 +143,8 @@ func reconstructPath(cameFrom [][]*grid.Position, end grid.Position, cost int) *
 	}
 	slices.Reverse(path)
 	return &Result{
-		Path: path,
-		Cost: cost,
+		Path:  path,
+		Cost:  cost,
+		Speed: cost / 10,
 	}
 }
