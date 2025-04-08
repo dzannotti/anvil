@@ -1,7 +1,6 @@
 package pathfinding
 
 import (
-	"container/heap"
 	"math"
 	"slices"
 
@@ -19,29 +18,6 @@ type Result struct {
 type node struct {
 	pos    grid.Position
 	fScore int
-	index  int // used by heap
-}
-
-type nodeHeap []*node
-
-func (h nodeHeap) Len() int           { return len(h) }
-func (h nodeHeap) Less(i, j int) bool { return h[i].fScore < h[j].fScore }
-func (h nodeHeap) Swap(i, j int) {
-	h[i], h[j] = h[j], h[i]
-	h[i].index = i
-	h[j].index = j
-}
-func (h *nodeHeap) Push(x any) {
-	n := x.(*node)
-	n.index = len(*h)
-	*h = append(*h, n)
-}
-func (h *nodeHeap) Pop() any {
-	old := *h
-	n := len(old)
-	item := old[n-1]
-	*h = old[:n-1]
-	return item
 }
 
 var offsets = []grid.Position{
@@ -56,46 +32,38 @@ var offsets = []grid.Position{
 }
 
 func FindPath(start grid.Position, end grid.Position, width int, height int, movementCost func(grid.Position) int) (*Result, bool) {
-	// Use flat arrays for better cache locality
+	// Use flat arrays
 	size := width * height
 	gCost := make([]int, size)
 	cameFrom := make([]*grid.Position, size)
 
-	// Index conversion function
-	idx := func(p grid.Position) int {
-		return p.Y*width + p.X
-	}
-
-	// Initialize costs
 	for i := range gCost {
 		gCost[i] = math.MaxInt
+	}
+
+	idx := func(p grid.Position) int {
+		return p.Y*width + p.X
 	}
 
 	inBounds := func(p grid.Position) bool {
 		return p.X >= 0 && p.X < width && p.Y >= 0 && p.Y < height
 	}
 
-	open := &nodeHeap{}
-	heap.Init(open)
+	open := newMinHeap()
 
 	startNode := &node{
 		pos:    start,
 		fScore: heuristic(start, end),
 	}
-	heap.Push(open, startNode)
+	open.Push(startNode)
 	gCost[idx(start)] = 0
 
-	for open.Len() > 0 {
-		current := heap.Pop(open).(*node)
+	for !open.Empty() {
+		current := open.Pop()
 		currentIdx := idx(current.pos)
 
 		if current.pos == end {
 			return reconstructPath(cameFrom, end, width, gCost[idx(end)]), true
-		}
-
-		// If we've found a better path to this node already, skip it
-		if current.fScore > gCost[currentIdx]+heuristic(current.pos, end) {
-			continue
 		}
 
 		for i, offset := range offsets {
@@ -110,7 +78,7 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 			}
 
 			// Check diagonal wall cutting only for diagonal moves
-			isDiagonal := i >= 4 // First 4 are cardinal, last 4 are diagonal
+			isDiagonal := i >= 4
 			if isDiagonal {
 				dx := offset.X
 				dy := offset.Y
@@ -121,9 +89,7 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 				}
 			}
 
-			// Use the same cost factor for diagonals as for cardinal directions
 			moveCost := cost * 10
-
 			neighborIdx := idx(neighborPos)
 			tentativeG := gCost[currentIdx] + moveCost
 
@@ -131,12 +97,10 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 				gCost[neighborIdx] = tentativeG
 				cameFrom[neighborIdx] = &current.pos
 
-				// Create a new node (no pooling to maintain thread safety)
-				newNode := &node{
+				open.Push(&node{
 					pos:    neighborPos,
 					fScore: tentativeG + heuristic(neighborPos, end),
-				}
-				heap.Push(open, newNode)
+				})
 			}
 		}
 	}
