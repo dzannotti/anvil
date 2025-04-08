@@ -114,9 +114,8 @@ func printWorld(w *core.World, path []grid.Position) string {
 	for y := range w.Height() {
 		for x := 0; x < w.Width(); x++ {
 			pos := grid.Position{X: x, Y: y}
-			nav, _ := w.Navigation.At(pos)
 			cell, _ := w.At(pos)
-			if !nav.Walkable {
+			if cell.Tile == core.Wall {
 				sb.WriteString("#")
 				continue
 			}

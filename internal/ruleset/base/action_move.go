@@ -28,7 +28,7 @@ func NewMoveAction(owner *core.Actor) MoveAction {
 func (a MoveAction) Perform(pos []grid.Position) {
 	src := a.owner
 	world := src.World
-	path, ok := world.Navigation.FindPath(src.Position, pos[0])
+	path, ok := world.FindPath(src.Position, pos[0])
 	if !ok {
 		panic("attempted to move to unreachable location - this should never happen")
 	}
@@ -105,7 +105,7 @@ func (a MoveAction) estimateOpportunityAttackDamageAt(_ grid.Position) float64 {
 }
 
 func (a MoveAction) shortMovePenalty(dst grid.Position) float32 {
-	path, ok := a.owner.World.Navigation.FindPath(a.owner.Position, dst)
+	path, ok := a.owner.World.FindPath(a.owner.Position, dst)
 	if !ok {
 		return 0
 	}
@@ -134,8 +134,8 @@ func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
 		if cell.IsOccupied() {
 			continue
 		}
-		path, ok := a.owner.World.Navigation.FindPath(from, pos)
-		if !ok || path.Cost > speed {
+		path, ok := a.owner.World.FindPath(from, pos)
+		if !ok || path.Speed > speed {
 			continue
 		}
 		valid = append(valid, pos)
@@ -149,11 +149,11 @@ func (a MoveAction) closestAt(dst grid.Position, enemies []*core.Actor) (int, in
 	distNow := math.MaxInt
 	distThen := math.MaxInt
 	for _, enemy := range enemies {
-		if path, ok := world.Navigation.FindPath(src.Position, enemy.Position); ok && path.Cost < distNow {
-			distNow = path.Cost
+		if path, ok := world.FindPath(src.Position, enemy.Position); ok && path.Speed < distNow {
+			distNow = path.Speed
 		}
-		if path, ok := world.Navigation.FindPath(dst, enemy.Position); ok && path.Cost < distThen {
-			distThen = path.Cost
+		if path, ok := world.FindPath(dst, enemy.Position); ok && path.Speed < distThen {
+			distThen = path.Speed
 		}
 	}
 	return distNow, distThen
