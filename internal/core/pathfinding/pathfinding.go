@@ -56,18 +56,23 @@ var offsets = []grid.Position{
 }
 
 func FindPath(start grid.Position, end grid.Position, width int, height int, movementCost func(grid.Position) int) (*Result, bool) {
-	inBounds := func(p grid.Position) bool {
-		return p.X >= 0 && p.X < width && p.Y >= 0 && p.Y < height
+	// Use flat arrays for better cache locality
+	size := width * height
+	gCost := make([]int, size)
+	cameFrom := make([]*grid.Position, size)
+
+	// Index conversion function
+	idx := func(p grid.Position) int {
+		return p.Y*width + p.X
 	}
 
-	gCost := make([][]int, width)
-	cameFrom := make([][]*grid.Position, width)
-	for x := range gCost {
-		gCost[x] = make([]int, height)
-		cameFrom[x] = make([]*grid.Position, height)
-		for y := range gCost[x] {
-			gCost[x][y] = math.MaxInt
-		}
+	// Initialize costs
+	for i := range gCost {
+		gCost[i] = math.MaxInt
+	}
+
+	inBounds := func(p grid.Position) bool {
+		return p.X >= 0 && p.X < width && p.Y >= 0 && p.Y < height
 	}
 
 	open := &nodeHeap{}
@@ -78,15 +83,22 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 		fScore: heuristic(start, end),
 	}
 	heap.Push(open, startNode)
-	gCost[start.X][start.Y] = 0
+	gCost[idx(start)] = 0
 
 	for open.Len() > 0 {
 		current := heap.Pop(open).(*node)
+		currentIdx := idx(current.pos)
+
 		if current.pos == end {
-			return reconstructPath(cameFrom, end, gCost[end.X][end.Y]), true
+			return reconstructPath(cameFrom, end, width, gCost[idx(end)]), true
 		}
 
-		for _, offset := range offsets {
+		// If we've found a better path to this node already, skip it
+		if current.fScore > gCost[currentIdx]+heuristic(current.pos, end) {
+			continue
+		}
+
+		for i, offset := range offsets {
 			neighborPos := current.pos.Add(offset)
 			if !inBounds(neighborPos) {
 				continue
@@ -97,10 +109,11 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 				continue // impassable
 			}
 
-			// prevent diagonal cuts through walls
-			dx := neighborPos.X - current.pos.X
-			dy := neighborPos.Y - current.pos.Y
-			if dx != 0 && dy != 0 {
+			// Check diagonal wall cutting only for diagonal moves
+			isDiagonal := i >= 4 // First 4 are cardinal, last 4 are diagonal
+			if isDiagonal {
+				dx := offset.X
+				dy := offset.Y
 				adj1 := grid.Position{X: current.pos.X + dx, Y: current.pos.Y}
 				adj2 := grid.Position{X: current.pos.X, Y: current.pos.Y + dy}
 				if movementCost(adj1) == math.MaxInt || movementCost(adj2) == math.MaxInt {
@@ -108,15 +121,22 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 				}
 			}
 
-			moveCost := 10 * cost
-			tentativeG := gCost[current.pos.X][current.pos.Y] + moveCost
-			if tentativeG < gCost[neighborPos.X][neighborPos.Y] {
-				gCost[neighborPos.X][neighborPos.Y] = tentativeG
-				cameFrom[neighborPos.X][neighborPos.Y] = &current.pos
-				heap.Push(open, &node{
+			// Use the same cost factor for diagonals as for cardinal directions
+			moveCost := cost * 10
+
+			neighborIdx := idx(neighborPos)
+			tentativeG := gCost[currentIdx] + moveCost
+
+			if tentativeG < gCost[neighborIdx] {
+				gCost[neighborIdx] = tentativeG
+				cameFrom[neighborIdx] = &current.pos
+
+				// Create a new node (no pooling to maintain thread safety)
+				newNode := &node{
 					pos:    neighborPos,
 					fScore: tentativeG + heuristic(neighborPos, end),
-				})
+				}
+				heap.Push(open, newNode)
 			}
 		}
 	}
@@ -124,27 +144,33 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 	return nil, false
 }
 
-func heuristic(a, b grid.Position) int {
-	xd := ix.Abs(a.X - b.X)
-	yd := ix.Abs(a.Y - b.Y)
-	return 10 * (xd + yd)
-}
-
-func reconstructPath(cameFrom [][]*grid.Position, end grid.Position, cost int) *Result {
+func reconstructPath(cameFrom []*grid.Position, end grid.Position, width int, cost int) *Result {
 	path := []grid.Position{end}
 	curr := end
+
+	idx := func(p grid.Position) int {
+		return p.Y*width + p.X
+	}
+
 	for {
-		prev := cameFrom[curr.X][curr.Y]
-		if prev == nil {
+		prevPtr := cameFrom[idx(curr)]
+		if prevPtr == nil {
 			break
 		}
-		curr = *prev
+		curr = *prevPtr
 		path = append(path, curr)
 	}
+
 	slices.Reverse(path)
 	return &Result{
 		Path:  path,
 		Cost:  cost,
 		Speed: cost / 10,
 	}
+}
+func heuristic(a, b grid.Position) int {
+	dx := ix.Abs(a.X - b.X)
+	dy := ix.Abs(a.Y - b.Y)
+	// Chebyshev distance - maximum of dx and dy
+	return 10 * ix.Max(dx, dy)
 }
