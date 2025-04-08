@@ -2,10 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
-	"runtime"
-	"runtime/pprof"
 	"time"
 
 	"anvil/internal/ai"
@@ -14,6 +11,7 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
+	"anvil/internal/prettyprint"
 	"anvil/internal/ruleset"
 	"anvil/internal/ruleset/fighter"
 	"anvil/internal/ruleset/item/armor"
@@ -23,11 +21,10 @@ import (
 )
 
 func setupWorld(world *core.World) {
-	walls := make([]grid.Position, 0, 25)
+	walls := make([]grid.Position, 0, 256)
 	for x := 0; x < world.Width(); x++ {
-		walls = append(walls, grid.Position{X: x, Y: 0}, grid.Position{X: x, Y: world.Height() - 1})
-		walls = append(walls, grid.Position{X: 0, Y: x}, grid.Position{X: world.Width() - 1, Y: x})
-		if x > 0 && x < world.Height()-2 {
+		walls = append(walls, grid.Position{X: x, Y: 0}, grid.Position{X: x, Y: world.Height() - 1}, grid.Position{X: 0, Y: x}, grid.Position{X: world.Width() - 1, Y: x})
+		if x > 0 && x < world.Width()-2 {
 			walls = append(walls, grid.Position{X: world.Width() - x, Y: x})
 		}
 	}
@@ -39,24 +36,12 @@ func setupWorld(world *core.World) {
 
 func main() {
 	hub := eventbus.Hub{}
-	f, err := os.Create("cpu.prof")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	runtime.GOMAXPROCS(1)
-	runtime.SetCPUProfileRate(1000)
-	if err := pprof.StartCPUProfile(f); err != nil {
-		log.Fatal(err)
-	}
-	defer pprof.StopCPUProfile()
-
 	hub.Subscribe(func(msg eventbus.Message) {
-		//prettyprint.Print(os.Stdout, msg)
+		prettyprint.Print(os.Stdout, msg)
 	})
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
+
 	/*wres := core.Resources{Max: map[tag.Tag]int{
 		tags.WalkSpeed:  5,
 		tags.SpellSlot1: 1,

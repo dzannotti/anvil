@@ -116,7 +116,6 @@ func TestObstacleAvoidance(t *testing.T) {
 	})
 
 	t.Run("should return empty path when destination is unreachable", func(t *testing.T) {
-
 		navCost := func(pos grid.Position) int {
 			blocked := []grid.Position{}
 			for y := 0; y < 5; y++ {

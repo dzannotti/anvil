@@ -5,14 +5,17 @@ import (
 	"sync"
 )
 
+const useAsync = false
+
 func (a Actor) BestScoredAction() *ScoredAction {
-	return a.bestScoredActionAtAsync(a.Position)
+	if useAsync {
+		return a.bestScoredActionAtAsync(a.Position)
+	}
+	return a.bestScoredActionAt(a.Position)
 }
 
-/*
 func (a Actor) bestScoredActionAt(pos grid.Position, filter ...func(Action) bool) *ScoredAction {
 	var best *ScoredAction
-	// REMINDER: This cannot be made concurrent if an action uses pathfinding
 	for _, action := range a.Actions {
 		for _, pos := range action.ValidPositions(pos) {
 			if len(filter) > 0 && filter[0](action) {
@@ -30,7 +33,6 @@ func (a Actor) bestScoredActionAt(pos grid.Position, filter ...func(Action) bool
 
 	return best
 }
-*/
 
 func (a *Actor) bestScoredActionAtAsync(pos grid.Position, filter ...func(Action) bool) *ScoredAction {
 	scoredCh := make(chan *ScoredAction, 1024)
