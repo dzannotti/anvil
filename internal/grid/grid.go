@@ -1,19 +1,20 @@
 package grid
 
+import "github.com/adam-lavrik/go-imath/ix"
+
 type Grid[cell any] struct {
 	Width  int
 	Height int
-	cells  [][]cell
+	cells  []cell
 }
 
 type CellCreator[cell any] = func(pos Position) cell
 
 func New[cell any](width int, height int, creator CellCreator[cell]) *Grid[cell] {
-	cells := make([][]cell, width)
+	cells := make([]cell, width*height)
 	for x := 0; x < width; x++ {
-		cells[x] = make([]cell, height)
 		for y := 0; y < height; y++ {
-			cells[x][y] = creator(Position{X: x, Y: y})
+			cells[x+y*width] = creator(Position{X: x, Y: y})
 		}
 	}
 
@@ -24,11 +25,19 @@ func New[cell any](width int, height int, creator CellCreator[cell]) *Grid[cell]
 	}
 }
 
+func (g Grid[cell]) fromPos(pos Position) int {
+	return pos.X + pos.Y*g.Width
+}
+
+func (g Grid[cell]) fromTuple(x int, y int) int {
+	return x + y*g.Width
+}
+
 func (g Grid[cell]) At(pos Position) (*cell, bool) {
 	if !g.IsValidPosition(pos) {
 		return nil, false
 	}
-	return &g.cells[pos.X][pos.Y], true
+	return &g.cells[g.fromPos(pos)], true
 }
 
 func (g Grid[cell]) IsValidPosition(pos Position) bool {
@@ -36,13 +45,15 @@ func (g Grid[cell]) IsValidPosition(pos Position) bool {
 }
 
 func (g Grid[cell]) CellsInRange(origin Position, radius int) []*cell {
-	size := (2*radius + 1) * (2*radius + 1)
+	minX := ix.Max(0, origin.X-radius)
+	minY := ix.Max(0, origin.Y-radius)
+	maxX := ix.Min(g.Width-1, origin.X+radius)
+	maxY := ix.Min(g.Height-1, origin.Y+radius)
+	size := (maxX - minX + 1) * (maxY - minY + 1)
 	cells := make([]*cell, 0, size)
-	minP := Position{X: max(0, origin.X-radius), Y: max(0, origin.Y-radius)}
-	maxP := Position{X: min(g.Width-1, origin.X+radius), Y: min(g.Height-1, origin.Y+radius)}
-	for x := minP.X; x <= maxP.X; x++ {
-		for y := minP.Y; y <= maxP.Y; y++ {
-			cells = append(cells, &g.cells[x][y])
+	for x := minX; x <= maxX; x++ {
+		for y := minY; y <= maxY; y++ {
+			cells = append(cells, &g.cells[g.fromTuple(x, y)])
 		}
 	}
 	return cells
