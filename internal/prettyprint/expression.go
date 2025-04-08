@@ -92,11 +92,11 @@ func formatTags(term expression.Term) string {
 	if term.Tags.IsEmpty() {
 		return ""
 	}
-	termTags := strings.Builder{}
-	for _, t := range term.Tags.Strings() {
-		termTags.WriteString(tags.ToReadable(tag.FromString(t)))
+	termTags := make([]string, len(term.Tags.Strings()))
+	for i, t := range term.Tags.Strings() {
+		termTags[i] = tags.ToReadable(tag.FromString(t))
 	}
-	return fmt.Sprintf(" (%s)", termTags.String())
+	return fmt.Sprintf(" (%s)", strings.Join(termTags, ", "))
 }
 
 func printTerm(term expression.Term, indent string, last, first bool) []string {

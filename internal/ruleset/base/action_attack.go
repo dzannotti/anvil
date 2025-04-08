@@ -16,13 +16,13 @@ type AttackAction struct {
 	damage []core.DamageSource
 }
 
-func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, reach int, t ...tag.Tag) AttackAction {
+func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, reach int, tc tag.Container) AttackAction {
 	a := AttackAction{
 		Action: Action{
 			owner: owner,
 			name:  name,
 			cost:  map[tag.Tag]int{tags.Action: 1},
-			tags:  tag.ContainerFromTag(t...),
+			tags:  tc,
 		},
 		reach:  reach,
 		damage: ds,
@@ -36,7 +36,7 @@ func (a AttackAction) Perform(pos []grid.Position) {
 	a.owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: *a.owner, Target: *target})
 	defer a.owner.Log.End()
 	a.Commit()
-	result := a.owner.AttackRoll(target, tag.Container{})
+	result := a.owner.AttackRoll(target, a.tags)
 	if result.Success {
 		dmg := a.owner.DamageRoll(a.damage, result.Critical)
 		target.TakeDamage(*dmg)

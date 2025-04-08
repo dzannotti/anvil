@@ -56,11 +56,17 @@ func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 	speed := src.Resources.Remaining(tags.WalkSpeed)
 	enemies := world.ActorsInRange(dst, speed*lookAhead, func(other *core.Actor) bool { return other.Team != src.Team })
 
+	score := float32(0)
+
 	distNow, distThen := a.closestAt(dst, enemies)
 
 	if distThen >= distNow {
 		return nil
 	}
+
+	compression := float32(distNow-distThen) / (float32(distNow) + 0.001)
+	distWeight := compression * 0.5
+	score = score + distWeight*0.3
 
 	targetCount := src.TargetCountAt(dst)
 	currentTargetCount := src.TargetCountAt(src.Position)
@@ -69,11 +75,9 @@ func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 		return nil
 	}
 
-	compression := float32(distNow-distThen) / (float32(distNow) + 0.001)
-	distWeight := compression * 0.5
 	targetWeight := float32(targetCount) / float32(len(enemies))
 
-	score := distWeight*0.3 + targetWeight*0.6
+	score = score + targetWeight*0.6
 
 	score -= a.shortMovePenalty(dst)
 
