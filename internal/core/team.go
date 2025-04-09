@@ -6,8 +6,3 @@ const (
 	TeamPlayers TeamID = "Players"
 	TeamEnemies TeamID = "Enemies"
 )
-
-type Team struct {
-	Name    string
-	Members []*Actor
-}

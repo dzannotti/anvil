@@ -54,7 +54,7 @@ func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 	}
 	lookAhead := 4
 	speed := src.Resources.Remaining(tags.WalkSpeed)
-	enemies := world.ActorsInRange(dst, speed*lookAhead, func(other *core.Actor) bool { return other.Team != src.Team })
+	enemies := world.ActorsInRange(dst, speed*lookAhead, func(other *core.Actor) bool { return other.IsHostileTo(src) })
 
 	score := float32(0)
 

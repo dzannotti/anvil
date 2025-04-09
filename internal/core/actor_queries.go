@@ -9,13 +9,9 @@ import (
 )
 
 func (a Actor) Enemies() []*Actor {
-	opponents := TeamEnemies
-	if a.Team == TeamEnemies {
-		opponents = TeamPlayers
-	}
 	enemies := make([]*Actor, 0, len(a.Encounter.Actors))
 	for _, c := range a.Encounter.Actors {
-		if opponents == c.Team {
+		if a.IsHostileTo(c) {
 			enemies = append(enemies, c)
 		}
 	}
@@ -44,4 +40,8 @@ func (a Actor) TargetCountAt(pos grid.Position) int {
 		c = ix.Max(a.TargetCountAt(pos), c)
 	}
 	return c
+}
+
+func (a Actor) IsHostileTo(o *Actor) bool {
+	return a.Team != o.Team
 }
