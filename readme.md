@@ -21,7 +21,7 @@
 - [x] score based on damage
 - [x] conditions
 - [x] move based on resources
-- [ ] refactor team to have a struct (we need IsHostileTo and replace all team != other team to support neutrals)
+- [x] refactor team to have a struct (we need IsHostileTo and replace all team != other team to support neutrals)
 - [ ] revise AI to do something 'till it can do no more
 - [ ] death saving throws for PC
 - [ ] fire ball
