@@ -100,3 +100,33 @@ func (e *Effect) WithAfterSavingThrow(handler func(*Effect, *AfterSavingThrowSta
 		handler(e, state.(*AfterSavingThrowState))
 	}
 }
+
+func (e *Effect) WithAttributeChanged(handler func(*Effect, *AttributeChangedState)) {
+	e.Handlers.get()[AttributeChanged] = func(e *Effect, state any) {
+		handler(e, state.(*AttributeChangedState))
+	}
+}
+
+func (e *Effect) WithTurnStarted(handler func(*Effect, *TurnState)) {
+	e.Handlers.get()[TurnStarted] = func(e *Effect, state any) {
+		handler(e, state.(*TurnState))
+	}
+}
+
+func (e *Effect) WithTurnEnded(handler func(*Effect, *TurnState)) {
+	e.Handlers.get()[TurnEnded] = func(e *Effect, state any) {
+		handler(e, state.(*TurnState))
+	}
+}
+
+func (e *Effect) WithConditionAdded(handler func(*Effect, *ConditionChangedState)) {
+	e.Handlers.get()[ConditionAdded] = func(e *Effect, state any) {
+		handler(e, state.(*ConditionChangedState))
+	}
+}
+
+func (e *Effect) WithConditionRemoved(handler func(*Effect, *ConditionChangedState)) {
+	e.Handlers.get()[ConditionRemoved] = func(e *Effect, state any) {
+		handler(e, state.(*ConditionChangedState))
+	}
+}

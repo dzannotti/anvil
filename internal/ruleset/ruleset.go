@@ -23,7 +23,6 @@ func newActor(h *eventbus.Hub, w *core.World, t core.TeamID, pos grid.Position, 
 		Resources:     r,
 	}
 	w.AddOccupant(pos, a)
-	a.AddEffect(base.NewDeathEffect())
 	a.AddEffect(base.NewAttributeModifierEffect())
 	a.AddEffect(base.NewProficiencyModifierEffect())
 	a.AddEffect(base.NewCritEffect())
@@ -34,11 +33,13 @@ func newActor(h *eventbus.Hub, w *core.World, t core.TeamID, pos grid.Position, 
 
 func NewPCActor(h *eventbus.Hub, w *core.World, pos grid.Position, name string, hitPoints int, at stats.Attributes, p stats.Proficiencies, r core.Resources) *core.Actor {
 	a := newActor(h, w, core.TeamPlayers, pos, name, hitPoints, at, p, r)
+	a.AddEffect(base.NewDeathSavingThrowEffect())
 	return a
 }
 
 func NewNPCActor(h *eventbus.Hub, w *core.World, pos grid.Position, name string, hitPoints int, at stats.Attributes, p stats.Proficiencies, r core.Resources) *core.Actor {
 	a := newActor(h, w, core.TeamEnemies, pos, name, hitPoints, at, p, r)
+	a.AddEffect(base.NewDeathEffect())
 	a.AddProficiency(tags.NaturalWeapon)
 	return a
 }

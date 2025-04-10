@@ -58,8 +58,7 @@ func (c *Conditions) removeSpecific(t tag.Tag, src *Effect) bool {
 
 func (c *Conditions) removeAll(t tag.Tag) bool {
 	before := len(c.Sources[t])
-	// Clear slice while preserving capacity
-	c.Sources[t] = c.Sources[t][:0]
+	c.Sources[t] = make([]*Effect, 0)
 	after := len(c.Sources[t])
 	return after < before
 }

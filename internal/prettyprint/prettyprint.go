@@ -29,6 +29,7 @@ func shouldPrintEnd() bool {
 		core.SpendResourceType,
 		core.ConditionChangedType,
 		core.MoveStepType,
+		core.DeathSavingThrowResultType,
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
@@ -100,6 +101,12 @@ func printMessage(ev eventbus.Message) string {
 		return printMove(ev.Data.(core.MoveEvent))
 	case core.MoveStepType:
 		return printMoveStep(ev.Data.(core.MoveStepEvent))
+	case core.DeathSavingThrowType:
+		return printDeathSavingThrow(ev.Data.(core.DeathSavingThrowEvent))
+	case core.DeathSavingThrowResultType:
+		return printDeathSavingThrowResult(ev.Data.(core.DeathSavingThrowResultEvent))
+	case core.DeathSavingThrowAutomaticType:
+		return printDeathSavingThrowAutomaticResult(ev.Data.(core.DeathSavingThrowAutomaticEvent))
 	}
 	return "unknown event " + ev.Kind
 }
@@ -301,4 +308,20 @@ func printMove(e core.MoveEvent) string {
 
 func printMoveStep(e core.MoveStepEvent) string {
 	return fmt.Sprintf("🚶 %s about to step from %s to %s", e.Source.Name, printPosition(e.From), printPosition(e.To))
+}
+
+func printDeathSavingThrow(e core.DeathSavingThrowEvent) string {
+	return fmt.Sprintf("⚰️ %s is about to roll a Death Saving throw", e.Source.Name)
+}
+
+func printDeathSavingThrowResult(e core.DeathSavingThrowResultEvent) string {
+	return fmt.Sprintf("%d failures and %d successes", e.Failure, e.Success)
+}
+
+func printDeathSavingThrowAutomaticResult(e core.DeathSavingThrowAutomaticEvent) string {
+	status := "success"
+	if e.Failure {
+		status = "failure"
+	}
+	return fmt.Sprintf("⚰️ %s automatic death save throw %s", e.Source.Name, status)
 }

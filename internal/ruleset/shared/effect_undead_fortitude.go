@@ -11,7 +11,7 @@ func NewUndeadFortitudeEffect() *core.Effect {
 	fx.WithAfterTakeDamage(func(_ *core.Effect, s *core.AfterTakeDamageState) {
 		wouldDie := s.Source.HitPoints == 0
 		radiant := s.Result.IsDamageType(tags.Radiant)
-		if !wouldDie || radiant || *s.Critical {
+		if !wouldDie || radiant || s.Result.IsCriticalSuccess() {
 			return
 		}
 		s.Source.Log.Start(core.EffectType, core.EffectEvent{Source: s.Source, Effect: fx})

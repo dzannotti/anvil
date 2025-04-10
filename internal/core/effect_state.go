@@ -45,28 +45,24 @@ type AttributeCalculationState struct {
 type BeforeTakeDamageState struct {
 	Expression *expression.Expression
 	Source     *Actor
-	Critical   *bool
 }
 
 type AfterTakeDamageState struct {
 	Result       *expression.Expression
 	Source       *Actor
-	Critical     *bool
 	ActualDamage int
 }
 
 type BeforeDamageRollState struct {
 	Expression *expression.Expression
 	Source     *Actor
-	Critical   *bool
 	Tags       tag.Container
 }
 
 type AfterDamageRollState struct {
-	Result   *expression.Expression
-	Source   *Actor
-	Critical *bool
-	Tags     tag.Container
+	Result *expression.Expression
+	Source *Actor
+	Tags   tag.Container
 }
 
 type BeforeSavingThrowState struct {
@@ -80,7 +76,6 @@ type AfterSavingThrowState struct {
 	Result          *expression.Expression
 	Source          *Actor
 	Attribute       tag.Tag
-	Critical        *bool
 	DifficultyClass int
 }
 

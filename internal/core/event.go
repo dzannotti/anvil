@@ -8,25 +8,28 @@ import (
 )
 
 const (
-	EncounterType            = "encounter"
-	RoundType                = "round"
-	TurnType                 = "turn"
-	AttributeCalculationType = "attributeCalculation"
-	CheckResultType          = "checkResult"
-	ExpressionResultType     = "expressionResult"
-	ConfirmType              = "confirm"
-	DeathType                = "death"
-	AttackRollType           = "attackRoll"
-	TakeDamageType           = "takeDamage"
-	UseActionType            = "useAction"
-	DamageRollType           = "damageRoll"
-	EffectType               = "effect"
-	AttributeChangedType     = "attributeChanged"
-	SavingThrowType          = "savingThrow"
-	SpendResourceType        = "spendResource"
-	ConditionChangedType     = "conditionChanged"
-	MoveType                 = "moveEvent"
-	MoveStepType             = "moveStep"
+	EncounterType                 = "encounter"
+	RoundType                     = "round"
+	TurnType                      = "turn"
+	AttributeCalculationType      = "attributeCalculation"
+	CheckResultType               = "checkResult"
+	ExpressionResultType          = "expressionResult"
+	ConfirmType                   = "confirm"
+	DeathType                     = "death"
+	AttackRollType                = "attackRoll"
+	TakeDamageType                = "takeDamage"
+	UseActionType                 = "useAction"
+	DamageRollType                = "damageRoll"
+	EffectType                    = "effect"
+	AttributeChangedType          = "attributeChanged"
+	SavingThrowType               = "savingThrow"
+	SpendResourceType             = "spendResource"
+	ConditionChangedType          = "conditionChanged"
+	MoveType                      = "moveEvent"
+	MoveStepType                  = "moveStep"
+	DeathSavingThrowType          = "deathSavingThrow"
+	DeathSavingThrowResultType    = "deathSavingThrowResult"
+	DeathSavingThrowAutomaticType = "deathSavingThrowAutomatic"
 )
 
 type EncounterEvent struct {
@@ -137,4 +140,19 @@ type MoveStepEvent struct {
 	Source *Actor
 	From   grid.Position
 	To     grid.Position
+}
+
+type DeathSavingThrowEvent struct {
+	Source *Actor
+}
+
+type DeathSavingThrowResultEvent struct {
+	Source  *Actor
+	Success int
+	Failure int
+}
+
+type DeathSavingThrowAutomaticEvent struct {
+	Source  *Actor
+	Failure bool
 }

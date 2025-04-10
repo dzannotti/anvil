@@ -44,7 +44,7 @@ func (a *Actor) ModifyAttribute(t tag.Tag, val int, reason string) {
 		a.Log.Start(AttributeChangedType, AttributeChangeEvent{Source: a, Attribute: t, OldValue: old, Value: old + val, Reason: reason})
 		defer a.Log.End()
 		a.HitPoints = val
-		a.Evaluate(AttributeChanged, AttributeChangedState{Source: a, Attribute: t, OldValue: old, Value: old + val})
+		a.Evaluate(AttributeChanged, &AttributeChangedState{Source: a, Attribute: t, OldValue: old, Value: old + val})
 		return
 	}
 	panic("ModifyAttribute not implemented")
@@ -60,22 +60,29 @@ func (a *Actor) SaveThrow(t tag.Tag, dc int) CheckResult {
 	after := AfterSavingThrowState{Result: &expr, Source: a, Attribute: t, DifficultyClass: dc}
 	a.Evaluate(AfterSavingThrow, &after)
 	ok := expr.Value >= dc
-	crit := expr.IsCritical()
+	crit := false
+	if after.Result.IsCriticalSuccess() {
+		crit = true
+		ok = true
+	}
+	if after.Result.IsCriticalFailure() {
+		crit = true
+		ok = false
+	}
 	a.Log.Add(ExpressionResultType, ExpressionResultEvent{Expression: &expr})
 	a.Log.Add(CheckResultType, CheckResultEvent{Value: expr.Value, Against: dc, Critical: crit, Success: ok})
 	return CheckResult{Value: expr.Value, Against: dc, Critical: crit, Success: ok}
 }
 
 func (a *Actor) TakeDamage(damage expression.Expression) {
-	crit := false
 	expr := expression.FromDamageResult(damage)
-	before := BeforeTakeDamageState{Expression: &expr, Source: a, Critical: &crit}
+	before := BeforeTakeDamageState{Expression: &expr, Source: a}
 	a.Evaluate(BeforeTakeDamage, &before)
 	res := expr.Evaluate()
 	actual := a.HitPoints - ix.Max(a.HitPoints-res.Value, 0)
 	a.HitPoints = ix.Max(a.HitPoints-actual, 0)
 	a.Log.Start(TakeDamageType, TakeDamageEvent{Target: a, Damage: &expr})
-	after := AfterTakeDamageState{Result: res, Source: a, ActualDamage: actual, Critical: &crit}
+	after := AfterTakeDamageState{Result: res, Source: a, ActualDamage: actual}
 	a.Effects.Evaluate(AfterTakeDamage, &after)
 	a.Log.End()
 }
@@ -91,10 +98,18 @@ func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 	a.Effects.Evaluate(AfterAttackRoll, &after)
 	a.Log.Add(ExpressionResultType, ExpressionResultEvent{Expression: &expr})
 	value := after.Result.Value
-	crit := after.Result.IsCritical()
 	targetAC := target.ArmorClass()
 	a.Log.Add(AttributeCalculationType, AttributeCalculationEvent{Attribute: tags.ArmorClass, Expression: targetAC})
 	ok := value >= targetAC.Value
+	crit := false
+	if after.Result.IsCriticalSuccess() {
+		crit = true
+		ok = true
+	}
+	if after.Result.IsCriticalFailure() {
+		crit = true
+		ok = false
+	}
 	a.Log.Add(CheckResultType, CheckResultEvent{Value: value, Against: targetAC.Value, Critical: crit, Success: ok})
 	return CheckResult{Value: value, Against: targetAC.Value, Critical: crit, Success: ok}
 }
@@ -104,13 +119,16 @@ func (a *Actor) DamageRoll(ds []DamageSource, crit bool) *expression.Expression 
 	for _, d := range ds {
 		expr.AddDamageDice(d.Times, d.Sides, d.Source, d.Tags)
 	}
+	if crit {
+		expr.SetCriticalSuccess("Attack Roll")
+	}
 	a.Log.Start(DamageRollType, DamageRollEvent{Source: a, DamageSource: ds})
 	defer a.Log.End()
-	before := BeforeDamageRollState{Source: a, Expression: &expr, Critical: &crit}
+	before := BeforeDamageRollState{Source: a, Expression: &expr}
 	a.Effects.Evaluate(BeforeDamageRoll, &before)
 	res := expr.EvaluateGroup()
 	a.Log.Add(ExpressionResultType, ExpressionResultEvent{Expression: res})
-	after := AfterDamageRollState{Source: a, Result: res, Critical: &crit}
+	after := AfterDamageRollState{Source: a, Result: res}
 	a.Effects.Evaluate(AfterDamageRoll, &after)
 	return res
 }
