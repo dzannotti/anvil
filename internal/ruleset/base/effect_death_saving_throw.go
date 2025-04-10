@@ -86,7 +86,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 			success = success + 1
 			if result.Critical {
 				reset()
-				s.Source.Log.Start(core.DeathSavingThrowAutomaticType, core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: true})
+				s.Source.Log.Start(core.DeathSavingThrowAutomaticType, core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: false})
 				defer s.Source.Log.End()
 				s.Source.RemoveCondition(tags.Unconscious, nil)
 				s.Source.ModifyAttribute(tags.HitPoints, 1, "Death Saving Throw critical success")
