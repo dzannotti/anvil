@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/adam-lavrik/go-imath/ix"
@@ -55,12 +56,26 @@ func (e Expression) evaluateD20Roll(term *Term) {
 	term.Value = min(values[0], values[1])
 }
 
-func (e Expression) IsCritical() bool {
+func (e Expression) IsCriticalSuccess() bool {
 	if len(e.Terms) == 0 {
 		return false
 	}
-	if e.Terms[0].IsCritical != 0 {
-		return e.Terms[0].IsCritical == 1
+	return e.Terms[0].IsCritical == 1 || e.Terms[0].Value == e.Terms[0].Sides
+}
+
+func (e Expression) IsCriticalFailure() bool {
+	if len(e.Terms) == 0 {
+		return false
 	}
-	return e.Terms[0].Value == e.Terms[0].Sides
+	return e.Terms[0].IsCritical == -1 || e.Terms[0].Values[0] == 1
+}
+
+func (e Expression) SetCriticalSuccess(source string) {
+	e.Terms[0].IsCritical = 1
+	e.Terms[0].Source = e.Terms[0].Source + fmt.Sprintf(" as Critical success (%s)", source)
+}
+
+func (e Expression) SetCriticalFailure(source string) {
+	e.Terms[0].IsCritical = -1
+	e.Terms[0].Source = e.Terms[0].Source + fmt.Sprintf(" as Critical failure (%s)", source)
 }

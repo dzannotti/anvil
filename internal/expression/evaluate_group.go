@@ -13,6 +13,7 @@ func (e *Expression) EvaluateGroup() *Expression {
 		}
 		out.AddDamageScalar(value, group[0].Source, group[0].Tags, group...)
 	}
+	out.Terms[0].IsCritical = e.Terms[0].IsCritical
 	return out.Evaluate()
 }
 

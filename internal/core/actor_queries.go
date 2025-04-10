@@ -26,12 +26,16 @@ func (a Actor) HasCondition(t tag.Tag, src *Effect) bool {
 	return a.Conditions.Has(t, src)
 }
 
+func (a Actor) MatchCondition(t tag.Tag) bool {
+	return a.Conditions.Match(t)
+}
+
 func (a Actor) IsDead() bool {
 	return a.HasCondition(tags.Dead, nil)
 }
 
 func (a Actor) CanAct() bool {
-	return !a.HasCondition(tags.Incapacitated, nil)
+	return !a.MatchCondition(tags.Incapacitated)
 }
 
 func (a Actor) TargetCountAt(pos grid.Position) int {
