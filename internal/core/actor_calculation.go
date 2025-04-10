@@ -119,6 +119,9 @@ func (a *Actor) DamageRoll(ds []DamageSource, crit bool) *expression.Expression 
 	for _, d := range ds {
 		expr.AddDamageDice(d.Times, d.Sides, d.Source, d.Tags)
 	}
+	if crit {
+		expr.SetCriticalSuccess("Attack Roll")
+	}
 	a.Log.Start(DamageRollType, DamageRollEvent{Source: a, DamageSource: ds})
 	defer a.Log.End()
 	before := BeforeDamageRollState{Source: a, Expression: &expr}
