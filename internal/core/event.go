@@ -31,6 +31,7 @@ const (
 	DeathSavingThrowType          = "deathSavingThrow"
 	DeathSavingThrowResultType    = "deathSavingThrowResult"
 	DeathSavingThrowAutomaticType = "deathSavingThrowAutomatic"
+	TargetType                    = "target"
 )
 
 type EncounterEvent struct {
@@ -46,6 +47,10 @@ type RoundEvent struct {
 type TurnEvent struct {
 	Turn  int
 	Actor *Actor
+}
+
+type TargetEvent struct {
+	Target []*Actor
 }
 
 type AttributeCalculationEvent struct {
@@ -95,7 +100,7 @@ type TakeDamageEvent struct {
 
 type UseActionEvent struct {
 	Source *Actor
-	Target *Actor
+	Target []grid.Position
 	Action Action
 }
 
