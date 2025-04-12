@@ -10,7 +10,7 @@ type Action interface {
 	ScoreAt(pos grid.Position) *ScoredAction
 	Perform(pos []grid.Position)
 	ValidPositions(from grid.Position) []grid.Position
-	Tags() tag.Container
+	Tags() *tag.Container
 	TargetCountAt(pos grid.Position) int
 }
 

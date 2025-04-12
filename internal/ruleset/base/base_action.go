@@ -1,10 +1,11 @@
 package base
 
 import (
+	"math"
+
 	"anvil/internal/core"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
-	"math"
 )
 
 type Action struct {
@@ -14,12 +15,25 @@ type Action struct {
 	cost  map[tag.Tag]int
 }
 
+func MakeAction(owner *core.Actor, name string, t tag.Container, cost map[tag.Tag]int) Action {
+	return Action{
+		owner: owner,
+		name:  name,
+		tags:  t,
+		cost:  cost,
+	}
+}
+
+func (a Action) Owner() *core.Actor {
+	return a.owner
+}
+
 func (a Action) Name() string {
 	return a.name
 }
 
-func (a Action) Tags() tag.Container {
-	return a.tags
+func (a Action) Tags() *tag.Container {
+	return &a.tags
 }
 
 func (a Action) Cost() map[tag.Tag]int {
