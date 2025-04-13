@@ -16,7 +16,7 @@ type FireballAction struct {
 
 func NewFireballAction(owner *core.Actor) FireballAction {
 	tc := tag.ContainerFromTag(tags.SpellAttack, tags.Evocation)
-	cost := map[tag.Tag]int{tags.SpellSlot3: 1}
+	cost := map[tag.Tag]int{tags.SpellSlot3: 1, tags.Action: 1}
 	a := FireballAction{
 		Action: base.MakeAction(owner, "Fireball", tc, cost),
 		damage: []core.DamageSource{{Times: 8, Sides: 6, Source: "Fireball", Tags: tag.ContainerFromTag(tags.Fire)}},
@@ -105,7 +105,14 @@ func (a FireballAction) ValidPositions(from grid.Position) []grid.Position {
 }
 
 func (a FireballAction) TargetCountAt(pos grid.Position) int {
-	return len(a.targetsAt(pos))
+	targets := a.targetsAt(pos)
+	count := len(targets)
+	for _, t := range targets {
+		if !a.Owner().IsHostileTo(t) {
+			count = count - 1
+		}
+	}
+	return count
 }
 
 func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {
@@ -118,9 +125,6 @@ func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {
 		}
 		occupant, ok := cell.Occupant()
 		if !ok {
-			continue
-		}
-		if !a.Owner().IsHostileTo(occupant) {
 			continue
 		}
 
