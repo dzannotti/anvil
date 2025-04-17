@@ -1,5 +1,6 @@
 {
-  "words": ["dzannotti",
+  "words": [
+    "dzannotti",
     "eventemitter",
     "pathfinding",
     "neighbour",
@@ -11,15 +12,8 @@
     "strcase",
     "stretchr",
     "aiutils",
-    "chebyshev"
+    "chebyshev",
+    "raylib"
   ],
-  "ignorePaths": [
-    ".gitignore",
-    ".github/**/*",
-    "go.mod",
-    "makefile",
-    "make.bat",
-    "cspell.json",
-    ".golangci.yml",
-  ]
+  "ignorePaths": [".gitignore", ".github/**/*", "go.mod", "makefile", "make.bat", "cspell.json", ".golangci.yml"]
 }
