@@ -16,9 +16,8 @@ func DrawRectangle(rect Rectangle, color Color, thickness int) {
 	rl.DrawRectangleLinesEx(rect.toRaylib(), float32(thickness), color)
 }
 
-func DrawPoint(pos Vector2i, color Color, size int) {
-	halfSize := size / 2
-	FillRectangle(Rectangle{X: pos.X - halfSize, Y: pos.Y - halfSize, Width: size, Height: size}, color)
+func FillCircle(pos Vector2i, radius int, color Color) {
+	rl.DrawCircle(int32(pos.X), int32(pos.Y), float32(radius)*0.5, color)
 }
 
 func DrawLine(start Vector2i, end Vector2i, color Color, thickness int) {

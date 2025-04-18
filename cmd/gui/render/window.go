@@ -4,10 +4,15 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type Window struct{}
+type Window struct {
+	Width  int
+	Height int
+}
 
 func (r Window) Open() {
-	rl.InitWindow(1280, 720, "Anvil")
+	r.Width = 1280
+	r.Height = 720
+	rl.InitWindow(int32(r.Width), int32(r.Height), "Anvil")
 	rl.SetTargetFPS(60)
 }
 
@@ -21,7 +26,7 @@ func (r Window) ShouldClose() bool {
 
 func (r Window) StartFrame() {
 	rl.BeginDrawing()
-	rl.ClearBackground(rl.Black)
+	rl.ClearBackground(rl.LightGray)
 }
 
 func (r Window) EndFrame() {

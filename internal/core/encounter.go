@@ -30,6 +30,22 @@ func (e *Encounter) playTurn(act Act) {
 	turnWG.Wait()
 }
 
+func (e *Encounter) EndTurn(act Act) {
+	e.ActiveActor().EndTurn()
+
+	e.Log.Start(TurnType, TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
+	defer e.Log.End()
+	turnWG := sync.WaitGroup{}
+	turnWG.Add(1)
+	e.ActiveActor().StartTurn()
+	go func() {
+		defer turnWG.Done()
+		act(e.ActiveActor())
+	}()
+
+	turnWG.Wait()
+}
+
 func (e *Encounter) playRound(act Act) {
 	e.Log.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
 	defer e.Log.End()
@@ -41,6 +57,16 @@ func (e *Encounter) playRound(act Act) {
 			break
 		}
 	}
+}
+
+func (e *Encounter) Start() {
+	e.Round = 0
+	e.Turn = 0
+	for _, a := range e.Actors {
+		a.Encounter = e
+	}
+	e.InitiativeOrder = slices.Clone(e.Actors)
+	e.Log.Start(EncounterType, EncounterEvent{Actors: e.Actors, World: e.World})
 }
 
 func (e *Encounter) Play(act Act) string {

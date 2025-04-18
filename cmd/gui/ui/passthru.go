@@ -15,6 +15,8 @@ var Blue = rl.Blue
 var Yellow = rl.Yellow
 var Gray = rl.Gray
 var LightGray = rl.LightGray
+var RoyalBlue = rl.Color{R: 65, G: 105, B: 225, A: 255}
+var Brown = rl.Brown
 
 var colorButtonDepressed = rl.Color{R: 152, G: 156, B: 154, A: 255}
 var colorButtonHover = White

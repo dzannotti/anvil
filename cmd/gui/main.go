@@ -1,11 +1,8 @@
 package main
 
-import (
-	"net"
-)
-
+/*
 func main() {
-	clientConn, serverConn := net.Pipe()
+	clientConn, serverCponn := net.Pipe()
 	go server(serverConn)
 	client(clientConn)
-}
+}*/
