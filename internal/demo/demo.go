@@ -16,11 +16,19 @@ import (
 
 func setupWorld(world *core.World) {
 	walls := make([]grid.Position, 0, 256)
-	for x := 0; x < world.Width(); x++ {
-		walls = append(walls, grid.Position{X: x, Y: 0}, grid.Position{X: x, Y: world.Height() - 1}, grid.Position{X: 0, Y: x}, grid.Position{X: world.Width() - 1, Y: x})
-		if x > 0 && x < world.Width()-2 {
-			walls = append(walls, grid.Position{X: world.Width() - x, Y: x})
-		}
+	for x := range world.Width() {
+		walls = append(walls,
+			grid.Position{X: x, Y: 0},
+			grid.Position{X: x, Y: world.Height() - 1})
+	}
+
+	for y := range world.Height() {
+		walls = append(walls,
+			grid.Position{X: 0, Y: y},
+			grid.Position{X: world.Width() - 1, Y: y})
+	}
+	for y := 1; y < world.Height()-2; y++ {
+		walls = append(walls, grid.Position{X: world.Width() - y, Y: y})
 	}
 	for _, p := range walls {
 		cell, _ := world.At(p)
