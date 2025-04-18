@@ -14,15 +14,14 @@ type Encounter struct {
 }
 
 func (e *Encounter) Start() {
-	e.Round = 0
-	e.Turn = 0
 	for _, a := range e.Actors {
 		a.Encounter = e
 	}
 	e.InitiativeOrder = slices.Clone(e.Actors)
 	e.Log.Start(EncounterType, EncounterEvent{Actors: e.Actors, World: e.World})
-	e.Log.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
-	e.Log.Start(TurnType, TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
+	e.Round = -1
+	e.startRound()
+	e.startTurn()
 }
 
 func (e *Encounter) End() TeamID {
@@ -36,21 +35,29 @@ func (e *Encounter) End() TeamID {
 
 func (e *Encounter) EndTurn() {
 	e.Log.End()
-	e.Turn = e.Turn + 1
-	if e.Turn >= len(e.InitiativeOrder) {
-		e.EndRound()
-	}
 	if e.IsOver() {
-		e.EndRound()
+		e.endRound()
 		return
 	}
-	e.Log.Start(TurnType, TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
-	e.ActiveActor().StartTurn()
+	e.Turn = e.Turn + 1
+	if e.Turn >= len(e.InitiativeOrder) {
+		e.endRound()
+		e.startRound()
+	}
+	e.startTurn()
 }
 
-func (e *Encounter) EndRound() {
-	e.Log.End()
+func (e *Encounter) startRound() {
 	e.Round = e.Round + 1
 	e.Log.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
 	e.Turn = 0
+}
+
+func (e *Encounter) endRound() {
+	e.Log.End()
+}
+
+func (e *Encounter) startTurn() {
+	e.Log.Start(TurnType, TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
+	e.ActiveActor().StartTurn()
 }
