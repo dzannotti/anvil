@@ -9,6 +9,7 @@ import (
 type ChainMail struct{ tags tag.Container }
 
 func newChainMailEffect() *core.Effect {
+	// TODO: implement item requirements for proficiencies (and maluses)
 	fx := &core.Effect{Name: "ChainMail", Priority: core.PriorityBaseOverride}
 
 	fx.WithAttributeCalculation(func(_ *core.Effect, s *core.AttributeCalculationState) {
