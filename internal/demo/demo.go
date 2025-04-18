@@ -15,7 +15,8 @@ import (
 )
 
 func setupWorld(world *core.World) {
-	walls := make([]grid.Position, 0, 256)
+	perimeter := 2 * (world.Width() + world.Height())
+	walls := make([]grid.Position, 0, perimeter+world.Height())
 	for x := range world.Width() {
 		walls = append(walls,
 			grid.Position{X: x, Y: 0},
