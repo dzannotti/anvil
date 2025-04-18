@@ -50,9 +50,6 @@ func (e *Encounter) EndTurn() {
 
 func (e *Encounter) EndRound() {
 	e.Log.End()
-	if e.IsOver() {
-		return
-	}
 	e.Round = e.Round + 1
 	e.Log.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
 	e.Turn = 0
