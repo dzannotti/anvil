@@ -32,6 +32,7 @@ func (e *Encounter) End() {
 }
 
 func (e *Encounter) EndTurn() {
+	e.ActiveActor().EndTurn()
 	e.Log.End()
 	if e.IsOver() {
 		e.endRound()
