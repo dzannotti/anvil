@@ -26,7 +26,7 @@ func (r Window) ShouldClose() bool {
 
 func (r Window) StartFrame() {
 	rl.BeginDrawing()
-	rl.ClearBackground(rl.LightGray)
+	rl.ClearBackground(rl.DarkGray)
 }
 
 func (r Window) EndFrame() {

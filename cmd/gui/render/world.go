@@ -10,12 +10,12 @@ import (
 
 const cellSize = 52
 
-func DrawWorld(w *core.World) {
+func DrawWorld(w *core.World, e *core.Encounter) {
 	drawGrid(w.Width(), w.Height())
 	for x := 0; x < w.Width(); x++ {
 		for y := 0; y < w.Height(); y++ {
 			cell, _ := w.At(grid.Position{X: x, Y: y})
-			drawCell(cell)
+			drawCell(cell, e)
 		}
 	}
 }
@@ -29,23 +29,25 @@ func drawGrid(w int, h int) {
 	}
 }
 
-func drawCell(cell *core.WorldCell) {
+func drawCell(cell *core.WorldCell, e *core.Encounter) {
 	if cell.Tile == core.Wall {
 		drawWall(cell.Position)
 	}
 	if cell.IsOccupied() {
 		occupant, _ := cell.Occupant()
-		drawActor(occupant)
+		drawActor(occupant, occupant == e.ActiveActor())
 	}
 }
 
-func drawActor(actor *core.Actor) {
+func drawActor(actor *core.Actor, selected bool) {
 	pos := actor.Position
 	if actor.Team == core.TeamPlayers {
-
 		ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-10, ui.Green)
 	} else {
 		ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-10, ui.Red)
+	}
+	if selected {
+		ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-10, ui.Yellow)
 	}
 	ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-14, ui.RoyalBlue)
 	shortName := fmt.Sprintf("%c%c", actor.Name[0], actor.Name[len(actor.Name)-1])

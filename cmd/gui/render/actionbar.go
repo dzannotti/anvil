@@ -19,7 +19,6 @@ func DrawActions(actor *core.Actor, selectAction func(action core.Action), curre
 		endTurn()
 	}, true)
 }
-
 func drawAction(rect ui.Rectangle, action core.Action, choose func(action core.Action), selected bool) {
 	ui.DrawToggleButton(rect, action.Name(), ui.AlignMiddle, 14, func() {
 		choose(action)
