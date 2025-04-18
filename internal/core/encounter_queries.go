@@ -24,10 +24,10 @@ func (e Encounter) ActiveActor() *Actor {
 	return e.InitiativeOrder[e.Turn]
 }
 
-func (e Encounter) Winner() (string, bool) {
+func (e Encounter) Winner() (TeamID, bool) {
 	for _, c := range e.Actors {
 		if !c.IsDead() {
-			return string(c.Team), true
+			return c.Team, true
 		}
 	}
 	return "", false

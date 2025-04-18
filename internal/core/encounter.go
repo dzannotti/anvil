@@ -2,7 +2,6 @@ package core
 
 import (
 	"slices"
-	"sync"
 )
 
 type Encounter struct {
@@ -14,36 +13,7 @@ type Encounter struct {
 	World           *World
 }
 
-type Act = func(active *Actor)
-
-func (e *Encounter) playTurn(act Act) {
-	e.Log.Start(TurnType, TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
-	defer e.Log.End()
-	turnWG := sync.WaitGroup{}
-	turnWG.Add(1)
-	e.ActiveActor().StartTurn()
-	go func() {
-		defer turnWG.Done()
-		act(e.ActiveActor())
-	}()
-	e.ActiveActor().EndTurn()
-	turnWG.Wait()
-}
-
-func (e *Encounter) playRound(act Act) {
-	e.Log.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
-	defer e.Log.End()
-	e.Turn = 0
-	for i := range e.InitiativeOrder {
-		e.Turn = i
-		e.playTurn(act)
-		if e.IsOver() {
-			break
-		}
-	}
-}
-
-func (e *Encounter) Play(act Act) string {
+func (e *Encounter) Start() {
 	e.Round = 0
 	e.Turn = 0
 	for _, a := range e.Actors {
@@ -51,11 +21,39 @@ func (e *Encounter) Play(act Act) string {
 	}
 	e.InitiativeOrder = slices.Clone(e.Actors)
 	e.Log.Start(EncounterType, EncounterEvent{Actors: e.Actors, World: e.World})
-	defer e.Log.End()
-	for !e.IsOver() {
-		e.playRound(act)
-		e.Round = e.Round + 1
+	e.Log.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
+	e.Log.Start(TurnType, TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
+}
+
+func (e *Encounter) End() TeamID {
+	if !e.IsOver() {
+		panic("encounter is not over")
 	}
+	e.Log.End()
 	winner, _ := e.Winner()
 	return winner
+}
+
+func (e *Encounter) EndTurn() {
+	e.Log.End()
+	e.Turn = e.Turn + 1
+	if e.Turn >= len(e.InitiativeOrder) {
+		e.EndRound()
+	}
+	if e.IsOver() {
+		e.EndRound()
+		return
+	}
+	e.Log.Start(TurnType, TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
+	e.ActiveActor().StartTurn()
+}
+
+func (e *Encounter) EndRound() {
+	e.Log.End()
+	if e.IsOver() {
+		return
+	}
+	e.Round = e.Round + 1
+	e.Log.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
+	e.Turn = 0
 }
