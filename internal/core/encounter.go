@@ -24,13 +24,11 @@ func (e *Encounter) Start() {
 	e.startTurn()
 }
 
-func (e *Encounter) End() TeamID {
+func (e *Encounter) End() {
 	if !e.IsOver() {
-		panic("encounter is not over")
+		return
 	}
 	e.Log.End()
-	winner, _ := e.Winner()
-	return winner
 }
 
 func (e *Encounter) EndTurn() {
