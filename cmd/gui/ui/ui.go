@@ -8,7 +8,7 @@ var whenClicked func() = nil
 var systemFont rl.Font
 
 func Init() {
-	systemFont = rl.LoadFont("/System/Library/Fonts/Monaco.ttf")
+	systemFont = rl.LoadFont("font.ttf")
 	rl.SetTextureFilter(systemFont.Texture, rl.FilterBilinear)
 }
 
@@ -16,12 +16,17 @@ func Close() {
 	rl.UnloadFont(systemFont)
 }
 
-func ProcessInput() {
+func Update() {
+	whenClicked = nil
+}
+
+func ProcessInput() bool {
 	if !rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-		return
+		return false
 	}
 	if whenClicked == nil {
-		return
+		return false
 	}
 	whenClicked()
+	return true
 }
