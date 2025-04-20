@@ -1,4 +1,4 @@
-package render
+package ui
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -26,7 +26,7 @@ func (r Window) ShouldClose() bool {
 
 func (r Window) StartFrame() {
 	rl.BeginDrawing()
-	rl.ClearBackground(rl.DarkGray)
+	rl.ClearBackground(Base)
 }
 
 func (r Window) EndFrame() {

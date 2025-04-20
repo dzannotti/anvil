@@ -1,4 +1,4 @@
-package render
+package ui
 
 import (
 	"fmt"
@@ -31,14 +31,14 @@ func (am *ActionManager) Draw(cam Camera) {
 	for _, pos := range valid {
 		rect := RectFromPos(pos)
 
-		FillRectangle(rect, Color{R: 255, G: 255, B: 255, A: 100})
-		DrawRectangle(rect.Expand(-2, -2), White, 2)
+		FillRectangle(rect, Color{R: 223, G: 142, B: 29, A: 100})
+		DrawRectangle(rect.Expand(-2, -2), Peach, 2)
 		score := am.Active.ScoreAt(pos)
 		if score == nil {
-			DrawString("---", rect, Black, 13, AlignBottom)
+			DrawString("---", rect, Text, 13, AlignBottom)
 			continue
 		}
-		color := Black
+		color := Text
 		if slices.Contains(best.Position, pos) {
 			color = Red
 		}

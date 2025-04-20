@@ -1,4 +1,4 @@
-package render
+package ui
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -37,7 +37,7 @@ func (t *OverheadText) Draw() {
 	}
 	col := t.Color
 	col.A = uint8(alpha)
-	DrawString(t.Message, t.Pos, col, 18, AlignTop)
+	DrawString(t.Message, t.Pos, col, 19, AlignTop)
 }
 
 type OverheadManager struct {

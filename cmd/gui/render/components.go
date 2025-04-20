@@ -1,4 +1,4 @@
-package render
+package ui
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
@@ -16,7 +16,7 @@ func DrawToggleButton(rect Rectangle, text string, align TextAlignment, fontSize
 		}
 	}
 	DrawRectangle(rect, colorButtonBorder, 2)
-	DrawString(text, rect, Black, fontSize, align)
+	DrawString(text, rect, Crust, fontSize, align)
 	if mo {
 		if enabled {
 			whenClicked = onClick

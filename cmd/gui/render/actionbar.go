@@ -1,4 +1,4 @@
-package render
+package ui
 
 import (
 	"anvil/internal/core"

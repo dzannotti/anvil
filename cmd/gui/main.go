@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"anvil/cmd/gui/render"
+	ui "anvil/cmd/gui/render"
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/demo"
@@ -16,10 +16,10 @@ import (
 	"anvil/internal/prettyprint"
 )
 
-func printOverhead(ev eventbus.Message, overhead *render.OverheadManager) {
+func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
 	var pos grid.Position
 	var text string
-	color := render.Black
+	color := ui.Text
 	switch ev.Kind {
 	/*case core.UseActionType:
 	data := ev.Data.(core.UseActionEvent)
@@ -33,12 +33,12 @@ func printOverhead(ev eventbus.Message, overhead *render.OverheadManager) {
 		data := ev.Data.(core.TakeDamageEvent)
 		pos = data.Target.Position
 		text = fmt.Sprintf("-%d", data.Damage.Value)
-		color = render.Red
+		color = ui.Red
 	case core.ConditionChangedType:
 		data := ev.Data.(core.ConditionChangedEvent)
 		pos = data.Source.Position
 		prefix := ""
-		color = render.Yellow
+		color = ui.Yellow
 		if !data.Added {
 			prefix = "-"
 		}
@@ -47,20 +47,20 @@ func printOverhead(ev eventbus.Message, overhead *render.OverheadManager) {
 		data := ev.Data.(core.ConditionChangedEvent)
 		pos = data.Source.Position
 		prefix := ""
-		color = render.Yellow
+		color = ui.Yellow
 		if !data.Added {
 			prefix = "-"
-			color = render.Green
+			color = ui.Green
 		}
 		text = fmt.Sprintf("%s%s", prefix, tags.ToReadableShort(data.Condition))
 	case core.SavingThrowResultType:
 		data := ev.Data.(core.SavingThrowResultEvent)
 		pos = data.Actor.Position
 		text = "saved"
-		color = render.Green
+		color = ui.Green
 		if !data.Success {
 			text = "failed save"
-			color = render.Yellow
+			color = ui.Yellow
 		}
 	case core.CheckResultType:
 		data := ev.Data.(core.CheckResultEvent)
@@ -76,15 +76,15 @@ func printOverhead(ev eventbus.Message, overhead *render.OverheadManager) {
 }
 
 func client(_ net.Conn) {
-	log := render.ScrollText{
-		Rect:       render.Rectangle{X: 600, Y: 40, Width: 650, Height: 580},
+	log := ui.ScrollText{
+		Rect:       ui.Rectangle{X: 600, Y: 40, Width: 650, Height: 580},
 		LineHeight: 18 + 4,
 		Padding:    4,
-		BgColor:    render.LightGray,
-		TextColor:  render.Black,
+		BgColor:    ui.Surface0,
+		TextColor:  ui.Text,
 		FontSize:   18,
 	}
-	overhead := render.OverheadManager{}
+	overhead := ui.OverheadManager{}
 
 	hub := eventbus.Hub{}
 	hub.Subscribe(func(msg eventbus.Message) {
@@ -95,23 +95,23 @@ func client(_ net.Conn) {
 		printOverhead(msg, &overhead)
 	})
 
-	window := render.Window{}
+	window := ui.Window{}
 	window.Open()
 	defer window.Close()
-	render.Init()
-	defer render.Close()
+	ui.Init()
+	defer ui.Close()
 	world, encounter := demo.Create(&hub)
-	camera := render.Camera{}
+	camera := ui.Camera{}
 	camera.Reset(window.Width, window.Height)
 	camera.SetPosition(-20, -20)
-	am := render.ActionManager{Encounter: encounter, World: world}
+	am := ui.ActionManager{Encounter: encounter, World: world}
 
 	endTurn := func() {
 		encounter.EndTurn()
 		am.SetActive(nil)
 	}
 
-	keyBinds := render.KeyBinds{
+	keyBinds := ui.KeyBinds{
 		SelectAction: func(i int) {
 			actor := encounter.ActiveActor()
 			if i > len(actor.Actions) {
@@ -124,24 +124,24 @@ func client(_ net.Conn) {
 
 	encounter.Start()
 	for !window.ShouldClose() {
-		dt := render.GetFrameTime()
+		dt := ui.GetFrameTime()
 		window.StartFrame()
 		camera.Begin()
-		render.DrawWorld(world, encounter)
+		ui.DrawWorld(world, encounter)
 		am.Draw(camera)
 		camera.End()
-		render.DrawHeading(encounter)
-		render.DrawActions(encounter.ActiveActor(), am.SetActive, am.Active, endTurn)
+		ui.DrawHeading(encounter)
+		ui.DrawActions(encounter.ActiveActor(), am.SetActive, am.Active, endTurn)
 		overhead.Draw()
 		log.Draw()
 		window.EndFrame()
-		consumed := render.ProcessInput()
+		consumed := ui.ProcessInput()
 		if !consumed {
 			am.ProcessInput(camera)
 		}
 		overhead.Update(dt)
 		camera.Update()
-		render.Update()
+		ui.Update()
 		keyBinds.Update()
 	}
 }

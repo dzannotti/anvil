@@ -1,4 +1,4 @@
-package render
+package ui
 
 import (
 	"fmt"
@@ -13,7 +13,9 @@ func DrawWorld(w *core.World, e *core.Encounter) {
 	drawGrid(w.Width(), w.Height())
 	for x := 0; x < w.Width(); x++ {
 		for y := 0; y < w.Height(); y++ {
-			cell, _ := w.At(grid.Position{X: x, Y: y})
+			pos := grid.Position{X: x, Y: y}
+			FillRectangle(RectFromPos(pos).Expand(-1, -1), Surface2)
+			cell, _ := w.At(pos)
 			drawCell(cell, e)
 		}
 	}
@@ -21,10 +23,10 @@ func DrawWorld(w *core.World, e *core.Encounter) {
 
 func drawGrid(w int, h int) {
 	for y := 0; y <= h; y++ {
-		DrawLine(Vector2i{X: 0, Y: y * CellSize}, Vector2i{X: w * CellSize, Y: y * CellSize}, Black, 2)
+		DrawLine(Vector2i{X: 0, Y: y * CellSize}, Vector2i{X: w * CellSize, Y: y * CellSize}, Overlay0, 2)
 	}
 	for x := 0; x <= w; x++ {
-		DrawLine(Vector2i{X: x * CellSize, Y: 0}, Vector2i{X: x * CellSize, Y: h * CellSize}, Black, 2)
+		DrawLine(Vector2i{X: x * CellSize, Y: 0}, Vector2i{X: x * CellSize, Y: h * CellSize}, Overlay0, 2)
 	}
 }
 
@@ -48,9 +50,9 @@ func drawActor(actor *core.Actor, selected bool) {
 	if selected {
 		FillCircle(Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}, CellSize-10, Yellow)
 	}
-	FillCircle(Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}, CellSize-14, RoyalBlue)
+	FillCircle(Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}, CellSize-18, Blue)
 	shortName := fmt.Sprintf("%c%c", actor.Name[0], actor.Name[len(actor.Name)-1])
-	DrawString(shortName, Rectangle{X: pos.X * CellSize, Y: pos.Y * CellSize, Width: CellSize, Height: CellSize}, White, 15, AlignMiddle)
+	DrawString(shortName, Rectangle{X: pos.X * CellSize, Y: pos.Y * CellSize, Width: CellSize, Height: CellSize}, Crust, 15, AlignMiddle)
 	DrawHealthbar(actor.Position, actor.HitPoints, actor.MaxHitPoints)
 }
 
@@ -61,7 +63,7 @@ func drawWall(pos grid.Position) {
 		Width:  CellSize - 2,
 		Height: CellSize - 2,
 	}
-	FillRectangle(rect, Brown)
+	FillRectangle(rect, Base)
 }
 
 func ToWorldPosition(pos grid.Position) Vector2i {

@@ -1,4 +1,4 @@
-package render
+package ui
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ func (log *ScrollText) AddLine(line string) {
 // Draw renders the text log and handles scrolling.
 func (log *ScrollText) Draw() {
 	FillRectangle(log.Rect, log.BgColor)
-	DrawRectangle(log.Rect, Black, 2)
+	DrawRectangle(log.Rect, Surface0, 2)
 
 	// Scroll handling (if mouse is over)
 	mouse := rl.GetMousePosition()
