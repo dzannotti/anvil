@@ -63,3 +63,11 @@ func drawWall(pos grid.Position) {
 	}
 	ui.FillRectangle(rect, ui.Brown)
 }
+
+func ToWorldPosition(pos grid.Position) ui.Vector2i {
+	return ui.Vector2i{X: pos.X * cellSize, Y: pos.Y * cellSize}
+}
+
+func ToWorldPositionCenter(pos grid.Position) ui.Vector2i {
+	return ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}
+}

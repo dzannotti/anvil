@@ -22,8 +22,18 @@ const (
 	AlignBottomRight
 )
 
+func stripUnicode(s string) string {
+	result := make([]rune, 0, len(s))
+	for _, r := range s {
+		if r <= 127 {
+			result = append(result, r)
+		}
+	}
+	return string(result)
+}
+
 func DrawText(text string, pos Vector2i, color Color, size int) {
-	rl.DrawTextEx(systemFont, text, pos.toRaylib(), float32(size), textSpacing, color)
+	rl.DrawTextEx(systemFont, stripUnicode(text), pos.ToRaylib(), float32(size), textSpacing, color)
 }
 
 func DrawString(text string, rect Rectangle, color Color, size int, align TextAlignment) {
@@ -51,5 +61,5 @@ func DrawString(text string, rect Rectangle, color Color, size int, align TextAl
 	}
 
 	pos := Vector2i{X: posX, Y: posY}
-	rl.DrawTextEx(systemFont, text, pos.toRaylib(), float32(size), 0.25, color)
+	rl.DrawTextEx(systemFont, text, pos.ToRaylib(), float32(size), 0.25, color)
 }

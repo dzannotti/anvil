@@ -7,6 +7,6 @@ type Vector2i struct {
 	Y int
 }
 
-func (v Vector2i) toRaylib() rl.Vector2 {
+func (v Vector2i) ToRaylib() rl.Vector2 {
 	return rl.NewVector2(float32(v.X), float32(v.Y))
 }

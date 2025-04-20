@@ -21,5 +21,5 @@ func FillCircle(pos Vector2i, radius int, color Color) {
 }
 
 func DrawLine(start Vector2i, end Vector2i, color Color, thickness int) {
-	rl.DrawLineEx(start.toRaylib(), end.toRaylib(), float32(thickness), color)
+	rl.DrawLineEx(start.ToRaylib(), end.ToRaylib(), float32(thickness), color)
 }
