@@ -51,6 +51,7 @@ func drawActor(actor *core.Actor, selected bool) {
 	FillCircle(Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}, CellSize-14, RoyalBlue)
 	shortName := fmt.Sprintf("%c%c", actor.Name[0], actor.Name[len(actor.Name)-1])
 	DrawString(shortName, Rectangle{X: pos.X * CellSize, Y: pos.Y * CellSize, Width: CellSize, Height: CellSize}, White, 15, AlignMiddle)
+	DrawHealthbar(actor.Position, actor.HitPoints, actor.MaxHitPoints)
 }
 
 func drawWall(pos grid.Position) {
