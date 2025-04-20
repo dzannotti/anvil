@@ -137,3 +137,9 @@ func ToReadable(tag tag.Tag) string {
 	}
 	return strings.Join(keep, " ")
 }
+
+func ToReadableShort(tag tag.Tag) string {
+	long := ToReadable(tag)
+	parts := strings.Split(long, " ")
+	return parts[1]
+}

@@ -38,7 +38,7 @@ func (t *OverheadText) Draw(camera Camera) {
 	}
 	col := t.Color
 	col.A = uint8(alpha)
-	ui.DrawString(t.Message, t.Pos, col, 16, ui.AlignTop)
+	ui.DrawString(t.Message, t.Pos, col, 18, ui.AlignTop)
 }
 
 type OverheadManager struct {

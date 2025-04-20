@@ -1,12 +1,12 @@
 package core
 
 import (
+	"github.com/adam-lavrik/go-imath/ix"
+
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
 	"anvil/internal/expression"
 	"anvil/internal/tag"
-
-	"github.com/adam-lavrik/go-imath/ix"
 )
 
 func (a *Actor) ArmorClass() *expression.Expression {
@@ -67,10 +67,9 @@ func (a *Actor) SaveThrow(t tag.Tag, dc int) CheckResult {
 	}
 	if after.Result.IsCriticalFailure() {
 		crit = true
-		ok = false
 	}
 	a.Log.Add(ExpressionResultType, ExpressionResultEvent{Expression: &expr})
-	a.Log.Add(CheckResultType, CheckResultEvent{Value: expr.Value, Against: dc, Critical: crit, Success: ok})
+	a.Log.Add(SavingThrowResultType, SavingThrowResultEvent{Actor: a, Value: expr.Value, Against: dc, Critical: crit, Success: ok})
 	return CheckResult{Value: expr.Value, Against: dc, Critical: crit, Success: ok}
 }
 
@@ -110,7 +109,7 @@ func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 		crit = true
 		ok = false
 	}
-	a.Log.Add(CheckResultType, CheckResultEvent{Value: value, Against: targetAC.Value, Critical: crit, Success: ok})
+	a.Log.Add(CheckResultType, CheckResultEvent{Actor: a, Value: value, Against: targetAC.Value, Critical: crit, Success: ok, Tags: tc})
 	return CheckResult{Value: value, Against: targetAC.Value, Critical: crit, Success: ok}
 }
 
