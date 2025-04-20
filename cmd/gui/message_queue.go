@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"net"
 	"time"
@@ -58,3 +59,4 @@ func (q *MessageQueue) Pop() *Message {
 	q.events = q.events[1:]
 	return &evt
 }
+*/

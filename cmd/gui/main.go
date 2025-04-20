@@ -1,8 +1,154 @@
 package main
 
-/*
+import (
+	"fmt"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"anvil/cmd/gui/render"
+	"anvil/cmd/gui/ui"
+	"anvil/internal/core"
+	"anvil/internal/core/tags"
+	"anvil/internal/demo"
+	"anvil/internal/eventbus"
+	"anvil/internal/grid"
+	"anvil/internal/prettyprint"
+)
+
+func printOverhead(ev eventbus.Message, overhead *render.OverheadManager) {
+	var pos grid.Position
+	var text string
+	color := ui.Black
+	switch ev.Kind {
+	/*case core.UseActionType:
+	data := ev.Data.(core.UseActionEvent)
+	pos = data.Source.Position
+	text = fmt.Sprintf("*%s*", data.Action.Name())*/
+	case core.MoveType:
+		data := ev.Data.(core.MoveEvent)
+		pos = data.Source.Position
+		text = "*move*"
+	case core.TakeDamageType:
+		data := ev.Data.(core.TakeDamageEvent)
+		pos = data.Target.Position
+		text = fmt.Sprintf("-%d", data.Damage.Value)
+		color = ui.Red
+	case core.ConditionChangedType:
+		data := ev.Data.(core.ConditionChangedEvent)
+		pos = data.Source.Position
+		prefix := ""
+		color = ui.Yellow
+		if !data.Added {
+			prefix = "-"
+		}
+		text = fmt.Sprintf("%s%s", prefix, tags.ToReadableShort(data.Condition))
+	case core.EffectType:
+		data := ev.Data.(core.ConditionChangedEvent)
+		pos = data.Source.Position
+		prefix := ""
+		color = ui.Yellow
+		if !data.Added {
+			prefix = "-"
+			color = ui.Green
+		}
+		text = fmt.Sprintf("%s%s", prefix, tags.ToReadableShort(data.Condition))
+	case core.SavingThrowResultType:
+		data := ev.Data.(core.SavingThrowResultEvent)
+		pos = data.Actor.Position
+		text = "saved"
+		color = ui.Green
+		if !data.Success {
+			text = "failed save"
+			color = ui.Yellow
+		}
+	case core.CheckResultType:
+		data := ev.Data.(core.CheckResultEvent)
+		if data.Success || !data.Tags.HasTag(tags.Attack) {
+			return
+		}
+		pos = data.Actor.Position
+		text = "** miss **"
+	default:
+		return
+	}
+	overhead.Add(pos, text, color)
+}
+
+func client(_ net.Conn) {
+	log := ui.ScrollText{
+		Rect:       ui.Rectangle{X: 600, Y: 40, Width: 650, Height: 580},
+		LineHeight: 18 + 4,
+		Padding:    4,
+		BgColor:    ui.LightGray,
+		TextColor:  ui.Black,
+		FontSize:   18,
+	}
+	overhead := render.OverheadManager{}
+
+	hub := eventbus.Hub{}
+	hub.Subscribe(func(msg eventbus.Message) {
+		prettyprint.Print(&log, msg)
+		if msg.End {
+			return
+		}
+		printOverhead(msg, &overhead)
+	})
+
+	window := render.Window{}
+	window.Open()
+	defer window.Close()
+	ui.Init()
+	defer ui.Close()
+	world, encounter := demo.Create(&hub)
+	camera := render.Camera{}
+	camera.Reset(window.Width, window.Height)
+	camera.SetPosition(-20, -20)
+	am := render.ActionManager{Encounter: encounter, World: world}
+
+	endTurn := func() {
+		encounter.EndTurn()
+		am.SetActive(nil)
+	}
+
+	keyBinds := ui.KeyBinds{
+		SelectAction: func(i int) {
+			actor := encounter.ActiveActor()
+			if i > len(actor.Actions) {
+				endTurn()
+				return
+			}
+			am.SetActive(actor.Actions[i-1])
+		},
+	}
+
+	encounter.Start()
+	for !window.ShouldClose() {
+		dt := render.GetFrameTime()
+		window.StartFrame()
+		camera.Begin()
+		render.DrawWorld(world, encounter)
+		am.Draw(camera)
+		camera.End()
+		render.DrawHeading(encounter)
+		render.DrawActions(encounter.ActiveActor(), am.SetActive, am.Active, endTurn)
+		overhead.Draw()
+		log.Draw()
+		window.EndFrame()
+		consumed := ui.ProcessInput()
+		if !consumed {
+			am.ProcessInput(camera)
+		}
+		overhead.Update(dt)
+		camera.Update()
+		ui.Update()
+		keyBinds.Update()
+	}
+}
+
 func main() {
-	clientConn, serverCponn := net.Pipe()
-	go server(serverConn)
-	client(clientConn)
-}*/
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	client(nil)
+}

@@ -22,7 +22,7 @@ func (t *OverheadText) Update(dt float32) {
 	t.Age += dt
 	t.OffsetY += dt * scrollSpeed
 	if t.OffsetY > 1 {
-		t.Pos.Y -= 1
+		t.Pos.Y--
 		t.OffsetY -= 1.0
 	}
 }
@@ -31,7 +31,7 @@ func (t *OverheadText) IsExpired() bool {
 	return t.Age >= t.Lifetime
 }
 
-func (t *OverheadText) Draw(camera Camera) {
+func (t *OverheadText) Draw() {
 	alpha := 255 - int32((t.Age/t.Lifetime)*255)
 	if alpha < 0 {
 		alpha = 0
@@ -65,8 +65,8 @@ func (m *OverheadManager) Update(dt float32) {
 	m.Texts = remaining
 }
 
-func (m *OverheadManager) Draw(camera Camera) {
+func (m *OverheadManager) Draw() {
 	for i := range m.Texts {
-		m.Texts[i].Draw(camera)
+		m.Texts[i].Draw()
 	}
 }

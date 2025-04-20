@@ -4,7 +4,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-var whenClicked func() = nil
+var whenClicked func()
 var systemFont rl.Font
 
 func Init() {

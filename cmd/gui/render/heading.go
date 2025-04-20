@@ -16,5 +16,4 @@ func DrawHeading(encounter *core.Encounter) {
 		ui.DrawString(fmt.Sprintf("Best Action: %s", best.Action.Name()), textRect, ui.White, 20, ui.AlignRight)
 	}
 	ui.DrawString(fmt.Sprintf("Round %d - Turn: %d", encounter.Round+1, encounter.Turn+1), textRect, ui.White, 20, ui.AlignLeft)
-
 }
