@@ -1,4 +1,4 @@
-package ui
+package render
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"

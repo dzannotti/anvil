@@ -1,7 +1,6 @@
 package render
 
 import (
-	"anvil/cmd/gui/ui"
 	"anvil/internal/core"
 )
 
@@ -13,15 +12,15 @@ func DrawActions(actor *core.Actor, selectAction func(action core.Action), curre
 			selected = true
 		}
 
-		drawAction(ui.Rectangle{X: i*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, a, selectAction, selected)
+		drawAction(Rectangle{X: i*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, a, selectAction, selected)
 	}
-	ui.DrawButton(ui.Rectangle{X: len(actor.Actions)*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, "End Turn", ui.AlignMiddle, 14, func() {
+	DrawButton(Rectangle{X: len(actor.Actions)*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, "End Turn", AlignMiddle, 14, func() {
 		endTurn()
 	}, true)
 }
 
-func drawAction(rect ui.Rectangle, action core.Action, choose func(action core.Action), selected bool) {
-	ui.DrawToggleButton(rect, action.Name(), ui.AlignMiddle, 14, func() {
+func drawAction(rect Rectangle, action core.Action, choose func(action core.Action), selected bool) {
+	DrawToggleButton(rect, action.Name(), AlignMiddle, 14, func() {
 		choose(action)
 	}, true, selected)
 }

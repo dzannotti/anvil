@@ -3,12 +3,11 @@ package render
 import (
 	"fmt"
 
-	"anvil/cmd/gui/ui"
 	"anvil/internal/core"
 	"anvil/internal/grid"
 )
 
-const cellSize = 52
+const CellSize = 52
 
 func DrawWorld(w *core.World, e *core.Encounter) {
 	drawGrid(w.Width(), w.Height())
@@ -22,10 +21,10 @@ func DrawWorld(w *core.World, e *core.Encounter) {
 
 func drawGrid(w int, h int) {
 	for y := 0; y <= h; y++ {
-		ui.DrawLine(ui.Vector2i{X: 0, Y: y * cellSize}, ui.Vector2i{X: w * cellSize, Y: y * cellSize}, ui.Black, 2)
+		DrawLine(Vector2i{X: 0, Y: y * CellSize}, Vector2i{X: w * CellSize, Y: y * CellSize}, Black, 2)
 	}
 	for x := 0; x <= w; x++ {
-		ui.DrawLine(ui.Vector2i{X: x * cellSize, Y: 0}, ui.Vector2i{X: x * cellSize, Y: h * cellSize}, ui.Black, 2)
+		DrawLine(Vector2i{X: x * CellSize, Y: 0}, Vector2i{X: x * CellSize, Y: h * CellSize}, Black, 2)
 	}
 }
 
@@ -42,32 +41,36 @@ func drawCell(cell *core.WorldCell, e *core.Encounter) {
 func drawActor(actor *core.Actor, selected bool) {
 	pos := actor.Position
 	if actor.Team == core.TeamPlayers {
-		ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-10, ui.Green)
+		FillCircle(Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}, CellSize-10, Green)
 	} else {
-		ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-10, ui.Red)
+		FillCircle(Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}, CellSize-10, Red)
 	}
 	if selected {
-		ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-10, ui.Yellow)
+		FillCircle(Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}, CellSize-10, Yellow)
 	}
-	ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-14, ui.RoyalBlue)
+	FillCircle(Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}, CellSize-14, RoyalBlue)
 	shortName := fmt.Sprintf("%c%c", actor.Name[0], actor.Name[len(actor.Name)-1])
-	ui.DrawString(shortName, ui.Rectangle{X: pos.X * cellSize, Y: pos.Y * cellSize, Width: cellSize, Height: cellSize}, ui.White, 15, ui.AlignMiddle)
+	DrawString(shortName, Rectangle{X: pos.X * CellSize, Y: pos.Y * CellSize, Width: CellSize, Height: CellSize}, White, 15, AlignMiddle)
 }
 
 func drawWall(pos grid.Position) {
-	rect := ui.Rectangle{
-		X:      pos.X*cellSize + 1,
-		Y:      pos.Y*cellSize + 1,
-		Width:  cellSize - 2,
-		Height: cellSize - 2,
+	rect := Rectangle{
+		X:      pos.X*CellSize + 1,
+		Y:      pos.Y*CellSize + 1,
+		Width:  CellSize - 2,
+		Height: CellSize - 2,
 	}
-	ui.FillRectangle(rect, ui.Brown)
+	FillRectangle(rect, Brown)
 }
 
-func ToWorldPosition(pos grid.Position) ui.Vector2i {
-	return ui.Vector2i{X: pos.X * cellSize, Y: pos.Y * cellSize}
+func ToWorldPosition(pos grid.Position) Vector2i {
+	return Vector2i{X: pos.X * CellSize, Y: pos.Y * CellSize}
 }
 
-func ToWorldPositionCenter(pos grid.Position) ui.Vector2i {
-	return ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}
+func ToWorldPositionCenter(pos grid.Position) Vector2i {
+	return Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}
+}
+
+func RectFromPos(pos grid.Position) Rectangle {
+	return Rectangle{X: pos.X * CellSize, Y: pos.Y * CellSize, Width: CellSize, Height: CellSize}
 }

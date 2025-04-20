@@ -3,12 +3,11 @@ package render
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 
-	"anvil/cmd/gui/ui"
 	"anvil/internal/grid"
 )
 
 type OverheadText struct {
-	Pos      ui.Rectangle
+	Pos      Rectangle
 	Message  string
 	Color    rl.Color
 	Age      float32
@@ -38,7 +37,7 @@ func (t *OverheadText) Draw() {
 	}
 	col := t.Color
 	col.A = uint8(alpha)
-	ui.DrawString(t.Message, t.Pos, col, 18, ui.AlignTop)
+	DrawString(t.Message, t.Pos, col, 18, AlignTop)
 }
 
 type OverheadManager struct {
@@ -47,7 +46,7 @@ type OverheadManager struct {
 
 func (m *OverheadManager) Add(pos grid.Position, msg string, color rl.Color) {
 	m.Texts = append(m.Texts, OverheadText{
-		Pos:      ui.Rectangle{X: pos.X*cellSize + cellSize/2, Y: pos.Y * cellSize, Width: cellSize, Height: cellSize},
+		Pos:      Rectangle{X: pos.X*CellSize + CellSize/2, Y: pos.Y * CellSize, Width: CellSize, Height: CellSize},
 		Message:  msg,
 		Color:    color,
 		Lifetime: 1,

@@ -3,7 +3,6 @@ package render
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 
-	"anvil/cmd/gui/ui"
 	"anvil/internal/grid"
 )
 
@@ -72,13 +71,13 @@ func (c *Camera) GetWorldMousePosition() rl.Vector2 {
 	return rl.GetScreenToWorld2D(rl.GetMousePosition(), c.Camera)
 }
 
-func (c *Camera) GetWorldScreenPos(pos ui.Vector2i) rl.Vector2 {
+func (c *Camera) GetWorldScreenPos(pos Vector2i) rl.Vector2 {
 	return rl.GetWorldToScreen2D(pos.ToRaylib(), c.Camera)
 }
 
 func (c *Camera) GetMouseGridPosition() grid.Position {
 	mouseWorldPos := c.GetWorldMousePosition()
-	return grid.Position{X: int(mouseWorldPos.X / cellSize), Y: int(mouseWorldPos.Y / cellSize)}
+	return grid.Position{X: int(mouseWorldPos.X / CellSize), Y: int(mouseWorldPos.Y / CellSize)}
 }
 
 func (c *Camera) SetPosition(x, y float32) {
