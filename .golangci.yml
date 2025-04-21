@@ -1,8 +1,6 @@
 version: "2"
 
 linters:
-  cgo:
-    enable: false
   enable:
     - revive
     - staticcheck
@@ -34,3 +32,8 @@ formatters:
     goimports:
       local-prefixes:
         - github.com/dzannotti/anvil
+  exclusions:
+    generated: lax
+    paths:
+      - cmd/gui/
+      - ^_test\.go
