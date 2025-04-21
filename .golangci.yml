@@ -1,6 +1,8 @@
 version: "2"
 
 linters:
+  cgo:
+    enable: false
   enable:
     - revive
     - staticcheck
