@@ -12,7 +12,7 @@ jobs:
     permissions: write-all
     steps:
       - name: Generate coverage report
-        run: go test -coverprofile=coverage.out -covermode=atomic ./internal/...
+        run: go test -coverprofile=coverage.out -covermode=atomic ./cmd/cli/... ./internal/...
 
       - name: Check coverage threshold
         id: coverage
