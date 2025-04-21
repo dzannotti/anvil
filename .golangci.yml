@@ -16,9 +16,13 @@ linters:
       - linters:
           - errcheck
           - revive
+          - goimports
         path: _test\.go
         rules:
           - unused-parameter
+    paths:
+      - cmd/gui/
+      - ^_test\.go
 
 formatters:
   enable:
@@ -28,9 +32,3 @@ formatters:
     goimports:
       local-prefixes:
         - github.com/dzannotti/anvil
-        - anvil
-
-exclusions:
-  generated: lax
-  paths:
-    - ^cmd/gui/
