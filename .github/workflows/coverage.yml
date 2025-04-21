@@ -11,22 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - name: Cache apt packages
-        id: apt-cache
-        uses: actions/cache@v3
-        with:
-          path: /var/cache/apt/archives
-          key: ${{ runner.os }}-apt-${{ hashFiles('**/your-dependency-list-file') }}
+      - name: Cache APT packages
+          uses: actions/cache@v3
+          with:
+            path: |
+              /var/cache/apt
+              /var/lib/apt/lists
+            key: ${{ runner.os }}-apt-${{ hashFiles('**/.github/apt-packages.txt') }}
+            restore-keys: |
+              ${{ runner.os }}-apt-
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          if [ "${{ steps.apt-cache.outputs.cache-hit }}" != "true" ]; then
-            sudo apt-get install -y libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
-          else
-            sudo apt-get --fix-broken install
-            sudo apt-get install --no-download -y libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
-          fi
+          sudo xargs -a apt-packages.txt apt-get install -y
       - uses: actions/checkout@v4
       - name: Set up Go
         uses: actions/setup-go@v4
