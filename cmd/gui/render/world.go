@@ -42,16 +42,16 @@ func drawCell(cell *core.WorldCell, e *core.Encounter) {
 
 func drawActor(actor *core.Actor, selected bool) {
 	pos := actor.Position
-	centerPos := ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}
+	centerPos := Vector2i{X: pos.X*CellSize + CellSize/2, Y: pos.Y*CellSize + CellSize/2}
 	if actor.Team == core.TeamPlayers {
-		ui.FillCircle(centerPos, cellSize-10, ui.Green)
+		FillCircle(centerPos, CellSize-10, Green)
 	} else {
-		ui.FillCircle(centerPos, cellSize-10, ui.Red)
+		FillCircle(centerPos, CellSize-10, Red)
 	}
 	if selected {
-		ui.FillCircle(centerPos, cellSize-10, ui.Yellow)
+		FillCircle(centerPos, CellSize-10, Yellow)
 	}
-	ui.FillCircle(centerPos, cellSize-14, ui.RoyalBlue)
+	FillCircle(centerPos, CellSize-14, Blue)
 	shortName := fmt.Sprintf("%c%c", actor.Name[0], actor.Name[len(actor.Name)-1])
 	DrawString(shortName, Rectangle{X: pos.X * CellSize, Y: pos.Y * CellSize, Width: CellSize, Height: CellSize}, Crust, 15, AlignMiddle)
 	DrawHealthbar(actor.Position, actor.HitPoints, actor.MaxHitPoints)
