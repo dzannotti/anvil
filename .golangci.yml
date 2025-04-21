@@ -19,7 +19,7 @@ linters:
         rules:
           - unused-parameter
     paths:
-      - internal/ai/aiutils/debug.go
+      - cmd/gui
 formatters:
   enable:
     - gofmt

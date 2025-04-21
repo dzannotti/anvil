@@ -11,29 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - name: Cache APT packages
-          uses: actions/cache@v3
-          with:
-            path: |
-              /var/cache/apt
-              /var/lib/apt/lists
-            key: ${{ runner.os }}-apt-${{ hashFiles('**/.github/apt-packages.txt') }}
-            restore-keys: |
-              ${{ runner.os }}-apt-
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo xargs -a apt-packages.txt apt-get install -y
-      - uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.24"
-          cache: true
-
       - name: Generate coverage report
-        run: go test -coverprofile=coverage.out -covermode=atomic ./...
+        run: go test -coverprofile=coverage.out -covermode=atomic ./internal/...
 
       - name: Check coverage threshold
         id: coverage

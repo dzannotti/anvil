@@ -1,8 +1,0 @@
-libgl1-mesa-dev
-libx11-dev
-libxcursor-dev
-libxrandr-dev
-libxi-dev
-libxinerama-dev
-libwayland-dev
-xvfb
