@@ -7,6 +7,14 @@
       "request": "launch",
       "mode": "debug",
       "program": "cmd/cli/main.go"
+    },
+    {
+      "name": "Launch GUI",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "cwd": "./",
+      "program": "cmd/gui"
     }
   ]
 }

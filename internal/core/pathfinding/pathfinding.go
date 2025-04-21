@@ -4,9 +4,9 @@ import (
 	"math"
 	"slices"
 
-	"anvil/internal/grid"
-
 	"github.com/adam-lavrik/go-imath/ix"
+
+	"anvil/internal/grid"
 )
 
 type Result struct {
@@ -32,7 +32,6 @@ var offsets = []grid.Position{
 }
 
 func FindPath(start grid.Position, end grid.Position, width int, height int, movementCost func(grid.Position) int) (*Result, bool) {
-	// Use flat arrays
 	size := width * height
 	gCost := make([]int, size)
 	cameFrom := make([]*grid.Position, size)
@@ -74,7 +73,7 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 
 			cost := movementCost(neighborPos)
 			if cost == math.MaxInt {
-				continue // impassable
+				continue
 			}
 
 			// Check diagonal wall cutting only for diagonal moves
@@ -91,7 +90,7 @@ func FindPath(start grid.Position, end grid.Position, width int, height int, mov
 
 			moveCost := cost * 10
 			if isDiagonal {
-				moveCost = moveCost + 1
+				moveCost = moveCost + 4
 			}
 
 			neighborIdx := idx(neighborPos)

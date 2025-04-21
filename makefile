@@ -18,6 +18,7 @@ endif
 GOBASE := $(shell go list -m)
 GOBIN := ./bin
 GOSRC := ./cmd/cli/
+GOGUISRC := ./cmd/gui/
 
 # Simplified run that doesn't rebuild unless needed
 .PHONY: run-fast
@@ -64,6 +65,10 @@ run:
 	@echo Running application...
 	@go run $(GOSRC)/main.go
 
+gui:
+	@echo Running gui application...
+	@go run $(GOGUISRC)
+
 deps:
 	@echo Installing dependencies...
 	@go mod tidy
@@ -72,7 +77,7 @@ deps:
 
 loc:
 	@echo Counting LOC...
-	@npx sloc --keys source --format cli-table --format-option no-head --exclude ".*_test.go" .
+	@npx sloc --keys source --forwat cli-table --format-option no-head --exclude ".*_test.go" .
 
 help:
 	@echo Make targets:"
@@ -82,6 +87,7 @@ help:
 	@echo   test   - Run tests
 	@echo   lint   - Run linter
 	@echo   run    - Run the application
+	@echo   gui    - Run the gui application
 	@echo   run-fast - Run without full make overhead
 	@echo   deps   - Install dependencies
 	@echo   loc    - Count lines of code

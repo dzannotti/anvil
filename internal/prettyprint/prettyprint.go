@@ -23,6 +23,7 @@ func shouldPrintEnd() bool {
 	stoppers := []string{
 		core.ExpressionResultType,
 		core.CheckResultType,
+		core.SavingThrowResultType,
 		core.AttributeCalculationType,
 		core.ConfirmType,
 		core.AttributeChangedType,
@@ -107,6 +108,8 @@ func printMessage(ev eventbus.Message) string {
 		return printDeathSavingThrowResult(ev.Data.(core.DeathSavingThrowResultEvent))
 	case core.DeathSavingThrowAutomaticType:
 		return printDeathSavingThrowAutomaticResult(ev.Data.(core.DeathSavingThrowAutomaticEvent))
+	case core.SavingThrowResultType:
+		return printSavingThrowResult(ev.Data.(core.SavingThrowResultEvent))
 	}
 	return "unknown event " + ev.Kind
 }
@@ -228,6 +231,21 @@ func printExpressionResult(e core.ExpressionResultEvent) string {
 	sb.WriteString("🎲 ")
 	sb.WriteString(printExpression(e.Expression))
 	return sb.String()
+}
+
+func printSavingThrowResult(e core.SavingThrowResultEvent) string {
+	return formatRollResult(e.Success, e.Critical, e.Value, e.Against)
+}
+
+func formatRollResult(success, critical bool, value, against int) string {
+	icons := map[bool]string{true: "✅", false: "❌"}
+	sb := strings.Builder{}
+	sb.WriteString(icons[success])
+	if critical {
+		sb.WriteString("💥 Critical")
+	}
+	sb.WriteString(map[bool]string{true: " Success", false: " Failure"}[success])
+	return fmt.Sprintf("%s %d vs %d", sb.String(), value, against)
 }
 
 func printCheckResult(e core.CheckResultEvent) string {

@@ -23,6 +23,7 @@ const (
 	EffectType                    = "effect"
 	AttributeChangedType          = "attributeChanged"
 	SavingThrowType               = "savingThrow"
+	SavingThrowResultType         = "savingThrowResult"
 	SpendResourceType             = "spendResource"
 	ConditionChangedType          = "conditionChanged"
 	MoveType                      = "moveEvent"
@@ -53,6 +54,16 @@ type AttributeCalculationEvent struct {
 }
 
 type CheckResultEvent struct {
+	Actor    *Actor
+	Value    int
+	Against  int
+	Critical bool
+	Success  bool
+	Tags     tag.Container
+}
+
+type SavingThrowResultEvent struct {
+	Actor    *Actor
 	Value    int
 	Against  int
 	Critical bool

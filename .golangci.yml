@@ -1,4 +1,5 @@
 version: "2"
+
 linters:
   enable:
     - revive
@@ -15,11 +16,14 @@ linters:
       - linters:
           - errcheck
           - revive
+          - goimports
         path: _test\.go
         rules:
           - unused-parameter
     paths:
-      - internal/ai/aiutils/debug.go
+      - cmd/gui/
+      - ^_test\.go
+
 formatters:
   enable:
     - gofmt
@@ -31,6 +35,5 @@ formatters:
   exclusions:
     generated: lax
     paths:
-      - third_party$
-      - builtin$
-      - examples$
+      - cmd/gui/
+      - ^_test\.go
