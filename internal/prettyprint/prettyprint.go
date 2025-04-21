@@ -234,16 +234,18 @@ func printExpressionResult(e core.ExpressionResultEvent) string {
 }
 
 func printSavingThrowResult(e core.SavingThrowResultEvent) string {
-	sb := strings.Builder{}
-	sIcon := map[bool]string{true: "✅", false: "❌"}
-	sb.WriteString(sIcon[e.Success])
-	if e.Critical {
-		sb.WriteString("💥 Critical")
-	}
-	success := map[bool]string{true: " Success", false: " Failure"}
-	sb.WriteString(success[e.Success])
-	outcome := sb.String()
-	return fmt.Sprintf("%s %d vs %d", outcome, e.Value, e.Against)
+    return formatRollResult(e.Success, e.Critical, e.Value, e.Against)
+}
+
+func formatRollResult(success, critical bool, value, against int) string {
+    icons := map[bool]string{true: "✅", false: "❌"}
+    sb := strings.Builder{}
+    sb.WriteString(icons[success])
+    if critical {
+        sb.WriteString("💥 Critical")
+    }
+    sb.WriteString(map[bool]string{true: " Success", false: " Failure"}[success])
+    return fmt.Sprintf("%s %d vs %d", sb.String(), value, against)
 }
 
 func printCheckResult(e core.CheckResultEvent) string {
