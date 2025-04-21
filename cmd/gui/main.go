@@ -44,15 +44,10 @@ func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
 		}
 		text = fmt.Sprintf("%s%s", prefix, tags.ToReadableShort(data.Condition))
 	case core.EffectType:
-		data := ev.Data.(core.ConditionChangedEvent)
+		data := ev.Data.(core.EffectEvent)
 		pos = data.Source.Position
-		prefix := ""
 		color = ui.Yellow
-		if !data.Added {
-			prefix = "-"
-			color = ui.Green
-		}
-		text = fmt.Sprintf("%s%s", prefix, tags.ToReadableShort(data.Condition))
+		text = data.Effect.Name
 	case core.SavingThrowResultType:
 		data := ev.Data.(core.SavingThrowResultEvent)
 		pos = data.Actor.Position

@@ -52,13 +52,12 @@ func (am *ActionManager) Draw(cam Camera) {
 func (am *ActionManager) drawPath(actor *core.Actor, cam Camera) {
 	worldPos := cam.GetMouseGridPosition()
 	path, ok := am.World.FindPath(actor.Position, worldPos)
-	halfSize := CellSize / 2
 	if !ok {
-		FillCircle(Vector2i{X: worldPos.X*CellSize + halfSize, Y: worldPos.Y*CellSize + halfSize}, 10, Red)
+		FillCircle(ToWorldPositionCenter(worldPos), 10, Red)
 		return
 	}
 	for i := 1; i < len(path.Path); i++ {
-		DrawLine(Vector2i{X: path.Path[i-1].X*CellSize + halfSize, Y: path.Path[i-1].Y*CellSize + halfSize}, Vector2i{X: path.Path[i].X*CellSize + halfSize, Y: path.Path[i].Y*CellSize + halfSize}, Green, 2)
+		DrawLine(ToWorldPositionCenter(path.Path[i-1]), ToWorldPositionCenter(path.Path[i]), Green, 2)
 	}
 }
 

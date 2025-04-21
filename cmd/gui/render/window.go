@@ -9,7 +9,7 @@ type Window struct {
 	Height int
 }
 
-func (r Window) Open() {
+func (r *Window) Open() {
 	r.Width = 1280
 	r.Height = 720
 	rl.InitWindow(int32(r.Width), int32(r.Height), "Anvil")
@@ -17,7 +17,7 @@ func (r Window) Open() {
 }
 
 func (r Window) Close() {
-	defer rl.CloseWindow()
+	rl.CloseWindow()
 }
 
 func (r Window) ShouldClose() bool {
