@@ -41,15 +41,16 @@ func drawCell(cell *core.WorldCell, e *core.Encounter) {
 
 func drawActor(actor *core.Actor, selected bool) {
 	pos := actor.Position
+	centerPos := ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}
 	if actor.Team == core.TeamPlayers {
-		ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-10, ui.Green)
+		ui.FillCircle(centerPos, cellSize-10, ui.Green)
 	} else {
-		ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-10, ui.Red)
+		ui.FillCircle(centerPos, cellSize-10, ui.Red)
 	}
 	if selected {
-		ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-10, ui.Yellow)
+		ui.FillCircle(centerPos, cellSize-10, ui.Yellow)
 	}
-	ui.FillCircle(ui.Vector2i{X: pos.X*cellSize + cellSize/2, Y: pos.Y*cellSize + cellSize/2}, cellSize-14, ui.RoyalBlue)
+	ui.FillCircle(centerPos, cellSize-14, ui.RoyalBlue)
 	shortName := fmt.Sprintf("%c%c", actor.Name[0], actor.Name[len(actor.Name)-1])
 	ui.DrawString(shortName, ui.Rectangle{X: pos.X * cellSize, Y: pos.Y * cellSize, Width: cellSize, Height: cellSize}, ui.White, 15, ui.AlignMiddle)
 }
