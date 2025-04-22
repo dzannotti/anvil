@@ -11,6 +11,7 @@ import (
 	"anvil/internal/ruleset/item/armor"
 	"anvil/internal/ruleset/item/weapon"
 	"anvil/internal/ruleset/monster/undead/zombie"
+	"anvil/internal/ruleset/shared"
 	"anvil/internal/tag"
 )
 
@@ -52,13 +53,16 @@ func Create(hub *eventbus.Hub) (*core.World, *core.Encounter) {
 	wizard.Equip(weapon.NewDagger())*/
 
 	cres := core.Resources{Max: map[tag.Tag]int{
-		tags.WalkSpeed: 5,
+		tags.WalkSpeed:  5,
+		tags.SpellSlot3: 1,
 	}}
 	cedric := ruleset.NewPCActor(hub, world, grid.Position{X: 3, Y: 2}, "Cedric", 12, stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10}, stats.Proficiencies{Bonus: 2}, cres)
+	cedric.SpellCastingSource = tags.Intelligence
 	cedric.Equip(weapon.NewGreatAxe())
 	cedric.Equip(armor.NewChainMail())
 	cedric.AddEffect(fighter.NewFightingStyleDefense())
 	cedric.AddProficiency(tags.MartialWeapon)
+	cedric.AddAction(shared.NewFireballAction(cedric))
 	mob1 := zombie.New(hub, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
 	mob2 := zombie.New(hub, world, grid.Position{X: 7, Y: 7}, "Zombie 2")
 	//mob3 := zombie.New(hub, world, grid.Position{X: 6, Y: 6}, "Zombie 3")

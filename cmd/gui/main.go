@@ -98,13 +98,20 @@ func client(_ net.Conn) {
 	world, encounter := demo.Create(&hub)
 	camera := ui.Camera{}
 	camera.Reset(window.Width, window.Height)
-	camera.SetPosition(-20, -20)
+	camera.SetPosition(615, 330)
 	am := ui.ActionManager{Encounter: encounter, World: world}
 
 	endTurn := func() {
 		encounter.EndTurn()
 		am.SetActive(nil)
+		if encounter.IsOver() {
+			log.AddLine("***** Game over! *****")
+			winner, _ := encounter.Winner()
+			log.AddLine(fmt.Sprintf("%s won!", string(winner)))
+		}
 	}
+
+	am.EndTurn = endTurn
 
 	keyBinds := ui.KeyBinds{
 		SelectAction: func(i int) {

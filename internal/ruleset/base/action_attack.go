@@ -33,7 +33,8 @@ func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, rea
 
 func (a AttackAction) Perform(pos []grid.Position) {
 	target, _ := a.owner.World.ActorAt(pos[0])
-	a.owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: a.owner, Target: target})
+	a.owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: a.owner, Target: pos})
+	a.owner.Log.Add(core.TargetType, core.TargetEvent{Target: []*core.Actor{target}})
 	defer a.owner.Log.End()
 	a.Commit()
 	result := a.owner.AttackRoll(target, a.tags)
@@ -93,4 +94,8 @@ func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {
 
 func (a AttackAction) TargetCountAt(at grid.Position) int {
 	return len(a.ValidPositions(at))
+}
+
+func (a AttackAction) AffectedPositions(tar []grid.Position) []grid.Position {
+	return []grid.Position{tar[0]}
 }

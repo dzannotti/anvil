@@ -9,6 +9,9 @@ import (
 const useAsync = false
 
 func (a Actor) BestScoredAction() *ScoredAction {
+	if !a.CanAct() {
+		return nil
+	}
 	if useAsync {
 		return a.bestScoredActionAtAsync(a.Position)
 	}

@@ -1,9 +1,11 @@
 package core
 
 import (
-	"anvil/internal/core/pathfinding"
-	"anvil/internal/grid"
 	"math"
+
+	"anvil/internal/core/pathfinding"
+	"anvil/internal/core/shapes"
+	"anvil/internal/grid"
 )
 
 type World struct {
@@ -74,4 +76,51 @@ func (w World) FindPath(start grid.Position, end grid.Position) (*pathfinding.Re
 		return 1
 	}
 	return pathfinding.FindPath(start, end, w.Width(), w.Height(), navCost)
+}
+
+func (w World) HasLineOfSight(from grid.Position, to grid.Position) bool {
+	isDiagonalStep := func(a grid.Position, b grid.Position) bool {
+		return a.X != b.X && a.Y != b.Y
+	}
+
+	isBlocked := func(pos grid.Position) bool {
+		cell, ok := w.Grid.At(pos)
+		if !ok {
+			return true
+		}
+		return cell.Tile == Wall
+	}
+
+	line := shapes.Line(from, to)
+
+	for i := 1; i < len(line); i++ {
+		current := line[i]
+		if isDiagonalStep(line[i-1], current) {
+			adj1 := grid.Position{X: current.X, Y: line[i-1].Y}
+			adj2 := grid.Position{X: line[i-1].X, Y: current.Y}
+			if isBlocked(adj1) && isBlocked(adj2) {
+				return false
+			}
+		}
+
+		if isBlocked(current) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (w World) FloodFill(start grid.Position, radius int) []grid.Position {
+	isBlocked := func(pos grid.Position) bool {
+		cell, ok := w.Grid.At(pos)
+		if !ok {
+			return true
+		}
+		if cell.Tile == Wall {
+			return true
+		}
+		return false
+	}
+	return shapes.FloodFill(start, radius, isBlocked)
 }

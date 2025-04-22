@@ -8,21 +8,22 @@ import (
 )
 
 type Actor struct {
-	Log           LogWriter
-	Encounter     *Encounter
-	Position      grid.Position
-	World         *World
-	Attributes    stats.Attributes
-	Proficiencies stats.Proficiencies
-	Name          string
-	HitPoints     int
-	MaxHitPoints  int
-	Actions       []Action
-	Team          TeamID
-	Effects       EffectContainer
-	Equipped      []Item
-	Resources     Resources
-	Conditions    Conditions
+	Log                LogWriter
+	Encounter          *Encounter
+	Position           grid.Position
+	World              *World
+	Attributes         stats.Attributes
+	Proficiencies      stats.Proficiencies
+	SpellCastingSource tag.Tag
+	Name               string
+	HitPoints          int
+	MaxHitPoints       int
+	Actions            []Action
+	Team               TeamID
+	Effects            EffectContainer
+	Equipped           []Item
+	Resources          Resources
+	Conditions         Conditions
 }
 
 func (a *Actor) StartTurn() {
