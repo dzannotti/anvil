@@ -31,6 +31,7 @@ func shouldPrintEnd() bool {
 		core.ConditionChangedType,
 		core.MoveStepType,
 		core.DeathSavingThrowResultType,
+		core.TargetType,
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]
@@ -110,6 +111,8 @@ func printMessage(ev eventbus.Message) string {
 		return printDeathSavingThrowAutomaticResult(ev.Data.(core.DeathSavingThrowAutomaticEvent))
 	case core.SavingThrowResultType:
 		return printSavingThrowResult(ev.Data.(core.SavingThrowResultEvent))
+	case core.TargetType:
+		return printTarget(ev.Data.(core.TargetEvent))
 	}
 	return "unknown event " + ev.Kind
 }
@@ -215,7 +218,11 @@ func printConfirm(c core.ConfirmEvent) string {
 }
 
 func printUseAction(u core.UseActionEvent) string {
-	return fmt.Sprintf("💫 %s uses %s on %s", u.Source.Name, u.Action.Name(), u.Target.Name)
+	pos := make([]string, len(u.Target))
+	for i, p := range u.Target {
+		pos[i] = printPosition(p)
+	}
+	return fmt.Sprintf("💫 %s uses %s at [%s]", u.Source.Name, u.Action.Name(), strings.Join(pos, ", "))
 }
 
 func printTakeDamage(d core.TakeDamageEvent) string {
@@ -342,4 +349,12 @@ func printDeathSavingThrowAutomaticResult(e core.DeathSavingThrowAutomaticEvent)
 		status = "failure"
 	}
 	return fmt.Sprintf("⚰️ %s automatic death save throw %s", e.Source.Name, status)
+}
+
+func printTarget(e core.TargetEvent) string {
+	targets := make([]string, len(e.Target))
+	for i, t := range e.Target {
+		targets[i] = t.Name
+	}
+	return fmt.Sprintf("🎯 Target [%s]", strings.Join(targets, ", "))
 }

@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"fmt"
 	"math"
 	"strings"
 
@@ -16,7 +17,8 @@ func (e *Expression) HalveDamage(tag tag.Tag, source string) {
 		}
 		e.evaluateTerm(&term)
 		value := math.Floor(float64(term.Value) / 2.0)
-		e.Terms[i] = makeTerm(TypeScalarHalve, source, term)
+		src := fmt.Sprintf("Halved (%s) %s", source, term.Source)
+		e.Terms[i] = makeTerm(TypeScalarHalve, src, term)
 		e.Terms[i].Value = int(value)
 		e.Terms[i].Tags = term.Tags
 	}

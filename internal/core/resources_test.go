@@ -18,7 +18,7 @@ func TestResources(t *testing.T) {
 				},
 			}
 			resources.Reset()
-
+			resources.LongRest()
 			if resources.Remaining(tags.Action) != 1 {
 				t.Errorf("expected 1 action, got %d", resources.Remaining(tags.Action))
 			}
@@ -39,7 +39,7 @@ func TestResources(t *testing.T) {
 				},
 			}
 			resources.Reset()
-
+			resources.LongRest()
 			resources.Consume(tags.Action, 1)
 			if resources.Remaining(tags.Action) != 0 {
 				t.Errorf("expected 0 actions, got %d", resources.Remaining(tags.Action))
@@ -58,7 +58,7 @@ func TestResources(t *testing.T) {
 				},
 			}
 			resources.Reset()
-
+			resources.LongRest()
 			resources.Consume(tags.Action, 1)
 			resources.Consume(tags.BonusAction, 1)
 			resources.Consume(tags.Reaction, 1)
@@ -87,7 +87,7 @@ func TestResources(t *testing.T) {
 				},
 			}
 			resources.Reset()
-
+			resources.LongRest()
 			if maxSpeed := resources.maxSpeed(); maxSpeed != 40 {
 				t.Errorf("expected max speed 40, got %d", maxSpeed)
 			}
@@ -177,6 +177,7 @@ func TestResources(t *testing.T) {
 			}
 
 			resources.Reset()
+			resources.LongRest()
 
 			if remaining := resources.Remaining(tags.LegendaryAction); remaining != 3 {
 				t.Errorf("expected 3 legendary actions, got %d", remaining)

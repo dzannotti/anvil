@@ -81,6 +81,7 @@ var (
 	Bludgeoning = tag.FromString("Damage.Kind.Bludgeoning")
 	Poison      = tag.FromString("Damage.Kind.Poison")
 	Radiant     = tag.FromString("Damage.Kind.Radiant")
+	Fire        = tag.FromString("Damage.Kind.Fire")
 
 	Melee  = tag.FromString("Melee")
 	Ranged = tag.FromString("Ranged")
@@ -88,10 +89,14 @@ var (
 	// Action
 	Attack       = tag.FromString("Attack")
 	WeaponAttack = tag.FromString("Attack.Weapon")
-	SpellAttack  = tag.FromString("Attack.Spell")
-	Move         = tag.FromString("Move")
-	Dodge        = tag.FromString("Dodge")
-	Help         = tag.FromString("Help")
+	Spell        = tag.FromString("Attack.Spell")
+
+	Move  = tag.FromString("Move")
+	Dodge = tag.FromString("Dodge")
+	Help  = tag.FromString("Help")
+
+	// School
+	Evocation = tag.FromString("School.Evocation")
 
 	// Item
 	Weapon        = tag.FromString("Item.Weapon")

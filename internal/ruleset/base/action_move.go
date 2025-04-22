@@ -1,12 +1,13 @@
 package base
 
 import (
+	"math"
+
 	"anvil/internal/core"
 	"anvil/internal/core/shapes"
 	"anvil/internal/core/tags"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
-	"math"
 )
 
 type MoveAction struct {
@@ -94,6 +95,10 @@ func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 
 func (a MoveAction) TargetCountAt(_ grid.Position) int {
 	return 0
+}
+
+func (a MoveAction) AffectedPositions(tar []grid.Position) []grid.Position {
+	return []grid.Position{a.Owner().Position, tar[0]}
 }
 
 func (a MoveAction) estimateOpportunityAttackDamageAt(_ grid.Position) float64 {

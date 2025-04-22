@@ -1,11 +1,12 @@
 package core
 
 import (
+	"github.com/adam-lavrik/go-imath/ix"
+
+	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
-
-	"github.com/adam-lavrik/go-imath/ix"
 )
 
 func (a Actor) Enemies() []*Actor {
@@ -44,6 +45,10 @@ func (a Actor) TargetCountAt(pos grid.Position) int {
 		c = ix.Max(a.TargetCountAt(pos), c)
 	}
 	return c
+}
+
+func (a Actor) SpellSaveDC() int {
+	return 8 + a.Proficiencies.Bonus + stats.AttributeModifier(a.Attribute(a.SpellCastingSource).Value)
 }
 
 func (a Actor) IsHostileTo(o *Actor) bool {

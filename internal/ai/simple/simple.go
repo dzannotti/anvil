@@ -19,5 +19,8 @@ func (ai *Simple) Play() {
 			break
 		}
 		a.Action.Perform(a.Position)
+		if ai.Owner.Encounter.IsOver() {
+			break
+		}
 	}
 }

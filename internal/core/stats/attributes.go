@@ -1,9 +1,10 @@
 package stats
 
 import (
+	"math"
+
 	"anvil/internal/core/tags"
 	"anvil/internal/tag"
-	"math"
 )
 
 type Attributes struct {

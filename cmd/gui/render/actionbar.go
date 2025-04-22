@@ -6,13 +6,15 @@ import (
 
 func DrawActions(actor *core.Actor, selectAction func(action core.Action), current core.Action, endTurn func()) {
 	buttonWidth := 160
-	for i, a := range actor.Actions {
-		selected := false
-		if current != nil && current.Name() == a.Name() {
-			selected = true
-		}
+	if actor.CanAct() {
+		for i, a := range actor.Actions {
+			selected := false
+			if current != nil && current.Name() == a.Name() {
+				selected = true
+			}
 
-		drawAction(Rectangle{X: i*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, a, selectAction, selected)
+			drawAction(Rectangle{X: i*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, a, selectAction, selected)
+		}
 	}
 	DrawButton(Rectangle{X: len(actor.Actions)*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, "End Turn", AlignMiddle, 14, func() {
 		endTurn()
