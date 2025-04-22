@@ -113,9 +113,9 @@ func (a FireballAction) TargetCountAt(pos grid.Position) int {
 			count = count + int(hitFriendliesPenalty)
 			continue
 		}
-		/*if !a.Owner().World.HasLineOfSight(a.Owner().Position, t.Position) {
+		if !a.Owner().World.HasLineOfSight(a.Owner().Position, t.Position) {
 			continue
-		}*/
+		}
 		count = count + 1
 	}
 	return max(count, 0)
