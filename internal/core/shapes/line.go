@@ -7,7 +7,8 @@ import (
 )
 
 func Line(from grid.Position, to grid.Position) []grid.Position {
-	var result []grid.Position
+	maxSteps := ix.Max(ix.Abs(to.X-from.X), ix.Abs(to.Y-from.Y)) + 1
+	result := make([]grid.Position, 0, maxSteps)
 
 	x0, y0 := from.X, from.Y
 	x1, y1 := to.X, to.Y

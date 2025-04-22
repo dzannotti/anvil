@@ -76,7 +76,7 @@ func (a FireballAction) Perform(pos []grid.Position) {
 	dmg := a.Owner().DamageRoll(a.damage, false)
 	for _, t := range targets {
 		currDmg := dmg.Clone()
-		save := t.SaveThrow(tags.Dexterity, 10)
+		save := t.SaveThrow(tags.Dexterity, a.Owner().SpellSaveDC())
 		if save.Success {
 			currDmg.HalveDamage(tags.Fire, "Saving throw")
 		}
