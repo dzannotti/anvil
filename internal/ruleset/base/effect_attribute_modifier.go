@@ -1,6 +1,8 @@
 package base
 
 import (
+	"fmt"
+
 	"anvil/internal/core"
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
@@ -9,7 +11,7 @@ import (
 )
 
 func NewAttributeModifierEffect() *core.Effect {
-	applyModifier := func(src *core.Actor, e *expression.Expression, tc tag.Container) {
+	applyAttackModifier := func(src *core.Actor, e *expression.Expression, tc tag.Container) {
 		str := src.Attribute(tags.Strength)
 		dex := src.Attribute(tags.Dexterity)
 		strMod := stats.AttributeModifier(str.Value)
@@ -21,14 +23,31 @@ func NewAttributeModifierEffect() *core.Effect {
 		e.AddScalar(strMod, "Attribute Modifier (Strength)", str.Terms...)
 	}
 
+	applySpellModifier := func(src *core.Actor, e *expression.Expression) {
+		attr := src.Attribute(src.SpellCastingSource)
+		attrMod := stats.AttributeModifier(attr.Value)
+		attrName := fmt.Sprintf("%s", tags.ToReadable(src.SpellCastingSource))
+		e.AddScalar(attrMod, fmt.Sprintf("Attribute Modifier (%s)", attrName), attr.Terms...)
+	}
+
 	fx := &core.Effect{Name: "AttributeModifier", Priority: core.PriorityBase}
 
 	fx.WithBeforeAttackRoll(func(_ *core.Effect, s *core.BeforeAttackRollState) {
-		applyModifier(s.Source, s.Expression, s.Tags)
+		if s.Tags.HasTag(tags.Ranged) || s.Tags.HasTag(tags.Melee) {
+			applyAttackModifier(s.Source, s.Expression, s.Tags)
+		}
+		if s.Tags.HasTag(tags.Spell) {
+			applySpellModifier(s.Source, s.Expression)
+		}
 	})
 
 	fx.WithBeforeDamageRoll(func(_ *core.Effect, s *core.BeforeDamageRollState) {
-		applyModifier(s.Source, s.Expression, s.Tags)
+		if s.Tags.HasTag(tags.Ranged) || s.Tags.HasTag(tags.Melee) {
+			applyAttackModifier(s.Source, s.Expression, s.Tags)
+		}
+		if s.Tags.HasTag(tags.Spell) {
+			applySpellModifier(s.Source, s.Expression)
+		}
 	})
 
 	fx.WithBeforeSavingThrow(func(_ *core.Effect, s *core.BeforeSavingThrowState) {

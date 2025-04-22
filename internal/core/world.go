@@ -110,3 +110,17 @@ func (w World) HasLineOfSight(from grid.Position, to grid.Position) bool {
 
 	return true
 }
+
+func (w World) FloodFill(start grid.Position, radius int) []grid.Position {
+	isBlocked := func(pos grid.Position) bool {
+		cell, ok := w.Grid.At(pos)
+		if !ok {
+			return true
+		}
+		if cell.Tile == Wall {
+			return true
+		}
+		return false
+	}
+	return shapes.FloodFill(start, radius, isBlocked)
+}

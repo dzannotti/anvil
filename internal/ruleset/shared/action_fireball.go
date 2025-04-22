@@ -9,13 +9,15 @@ import (
 	"anvil/internal/tag"
 )
 
+var hitFriendliesPenalty = float32(-3)
+
 type FireballAction struct {
 	base.Action
 	damage []core.DamageSource
 }
 
 func NewFireballAction(owner *core.Actor) FireballAction {
-	tc := tag.ContainerFromTag(tags.SpellAttack, tags.Evocation)
+	tc := tag.ContainerFromTag(tags.Spell, tags.Evocation)
 	cost := map[tag.Tag]int{tags.SpellSlot3: 1, tags.Action: 1}
 	a := FireballAction{
 		Action: base.MakeAction(owner, "Fireball", tc, cost),
@@ -34,7 +36,7 @@ func (a FireballAction) Range() int {
 }
 
 func (a FireballAction) ScoreAt(pos grid.Position) *core.ScoredAction {
-	targets := a.Owner().World.ActorsInRange(pos, a.Reach(), func(_ *core.Actor) bool { return true })
+	targets := a.targetsAt(pos)
 	if len(targets) == 0 {
 		return nil
 	}
@@ -50,7 +52,6 @@ func (a FireballAction) ScoreAt(pos grid.Position) *core.ScoredAction {
 		}
 		lowHPPriority := (1 - t.HitPointsNormalized()) * 0.5
 		if !a.Owner().IsHostileTo(t) {
-			hitFriendliesPenalty := float32(-3)
 			damageRatio = damageRatio * hitFriendliesPenalty
 			lowHPPriority = lowHPPriority * hitFriendliesPenalty
 		}
@@ -74,12 +75,12 @@ func (a FireballAction) Perform(pos []grid.Position) {
 	a.Commit()
 	dmg := a.Owner().DamageRoll(a.damage, false)
 	for _, t := range targets {
-		tdmg := dmg.Clone()
+		currDmg := dmg.Clone()
 		save := t.SaveThrow(tags.Dexterity, 10)
 		if save.Success {
-			tdmg.HalveDamage(tags.Fire, "Saving throw")
-			t.TakeDamage(tdmg)
+			currDmg.HalveDamage(tags.Fire, "Saving throw")
 		}
+		t.TakeDamage(currDmg)
 	}
 }
 
@@ -106,17 +107,22 @@ func (a FireballAction) ValidPositions(from grid.Position) []grid.Position {
 
 func (a FireballAction) TargetCountAt(pos grid.Position) int {
 	targets := a.targetsAt(pos)
-	count := len(targets)
+	count := 0
 	for _, t := range targets {
 		if !a.Owner().IsHostileTo(t) {
-			count = count - 1
+			count = count + int(hitFriendliesPenalty)
+			continue
 		}
+		/*if !a.Owner().World.HasLineOfSight(a.Owner().Position, t.Position) {
+			continue
+		}*/
+		count = count + 1
 	}
-	return count
+	return max(count, 0)
 }
 
 func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {
-	valid := a.ValidPositions(pos)
+	valid := a.AffectedPositions([]grid.Position{pos})
 	targets := make([]*core.Actor, 0)
 	for _, p := range valid {
 		cell, ok := a.Owner().World.At(p)
@@ -134,4 +140,9 @@ func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {
 		targets = append(targets, occupant)
 	}
 	return targets
+}
+
+func (a FireballAction) AffectedPositions(tar []grid.Position) []grid.Position {
+	valid := a.Owner().World.FloodFill(tar[0], a.Reach())
+	return valid
 }

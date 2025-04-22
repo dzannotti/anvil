@@ -15,6 +15,7 @@ type ActionManager struct {
 	Active    core.Action
 	Encounter *core.Encounter
 	World     *core.World
+	EndTurn   func()
 }
 
 func (am *ActionManager) SetActive(action core.Action) {
@@ -47,6 +48,7 @@ func (am *ActionManager) Draw(cam Camera) {
 	if am.Active.Tags().MatchTag(tags.Move) {
 		am.drawPath(actor, cam)
 	}
+	am.drawAffected(actor, cam)
 }
 
 func (am *ActionManager) drawPath(actor *core.Actor, cam Camera) {
@@ -79,5 +81,18 @@ func (am *ActionManager) ProcessInput(cam Camera) bool {
 	fmt.Println("Performing action")
 	am.Active.Perform([]grid.Position{mousePos})
 	am.SetActive(nil)
+	if am.Encounter.IsOver() {
+		am.EndTurn()
+	}
 	return true
+}
+
+func (am *ActionManager) drawAffected(actor *core.Actor, cam Camera) {
+	worldPos := cam.GetMouseGridPosition()
+	affected := am.Active.AffectedPositions([]grid.Position{worldPos})
+	for _, pos := range affected {
+		rect := RectFromPos(pos)
+		FillRectangle(rect, Color{R: 238, G: 190, B: 190, A: 100})
+		DrawRectangle(rect.Expand(-2, -2), Rosewater, 2)
+	}
 }

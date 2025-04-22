@@ -12,6 +12,7 @@ type Action interface {
 	ValidPositions(from grid.Position) []grid.Position
 	Tags() *tag.Container
 	TargetCountAt(pos grid.Position) int
+	AffectedPositions(target []grid.Position) []grid.Position
 }
 
 type ScoredAction struct {
