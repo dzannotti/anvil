@@ -30,7 +30,7 @@ func NewAttributeModifierEffect() *core.Effect {
 		e.AddScalar(attrMod, fmt.Sprintf("Attribute Modifier (%s)", attrName), attr.Terms...)
 	}
 
-	fx := &core.Effect{Name: "AttributeModifier", Priority: core.PriorityBase}
+	fx := &core.Effect{Name: "Attribute Modifier", Priority: core.PriorityBase}
 
 	fx.WithBeforeAttackRoll(func(_ *core.Effect, s *core.BeforeAttackRollState) {
 		if s.Tags.HasTag(tags.Ranged) || s.Tags.HasTag(tags.Melee) {

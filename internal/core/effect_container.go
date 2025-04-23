@@ -27,3 +27,12 @@ func (c *EffectContainer) Evaluate(event string, state any) {
 		effect.Evaluate(event, state)
 	}
 }
+
+func (c EffectContainer) Find(ID string) *Effect {
+	for _, effect := range c.effects {
+		if effect.ID() == ID {
+			return effect
+		}
+	}
+	return nil
+}

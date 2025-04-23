@@ -99,7 +99,8 @@ type TurnState struct {
 }
 
 type SerializeState struct {
-	state []struct {
+	Operation string
+	State     struct {
 		Kind string
 		ID   string
 		Data any

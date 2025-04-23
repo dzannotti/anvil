@@ -16,8 +16,8 @@ type AttackAction struct {
 	damage []core.DamageSource
 }
 
-func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, reach int, tc tag.Container) AttackAction {
-	a := AttackAction{
+func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, reach int, tc tag.Container) *AttackAction {
+	a := &AttackAction{
 		Action: Action{
 			owner: owner,
 			name:  name,

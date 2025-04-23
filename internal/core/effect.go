@@ -45,15 +45,16 @@ func (e *Effect) Evaluate(event string, state any) {
 		wg.Wait()
 	}
 	if !exists && event == Serialize {
-		save := state.(SerializeState)
-		save.state = append(save.state, struct {
+		save := state.(*SerializeState)
+		save.State = struct {
 			Kind string
 			ID   string
 			Data any
 		}{
 			Kind: e.Name,
 			ID:   e.ID(),
-		})
+			Data: nil,
+		}
 	}
 }
 
