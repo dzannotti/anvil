@@ -40,7 +40,7 @@ func setupWorld(world *core.World) {
 	}
 }
 
-func Create(hub *eventbus.Hub) (*core.World, *core.Encounter) {
+func New(hub *eventbus.Hub) *core.GameState {
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
 
@@ -71,5 +71,5 @@ func Create(hub *eventbus.Hub) (*core.World, *core.Encounter) {
 		World:  world,
 		Actors: []*core.Actor{ /*wizard, */ cedric, mob1, mob2 /* mob3*/},
 	}
-	return world, encounter
+	return &core.GameState{World: world, Encounter: encounter}
 }

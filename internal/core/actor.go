@@ -8,6 +8,7 @@ import (
 )
 
 type Actor struct {
+	id                 string
 	Log                LogWriter
 	Encounter          *Encounter
 	Position           grid.Position
@@ -40,7 +41,12 @@ func (a *Actor) Evaluate(event string, state any) {
 }
 
 func (a *Actor) AddAction(action ...Action) {
-	a.Actions = append(a.Actions, action...)
+	for _, ca := range action {
+		if a.HasAction(ca) {
+			continue
+		}
+		a.Actions = append(a.Actions, ca)
+	}
 }
 
 func (a *Actor) AddEffect(effect ...*Effect) {

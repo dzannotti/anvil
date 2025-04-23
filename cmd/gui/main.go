@@ -95,7 +95,10 @@ func client(_ net.Conn) {
 	defer window.Close()
 	ui.Init()
 	defer ui.Close()
-	world, encounter := demo.Create(&hub)
+	gameState := demo.New(&hub)
+	world := gameState.World
+	encounter := gameState.Encounter
+
 	camera := ui.Camera{}
 	camera.Reset(window.Width, window.Height)
 	camera.SetPosition(615, 330)

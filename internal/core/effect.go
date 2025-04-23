@@ -2,6 +2,8 @@ package core
 
 import (
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 type Priority int
@@ -25,6 +27,7 @@ func (h *Handlers) get() Handlers {
 }
 
 type Effect struct {
+	id       string
 	Name     string
 	Handlers Handlers
 	Priority Priority
@@ -41,6 +44,24 @@ func (e *Effect) Evaluate(event string, state any) {
 		}()
 		wg.Wait()
 	}
+	if !exists && event == Serialize {
+		save := state.(SerializeState)
+		save.state = append(save.state, struct {
+			Kind string
+			ID   string
+			Data any
+		}{
+			Kind: e.Name,
+			ID:   e.ID(),
+		})
+	}
+}
+
+func (e *Effect) ID() string {
+	if e.id == "" {
+		e.id = uuid.New().String()
+	}
+	return e.id
 }
 
 func (e *Effect) withHandler(event string, handler func(*Effect, any)) {
@@ -128,5 +149,17 @@ func (e *Effect) WithConditionAdded(handler func(*Effect, *ConditionChangedState
 func (e *Effect) WithConditionRemoved(handler func(*Effect, *ConditionChangedState)) {
 	e.Handlers.get()[ConditionRemoved] = func(e *Effect, state any) {
 		handler(e, state.(*ConditionChangedState))
+	}
+}
+
+func (e *Effect) WithSerialize(handler func(*Effect, *SerializeState)) {
+	e.Handlers.get()[Serialize] = func(e *Effect, state any) {
+		handler(e, state.(*SerializeState))
+	}
+}
+
+func (e *Effect) WithDeserialize(handler func(*Effect, *SerializeState)) {
+	e.Handlers.get()[Deserialize] = func(e *Effect, state any) {
+		handler(e, state.(*SerializeState))
 	}
 }

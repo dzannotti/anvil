@@ -17,7 +17,8 @@ func main() {
 	hub.Subscribe(func(msg eventbus.Message) {
 		prettyprint.Print(os.Stdout, msg)
 	})
-	_, encounter := demo.Create(&hub)
+	gameState := demo.New(&hub)
+	encounter := gameState.Encounter
 
 	gameAI := map[*core.Actor]ai.AI{}
 	for _, a := range encounter.Actors {
@@ -30,7 +31,9 @@ func main() {
 		active := encounter.ActiveActor()
 		gameAI[active].Play()
 		encounter.EndTurn()
+		break
 	}
+	gameState.Save(os.Stdout)
 	encounter.End()
 	total := time.Since(start)
 	winner, _ := encounter.Winner()
