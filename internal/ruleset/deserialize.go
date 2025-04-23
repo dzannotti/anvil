@@ -36,7 +36,7 @@ func CreateItem(_ *core.Actor, s core.SerializedItem) core.Item {
 	if s.Kind == "Dagger" {
 		return weapon.NewDagger()
 	}
-	if s.Kind == "ChainMail" {
+	if s.Kind == "Chain Mail" {
 		return armor.NewChainMail()
 	}
 	panic("cannot deserialize item: " + s.Kind)

@@ -98,6 +98,9 @@ func deserializeActor(hub *eventbus.Hub, a *SerializedActor, createAction Create
 	for i := range a.Effects {
 		fx := createEffect(a.Effects[i])
 		if fx != nil {
+			st := SerializeState{Operation: "deserialize"}
+			st.State.Data = a.Effects[i].Data
+			fx.Evaluate(Deserialize, &st)
 			actor.AddEffect(fx)
 		}
 	}
