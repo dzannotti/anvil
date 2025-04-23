@@ -31,7 +31,6 @@ func main() {
 		active := encounter.ActiveActor()
 		gameAI[active].Play()
 		encounter.EndTurn()
-		break
 	}
 	encounter.End()
 	total := time.Since(start)
