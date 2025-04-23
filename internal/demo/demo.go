@@ -6,7 +6,7 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
-	"anvil/internal/ruleset"
+	"anvil/internal/ruleset/actor"
 	"anvil/internal/ruleset/fighter"
 	"anvil/internal/ruleset/item/armor"
 	"anvil/internal/ruleset/item/weapon"
@@ -56,7 +56,7 @@ func New(hub *eventbus.Hub) *core.GameState {
 		tags.WalkSpeed:  5,
 		tags.SpellSlot3: 1,
 	}}
-	cedric := ruleset.NewPCActor(hub, world, grid.Position{X: 3, Y: 2}, "Cedric", 12, stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10}, stats.Proficiencies{Bonus: 2}, cres)
+	cedric := actor.NewPCActor(hub, world, grid.Position{X: 3, Y: 2}, "Cedric", 12, stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10}, stats.Proficiencies{Bonus: 2}, cres)
 	cedric.SpellCastingSource = tags.Intelligence
 	cedric.Equip(weapon.NewGreatAxe())
 	cedric.Equip(armor.NewChainMail())

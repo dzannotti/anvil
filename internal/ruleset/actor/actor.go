@@ -1,4 +1,4 @@
-package ruleset
+package actor
 
 import (
 	"anvil/internal/core"

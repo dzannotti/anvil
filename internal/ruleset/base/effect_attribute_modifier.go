@@ -26,7 +26,7 @@ func NewAttributeModifierEffect() *core.Effect {
 	applySpellModifier := func(src *core.Actor, e *expression.Expression) {
 		attr := src.Attribute(src.SpellCastingSource)
 		attrMod := stats.AttributeModifier(attr.Value)
-		attrName := fmt.Sprintf("%s", tags.ToReadable(src.SpellCastingSource))
+		attrName := tags.ToReadable(src.SpellCastingSource)
 		e.AddScalar(attrMod, fmt.Sprintf("Attribute Modifier (%s)", attrName), attr.Terms...)
 	}
 

@@ -33,10 +33,6 @@ func main() {
 		encounter.EndTurn()
 		break
 	}
-	werr := gameState.Save(os.Stdout)
-	if werr != nil {
-		fmt.Println("Error writing game state:", werr)
-	}
 	encounter.End()
 	total := time.Since(start)
 	winner, _ := encounter.Winner()
