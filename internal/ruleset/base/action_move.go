@@ -14,8 +14,8 @@ type MoveAction struct {
 	Action
 }
 
-func NewMoveAction(owner *core.Actor) MoveAction {
-	a := MoveAction{
+func NewMoveAction(owner *core.Actor) *MoveAction {
+	a := &MoveAction{
 		Action: Action{
 			owner: owner,
 			name:  "Move",

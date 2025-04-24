@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/adam-lavrik/go-imath/ix"
+	"github.com/google/uuid"
 
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
@@ -53,4 +54,20 @@ func (a Actor) SpellSaveDC() int {
 
 func (a Actor) IsHostileTo(o *Actor) bool {
 	return a.Team != o.Team
+}
+
+func (a *Actor) ID() string {
+	if a.id == "" {
+		a.id = uuid.New().String()
+	}
+	return a.id
+}
+
+func (a Actor) HasAction(aa Action) bool {
+	for _, ca := range a.Actions {
+		if ca.Name() == aa.Name() {
+			return true
+		}
+	}
+	return false
 }

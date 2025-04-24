@@ -26,11 +26,11 @@ func NewAttributeModifierEffect() *core.Effect {
 	applySpellModifier := func(src *core.Actor, e *expression.Expression) {
 		attr := src.Attribute(src.SpellCastingSource)
 		attrMod := stats.AttributeModifier(attr.Value)
-		attrName := fmt.Sprintf("%s", tags.ToReadable(src.SpellCastingSource))
+		attrName := tags.ToReadable(src.SpellCastingSource)
 		e.AddScalar(attrMod, fmt.Sprintf("Attribute Modifier (%s)", attrName), attr.Terms...)
 	}
 
-	fx := &core.Effect{Name: "AttributeModifier", Priority: core.PriorityBase}
+	fx := &core.Effect{Name: "Attribute Modifier", Priority: core.PriorityBase}
 
 	fx.WithBeforeAttackRoll(func(_ *core.Effect, s *core.BeforeAttackRollState) {
 		if s.Tags.HasTag(tags.Ranged) || s.Tags.HasTag(tags.Melee) {

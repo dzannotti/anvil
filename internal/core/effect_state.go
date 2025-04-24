@@ -20,6 +20,8 @@ const (
 	ConditionRemoved     = "ConditionRemoved"
 	TurnStarted          = "TurnStarted"
 	TurnEnded            = "TurnEnded"
+	Serialize            = "serialize"
+	Deserialize          = "deserialize"
 )
 
 type BeforeAttackRollState struct {
@@ -94,4 +96,13 @@ type ConditionChangedState struct {
 
 type TurnState struct {
 	Source *Actor
+}
+
+type SerializeState struct {
+	Operation string
+	State     struct {
+		Kind string
+		ID   string
+		Data any
+	}
 }

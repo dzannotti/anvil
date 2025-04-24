@@ -6,13 +6,13 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
-	"anvil/internal/ruleset"
+	"anvil/internal/ruleset/actor"
 	"anvil/internal/ruleset/base"
 	"anvil/internal/ruleset/shared"
 	"anvil/internal/tag"
 )
 
-func newSlamAction(owner *core.Actor) core.Action {
+func NewSlamAction(owner *core.Actor) core.Action {
 	return base.NewAttackAction(owner, "Slam", []core.DamageSource{
 		{Times: 1, Sides: 6, Source: "Slam", Tags: tag.ContainerFromTag(tags.Bludgeoning)},
 	}, 1, tag.ContainerFromTag(tags.Melee, tags.NaturalWeapon))
@@ -31,8 +31,8 @@ func New(hub *eventbus.Hub, world *core.World, pos grid.Position, name string) *
 	resources := core.Resources{Max: map[tag.Tag]int{
 		tags.WalkSpeed: 4,
 	}}
-	npc := ruleset.NewNPCActor(hub, world, pos, name, 22, attributes, proficiencies, resources)
-	npc.AddAction(newSlamAction(npc))
+	npc := actor.NewNPCActor(hub, world, pos, name, 22, attributes, proficiencies, resources)
+	npc.AddAction(NewSlamAction(npc))
 	npc.AddEffect(shared.NewUndeadFortitudeEffect())
 	return npc
 }

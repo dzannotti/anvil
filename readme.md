@@ -23,10 +23,8 @@
 - [x] move based on resources
 - [x] refactor team to have a struct (we need IsHostileTo and replace all team != other team to support neutrals)
 - [x] death saving throws for PC
-- [ ] fire ball
-- [ ] ability check
+- [x] fire ball
 - [ ] attacks of opportunity
-- [ ] Elementals (can move thru other people)
 - [ ] finesse
 - [ ] unarmed strike
 - [ ] fire bolt
@@ -61,3 +59,5 @@
 - [ ] thunder wave
 - [ ] phantasmal killer
 - [ ] invisibility
+- [ ] Elementals (can move thru other people)
+- [ ] ability check
