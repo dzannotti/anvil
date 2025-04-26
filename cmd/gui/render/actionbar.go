@@ -6,6 +6,7 @@ import (
 
 func DrawActions(actor *core.Actor, selectAction func(action core.Action), current core.Action, endTurn func()) {
 	buttonWidth := 160
+	isOver := actor.Encounter.IsOver()
 	if actor.CanAct() {
 		for i, a := range actor.Actions {
 			selected := false
@@ -13,16 +14,16 @@ func DrawActions(actor *core.Actor, selectAction func(action core.Action), curre
 				selected = true
 			}
 
-			drawAction(Rectangle{X: i*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, a, selectAction, selected)
+			drawAction(!isOver, Rectangle{X: i*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, a, selectAction, selected)
 		}
 	}
 	DrawButton(Rectangle{X: len(actor.Actions)*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40}, "End Turn", AlignMiddle, 14, func() {
 		endTurn()
-	}, true)
+	}, !isOver)
 }
 
-func drawAction(rect Rectangle, action core.Action, choose func(action core.Action), selected bool) {
+func drawAction(enabled bool, rect Rectangle, action core.Action, choose func(action core.Action), selected bool) {
 	DrawToggleButton(rect, action.Name(), AlignMiddle, 14, func() {
 		choose(action)
-	}, true, selected)
+	}, enabled, selected)
 }

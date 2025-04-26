@@ -9,18 +9,24 @@ import (
 )
 
 type Action struct {
-	owner *core.Actor
-	name  string
-	tags  tag.Container
-	cost  map[tag.Tag]int
+	owner     *core.Actor
+	name      string
+	tags      tag.Container
+	cost      map[tag.Tag]int
+	castRange int
+	reach     int
+	damage    []core.DamageSource
 }
 
-func MakeAction(owner *core.Actor, name string, t tag.Container, cost map[tag.Tag]int) Action {
+func MakeAction(owner *core.Actor, name string, t tag.Container, cost map[tag.Tag]int, castRange int, reach int, damage []core.DamageSource) Action {
 	return Action{
-		owner: owner,
-		name:  name,
-		tags:  t,
-		cost:  cost,
+		owner:     owner,
+		name:      name,
+		tags:      t,
+		cost:      cost,
+		castRange: castRange,
+		reach:     reach,
+		damage:    damage,
 	}
 }
 
@@ -40,13 +46,34 @@ func (a Action) Cost() map[tag.Tag]int {
 	return a.cost
 }
 
+func (a Action) Reach() int {
+	return a.reach
+}
+
+func (a Action) CastRange() int {
+	return a.castRange
+}
+
+func (a Action) Damage() []core.DamageSource {
+	return a.damage
+}
+
 func (a Action) CanAfford() bool {
 	return a.owner.Resources.CanAfford(a.cost)
 }
 
 func (a Action) Perform(_ []grid.Position) {}
+
 func (a Action) ValidPositions(_ grid.Position) []grid.Position {
 	return []grid.Position{}
+}
+
+func (a Action) AffectedPositions(_ grid.Position) []grid.Position {
+	return []grid.Position{}
+}
+
+func (a Action) TargetCountAt(at grid.Position) int {
+	return len(a.ValidPositions(at))
 }
 
 func (a Action) Commit() {
@@ -59,13 +86,24 @@ func (a Action) Commit() {
 	}
 }
 
-func (a Action) ScoreAt(_ grid.Position) *core.ScoredAction {
-	panic("you shouldn't call base ScoreAt - we cannot score here")
+func (a Action) ScoreAt(_ grid.Position) float32 {
+	target, _ := a.owner.World.ActorAt(a.Owner().Position)
+	if target == nil {
+		return 0
+	}
+	avgDmg := a.AverageDamage()
+	damageRatio := float32(avgDmg) / float32(target.HitPoints)
+	if damageRatio > 1.0 {
+		damageRatio = 1.0
+	}
+	lowHPPriority := (1 - target.HitPointsNormalized()) * 0.5
+	score := damageRatio + lowHPPriority
+	return score
 }
 
-func (a Action) AverageDamage(ds []core.DamageSource) int {
+func (a Action) AverageDamage() int {
 	avg := 0
-	for _, d := range ds {
+	for _, d := range a.damage {
 		roll := float64(d.Sides+1) / 2.0
 		avg += int(math.Floor(float64(d.Times) * roll))
 	}

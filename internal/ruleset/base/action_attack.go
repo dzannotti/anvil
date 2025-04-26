@@ -12,20 +12,19 @@ import (
 
 type AttackAction struct {
 	Action
-	reach  int
-	damage []core.DamageSource
+	reach int
 }
 
 func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, reach int, tc tag.Container) *AttackAction {
 	a := &AttackAction{
 		Action: Action{
-			owner: owner,
-			name:  name,
-			cost:  map[tag.Tag]int{tags.Action: 1},
-			tags:  tc,
+			owner:  owner,
+			name:   name,
+			cost:   map[tag.Tag]int{tags.Action: 1},
+			tags:   tc,
+			damage: ds,
 		},
-		reach:  reach,
-		damage: ds,
+		reach: reach,
 	}
 	a.tags.Add(tag.ContainerFromTag(tags.Attack))
 	return a
@@ -41,25 +40,6 @@ func (a AttackAction) Perform(pos []grid.Position) {
 	if result.Success {
 		dmg := a.owner.DamageRoll(a.damage, result.Critical)
 		target.TakeDamage(*dmg)
-	}
-}
-
-func (a AttackAction) ScoreAt(pos grid.Position) *core.ScoredAction {
-	target, _ := a.owner.World.ActorAt(pos)
-	if target == nil {
-		return nil
-	}
-	avgDmg := a.AverageDamage(a.damage)
-	damageRatio := float32(avgDmg) / float32(target.HitPoints)
-	if damageRatio > 1.0 {
-		damageRatio = 1.0
-	}
-	lowHPPriority := (1 - target.HitPointsNormalized()) * 0.5
-	score := damageRatio + lowHPPriority
-	return &core.ScoredAction{
-		Action:   &a,
-		Position: []grid.Position{pos},
-		Score:    score,
 	}
 }
 
@@ -90,10 +70,6 @@ func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {
 		valid = append(valid, pos)
 	}
 	return valid
-}
-
-func (a AttackAction) TargetCountAt(at grid.Position) int {
-	return len(a.ValidPositions(at))
 }
 
 func (a AttackAction) AffectedPositions(tar []grid.Position) []grid.Position {
