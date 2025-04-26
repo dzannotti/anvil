@@ -36,10 +36,10 @@ func (am *ActionManager) Draw(cam Camera) {
 		DrawRectangle(rect.Expand(-2, -2), Peach, 2)
 		score := am.Active.ScoreAt(pos)
 		color := Text
-		if slices.Contains(best.Position, pos) {
-			color = Red
+		if best != nil && am.Active != nil && slices.Contains(best.Position, pos) && best.Action.Name() == am.Active.Name() {
+			color = Green
 		}
-		DrawString(fmt.Sprintf("%.3f", score), rect.Expand(0, -7), color, 13, AlignBottom)
+		DrawString(fmt.Sprintf("%.3f", score), rect.Expand(0, -7), color, 14, AlignBottom)
 	}
 	if am.Active.Tags().MatchTag(tags.Move) {
 		am.drawPath(actor, cam)

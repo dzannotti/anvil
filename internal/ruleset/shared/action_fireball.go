@@ -13,26 +13,16 @@ var hitFriendliesPenalty = float32(-3)
 
 type FireballAction struct {
 	base.Action
-	damage []core.DamageSource
 }
 
 func NewFireballAction(owner *core.Actor) FireballAction {
 	tc := tag.ContainerFromTag(tags.Spell, tags.Evocation)
 	cost := map[tag.Tag]int{tags.SpellSlot3: 1, tags.Action: 1}
 	a := FireballAction{
-		Action: base.MakeAction(owner, "Fireball", tc, cost),
-		damage: []core.DamageSource{{Times: 8, Sides: 6, Source: "Fireball", Tags: tag.ContainerFromTag(tags.Fire)}},
+		Action: base.MakeAction(owner, "Fireball", tc, cost, 30, 4, []core.DamageSource{{Times: 8, Sides: 6, Source: "Fireball", Tags: tag.ContainerFromTag(tags.Fire)}}),
 	}
 	a.Tags().Add(tag.ContainerFromTag(tags.Attack))
 	return a
-}
-
-func (a FireballAction) Reach() int {
-	return 4
-}
-
-func (a FireballAction) Range() int {
-	return 30
 }
 
 func (a FireballAction) ScoreAt(pos grid.Position) float32 {
@@ -40,27 +30,19 @@ func (a FireballAction) ScoreAt(pos grid.Position) float32 {
 	if len(targets) == 0 {
 		return 0.0
 	}
-	avgDmg := a.AverageDamage(a.damage)
+	avgDmg := a.AverageDamage()
 	score := float32(0)
 	for _, t := range targets {
 		if t.IsDead() {
 			continue
 		}
 		damageRatio := float32(avgDmg) / float32(t.HitPoints)
-		if damageRatio > 1.0 {
-			damageRatio = 1.0
-		}
-		lowHPPriority := (1 - t.HitPointsNormalized()) * 0.5
 		if !a.Owner().IsHostileTo(t) {
 			damageRatio = damageRatio * hitFriendliesPenalty
-			lowHPPriority = lowHPPriority * hitFriendliesPenalty
 		}
-		score = score + damageRatio + lowHPPriority
+		score = score + damageRatio
 	}
-	if score > 1 {
-		score = 1.0
-	}
-	return score
+	return max(min(score, 1), 0)
 }
 
 func (a FireballAction) Perform(pos []grid.Position) {
@@ -69,7 +51,7 @@ func (a FireballAction) Perform(pos []grid.Position) {
 	a.Owner().Log.Add(core.TargetType, core.TargetEvent{Target: targets})
 	defer a.Owner().Log.End()
 	a.Commit()
-	dmg := a.Owner().DamageRoll(a.damage, false)
+	dmg := a.Owner().DamageRoll(a.Damage(), false)
 	for _, t := range targets {
 		currDmg := dmg.Clone()
 		save := t.SaveThrow(tags.Dexterity, a.Owner().SpellSaveDC())
@@ -85,7 +67,7 @@ func (a FireballAction) ValidPositions(from grid.Position) []grid.Position {
 		return []grid.Position{}
 	}
 	valid := []grid.Position{}
-	shape := shapes.Sphere(from, a.Range())
+	shape := shapes.Sphere(from, a.CastRange())
 	for _, pos := range shape {
 		if !a.Owner().World.IsValidPosition(pos) {
 			continue
@@ -107,9 +89,6 @@ func (a FireballAction) TargetCountAt(pos grid.Position) int {
 	for _, t := range targets {
 		if !a.Owner().IsHostileTo(t) {
 			count = count + int(hitFriendliesPenalty)
-			continue
-		}
-		if !a.Owner().World.HasLineOfSight(a.Owner().Position, t.Position) {
 			continue
 		}
 		count = count + 1

@@ -8,15 +8,21 @@ func DrawButton(rect Rectangle, text string, align TextAlignment, fontSize int, 
 
 func DrawToggleButton(rect Rectangle, text string, align TextAlignment, fontSize int, onClick func(), enabled bool, selected bool) {
 	mo := rect.IsMouseOver()
-	FillRectangle(rect, colorButtonBackground)
-	if mo || selected {
+	color := colorButtonBackground
+	textColor := Crust
+	if !enabled {
+		color = Surface0
+		textColor = Text
+	}
+	FillRectangle(rect, color)
+	if (mo || selected) && enabled {
 		FillRectangle(rect, colorButtonHover)
-		if enabled && rl.IsMouseButtonDown(rl.MouseButtonLeft) || selected {
+		if rl.IsMouseButtonDown(rl.MouseButtonLeft) || selected {
 			FillRectangle(rect, colorButtonDepressed)
 		}
 	}
 	DrawRectangle(rect, colorButtonBorder, 2)
-	DrawString(text, rect, Crust, fontSize, align)
+	DrawString(text, rect, textColor, fontSize, align)
 	if mo {
 		if enabled {
 			whenClicked = onClick

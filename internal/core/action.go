@@ -10,10 +10,10 @@ type Action interface {
 	Tags() *tag.Container
 	Perform(pos []grid.Position)
 
-	ScoreAt(pos grid.Position) float32
 	ValidPositions(from grid.Position) []grid.Position
-	TargetCountAt(pos grid.Position) int
 	AffectedPositions(target []grid.Position) []grid.Position
+	ScoreAt(pos grid.Position) float32
+	TargetCountAt(pos grid.Position) int
 }
 
 type ScoredAction struct {
