@@ -35,10 +35,10 @@ func (a FireballAction) Range() int {
 	return 30
 }
 
-func (a FireballAction) ScoreAt(pos grid.Position) *core.ScoredAction {
+func (a FireballAction) ScoreAt(pos grid.Position) float32 {
 	targets := a.targetsAt(pos)
 	if len(targets) == 0 {
-		return nil
+		return 0.0
 	}
 	avgDmg := a.AverageDamage(a.damage)
 	score := float32(0)
@@ -57,14 +57,10 @@ func (a FireballAction) ScoreAt(pos grid.Position) *core.ScoredAction {
 		}
 		score = score + damageRatio + lowHPPriority
 	}
-	if score < 0.01 {
-		return nil
+	if score > 1 {
+		score = 1.0
 	}
-	return &core.ScoredAction{
-		Action:   &a,
-		Position: []grid.Position{pos},
-		Score:    score,
-	}
+	return score
 }
 
 func (a FireballAction) Perform(pos []grid.Position) {

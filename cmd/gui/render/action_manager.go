@@ -35,15 +35,11 @@ func (am *ActionManager) Draw(cam Camera) {
 		FillRectangle(rect, Color{R: 223, G: 142, B: 29, A: 100})
 		DrawRectangle(rect.Expand(-2, -2), Peach, 2)
 		score := am.Active.ScoreAt(pos)
-		if score == nil {
-			DrawString("---", rect, Text, 13, AlignBottom)
-			continue
-		}
 		color := Text
 		if slices.Contains(best.Position, pos) {
 			color = Red
 		}
-		DrawString(fmt.Sprintf("%.3f", score.Score), rect.Expand(0, -7), color, 13, AlignBottom)
+		DrawString(fmt.Sprintf("%.3f", score), rect.Expand(0, -7), color, 13, AlignBottom)
 	}
 	if am.Active.Tags().MatchTag(tags.Move) {
 		am.drawPath(actor, cam)

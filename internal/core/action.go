@@ -7,10 +7,11 @@ import (
 
 type Action interface {
 	Name() string
-	ScoreAt(pos grid.Position) *ScoredAction
-	Perform(pos []grid.Position)
-	ValidPositions(from grid.Position) []grid.Position
 	Tags() *tag.Container
+	Perform(pos []grid.Position)
+
+	ScoreAt(pos grid.Position) float32
+	ValidPositions(from grid.Position) []grid.Position
 	TargetCountAt(pos grid.Position) int
 	AffectedPositions(target []grid.Position) []grid.Position
 }

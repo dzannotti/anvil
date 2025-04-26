@@ -44,10 +44,10 @@ func (a AttackAction) Perform(pos []grid.Position) {
 	}
 }
 
-func (a AttackAction) ScoreAt(pos grid.Position) *core.ScoredAction {
+func (a AttackAction) ScoreAt(pos grid.Position) float32 {
 	target, _ := a.owner.World.ActorAt(pos)
 	if target == nil {
-		return nil
+		return 0
 	}
 	avgDmg := a.AverageDamage(a.damage)
 	damageRatio := float32(avgDmg) / float32(target.HitPoints)
@@ -56,11 +56,7 @@ func (a AttackAction) ScoreAt(pos grid.Position) *core.ScoredAction {
 	}
 	lowHPPriority := (1 - target.HitPointsNormalized()) * 0.5
 	score := damageRatio + lowHPPriority
-	return &core.ScoredAction{
-		Action:   &a,
-		Position: []grid.Position{pos},
-		Score:    score,
-	}
+	return score
 }
 
 func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {

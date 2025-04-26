@@ -47,11 +47,11 @@ func (a MoveAction) Perform(pos []grid.Position) {
 	}
 }
 
-func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
+func (a MoveAction) ScoreAt(dst grid.Position) float32 {
 	src := a.owner
 	world := src.World
 	if src.Position == dst {
-		return nil
+		return 0.0
 	}
 	lookAhead := 4
 	speed := src.Resources.Remaining(tags.WalkSpeed)
@@ -62,7 +62,7 @@ func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 	distNow, distThen := a.closestAt(dst, enemies)
 
 	if distThen >= distNow {
-		return nil
+		return 0.0
 	}
 
 	compression := float32(distNow-distThen) / (float32(distNow) + 0.001)
@@ -72,7 +72,7 @@ func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 	currentTargetCount := src.TargetCountAt(src.Position)
 
 	if currentTargetCount > 0 && targetCount <= currentTargetCount {
-		return nil
+		return 0.0
 	}
 
 	targetWeight := float32(targetCount) / float32(len(enemies))
@@ -83,14 +83,10 @@ func (a MoveAction) ScoreAt(dst grid.Position) *core.ScoredAction {
 	score -= float32(a.estimateOpportunityAttackDamageAt(dst)) * 1.1
 
 	if score < 0.01 {
-		return nil
+		return 0.0
 	}
 
-	return &core.ScoredAction{
-		Action:   a,
-		Position: []grid.Position{dst},
-		Score:    score,
-	}
+	return score
 }
 
 func (a MoveAction) TargetCountAt(_ grid.Position) int {
