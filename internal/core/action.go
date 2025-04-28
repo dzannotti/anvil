@@ -12,8 +12,7 @@ type Action interface {
 
 	ValidPositions(from grid.Position) []grid.Position
 	AffectedPositions(target []grid.Position) []grid.Position
-	ScoreAt(pos grid.Position) float32
-	TargetCountAt(pos grid.Position) int
+	AverageDamage() int
 }
 
 type ScoredAction struct {

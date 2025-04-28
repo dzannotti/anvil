@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"anvil/internal/ai"
-	"anvil/internal/core"
 	"anvil/internal/demo"
 	"anvil/internal/eventbus"
 	"anvil/internal/prettyprint"
@@ -20,16 +19,10 @@ func main() {
 	gameState := demo.New(&hub)
 	encounter := gameState.Encounter
 
-	gameAI := map[*core.Actor]ai.AI{}
-	for _, a := range encounter.Actors {
-		gameAI[a] = &ai.Simple{Encounter: encounter, Owner: a}
-	}
-
 	start := time.Now()
 	encounter.Start()
 	for !encounter.IsOver() {
-		active := encounter.ActiveActor()
-		gameAI[active].Play()
+		ai.Play(gameState)
 		encounter.EndTurn()
 	}
 	encounter.End()

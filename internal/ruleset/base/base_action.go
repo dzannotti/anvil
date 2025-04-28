@@ -1,11 +1,10 @@
 package base
 
 import (
-	"math"
-
 	"anvil/internal/core"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
+	"math"
 )
 
 type Action struct {
@@ -72,10 +71,6 @@ func (a Action) AffectedPositions(_ grid.Position) []grid.Position {
 	return []grid.Position{}
 }
 
-func (a Action) TargetCountAt(at grid.Position) int {
-	return len(a.ValidPositions(at))
-}
-
 func (a Action) Commit() {
 	if !a.CanAfford() {
 		panic("Attempt to commit action without affording cost")
@@ -84,21 +79,6 @@ func (a Action) Commit() {
 		a.owner.Resources.Consume(tag, amount)
 		a.owner.Log.Add(core.SpendResourceType, core.SpendResourceEvent{Source: a.owner, Resource: tag, Amount: amount})
 	}
-}
-
-func (a Action) ScoreAt(_ grid.Position) float32 {
-	target, _ := a.owner.World.ActorAt(a.Owner().Position)
-	if target == nil {
-		return 0
-	}
-	avgDmg := a.AverageDamage()
-	damageRatio := float32(avgDmg) / float32(target.HitPoints)
-	if damageRatio > 1.0 {
-		damageRatio = 1.0
-	}
-	lowHPPriority := (1 - target.HitPointsNormalized()) * 0.5
-	score := damageRatio + lowHPPriority
-	return score
 }
 
 func (a Action) AverageDamage() int {

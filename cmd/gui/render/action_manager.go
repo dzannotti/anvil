@@ -6,6 +6,7 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 
+	"anvil/internal/ai"
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/grid"
@@ -22,6 +23,7 @@ func (am *ActionManager) SetActive(action core.Action) {
 	am.Active = action
 }
 
+/*
 func (am *ActionManager) Draw(cam Camera) {
 	if am.Active == nil {
 		return
@@ -40,6 +42,39 @@ func (am *ActionManager) Draw(cam Camera) {
 			color = Green
 		}
 		DrawString(fmt.Sprintf("%.3f", score), rect.Expand(0, -7), color, 14, AlignBottom)
+	}
+	if am.Active.Tags().MatchTag(tags.Move) {
+		am.drawPath(actor, cam)
+	}
+	am.drawAffected(actor, cam)
+}*/
+
+func (am *ActionManager) Draw(cam Camera) {
+	if am.Active == nil {
+		return
+	}
+	actor := am.Encounter.ActiveActor()
+	world := actor.World
+	valid := am.Active.ValidPositions(actor.Position)
+	choices := ai.ScoreAction(world, actor, am.Active)
+	best, bestPos := ai.PickBestAction(world, actor)
+	for _, pos := range valid {
+		rect := RectFromPos(pos)
+
+		FillRectangle(rect, Color{R: 223, G: 142, B: 29, A: 100})
+		DrawRectangle(rect.Expand(-2, -2), Peach, 2)
+		//score := am.Active.ScoreAt(pos)
+		color := Text
+		if best != nil && bestPos == pos && best.Name() == am.Active.Name() {
+			color = Green
+		}
+		choice := ai.Score{}
+		for _, c := range choices {
+			if c.Position == pos {
+				choice = c
+			}
+		}
+		DrawString(fmt.Sprintf("%d", choice.Total), rect.Expand(0, -7), color, 14, AlignBottom)
 	}
 	if am.Active.Tags().MatchTag(tags.Move) {
 		am.drawPath(actor, cam)

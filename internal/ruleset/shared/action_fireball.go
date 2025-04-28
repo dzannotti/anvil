@@ -83,19 +83,6 @@ func (a FireballAction) ValidPositions(from grid.Position) []grid.Position {
 	return valid
 }
 
-func (a FireballAction) TargetCountAt(pos grid.Position) int {
-	targets := a.targetsAt(pos)
-	count := 0
-	for _, t := range targets {
-		if !a.Owner().IsHostileTo(t) {
-			count = count + int(hitFriendliesPenalty)
-			continue
-		}
-		count = count + 1
-	}
-	return max(count, 0)
-}
-
 func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {
 	valid := a.AffectedPositions([]grid.Position{pos})
 	targets := make([]*core.Actor, 0)
