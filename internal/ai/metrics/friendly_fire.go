@@ -9,7 +9,7 @@ type FriendlyFire struct{}
 
 const FriendlyFireMultiplier = 2
 
-func (d FriendlyFire) Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, affected []grid.Position) int {
+func (d FriendlyFire) Evaluate(world *core.World, actor *core.Actor, action core.Action, _ grid.Position, affected []grid.Position) int {
 	damage := action.AverageDamage()
 	if damage == 0 {
 		return 0

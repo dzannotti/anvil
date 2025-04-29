@@ -2,7 +2,6 @@ package ai
 
 import (
 	"anvil/internal/ai/metrics"
-	"anvil/internal/ai/simple"
 	"anvil/internal/core"
 	"anvil/internal/grid"
 	"slices"
@@ -11,8 +10,6 @@ import (
 type AI interface {
 	Play()
 }
-
-type Simple = simple.Simple
 
 var DefaultMetrics = []metrics.AIMetric{
 	metrics.DamageDone{},

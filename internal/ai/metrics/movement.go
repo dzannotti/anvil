@@ -9,7 +9,7 @@ import (
 
 type Movement struct{}
 
-func (d Movement) Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, affected []grid.Position) int {
+func (m Movement) Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, _ []grid.Position) int {
 	if !action.Tags().MatchTag(tags.Move) {
 		return 0
 	}
@@ -24,7 +24,7 @@ func (d Movement) Evaluate(world *core.World, actor *core.Actor, action core.Act
 
 	score := 0
 
-	distNow, distThen := d.closestAt(actor, pos, enemies)
+	distNow, distThen := m.closestAt(actor, pos, enemies)
 
 	if distThen >= distNow {
 		return 0
@@ -40,7 +40,7 @@ func (d Movement) Evaluate(world *core.World, actor *core.Actor, action core.Act
 	}
 
 	targetWeight := float32(targetCount) / float32(len(enemies))
-	aooPenalty := float32(d.estimateOpportunityAttackDamageAt(pos))
+	aooPenalty := float32(m.estimateOpportunityAttackDamageAt(pos))
 
 	score = int(distWeight*4.0 + targetWeight*6.0 - aooPenalty*0.5 + 0.5)
 
@@ -51,12 +51,12 @@ func (d Movement) Evaluate(world *core.World, actor *core.Actor, action core.Act
 	return score
 }
 
-func (a Movement) estimateOpportunityAttackDamageAt(_ grid.Position) float64 {
+func (m Movement) estimateOpportunityAttackDamageAt(_ grid.Position) float64 {
 	// TODO: Implement AOO here
 	return 0.0
 }
 
-func (a Movement) closestAt(src *core.Actor, dst grid.Position, enemies []*core.Actor) (int, int) {
+func (m Movement) closestAt(src *core.Actor, dst grid.Position, enemies []*core.Actor) (int, int) {
 	world := src.World
 	distNow := math.MaxInt
 	distThen := math.MaxInt

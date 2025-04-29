@@ -23,32 +23,6 @@ func (am *ActionManager) SetActive(action core.Action) {
 	am.Active = action
 }
 
-/*
-func (am *ActionManager) Draw(cam Camera) {
-	if am.Active == nil {
-		return
-	}
-	actor := am.Encounter.ActiveActor()
-	valid := am.Active.ValidPositions(actor.Position)
-	best := actor.BestScoredAction()
-	for _, pos := range valid {
-		rect := RectFromPos(pos)
-
-		FillRectangle(rect, Color{R: 223, G: 142, B: 29, A: 100})
-		DrawRectangle(rect.Expand(-2, -2), Peach, 2)
-		score := am.Active.ScoreAt(pos)
-		color := Text
-		if best != nil && am.Active != nil && slices.Contains(best.Position, pos) && best.Action.Name() == am.Active.Name() {
-			color = Green
-		}
-		DrawString(fmt.Sprintf("%.3f", score), rect.Expand(0, -7), color, 14, AlignBottom)
-	}
-	if am.Active.Tags().MatchTag(tags.Move) {
-		am.drawPath(actor, cam)
-	}
-	am.drawAffected(actor, cam)
-}*/
-
 func (am *ActionManager) Draw(cam Camera) {
 	if am.Active == nil {
 		return
@@ -63,7 +37,6 @@ func (am *ActionManager) Draw(cam Camera) {
 
 		FillRectangle(rect, Color{R: 223, G: 142, B: 29, A: 100})
 		DrawRectangle(rect.Expand(-2, -2), Peach, 2)
-		//score := am.Active.ScoreAt(pos)
 		color := Text
 		if best != nil && bestPos == pos && best.Name() == am.Active.Name() {
 			color = Green
