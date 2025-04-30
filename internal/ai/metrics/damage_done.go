@@ -21,5 +21,8 @@ func (d DamageDone) Evaluate(world *core.World, actor *core.Actor, action core.A
 			los = append(los, t)
 		}
 	}
-	return BaseDamageScore + damage*len(targets)
+	if len(los) == 0 {
+		return 0
+	}
+	return BaseDamageScore + damage*len(los)
 }
