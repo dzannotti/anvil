@@ -31,7 +31,7 @@ func enemiesAffected(world *core.World, actor *core.Actor, pos []grid.Position) 
 	return enemies
 }
 
-func friedliesAffected(world *core.World, actor *core.Actor, pos []grid.Position) []*core.Actor {
+func friendliesAffected(world *core.World, actor *core.Actor, pos []grid.Position) []*core.Actor {
 	targets := targetsAffected(world, pos)
 	friendlies := make([]*core.Actor, 0, len(targets))
 	for _, t := range targets {

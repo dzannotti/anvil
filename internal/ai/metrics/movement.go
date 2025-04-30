@@ -15,7 +15,7 @@ func (m Movement) Evaluate(world *core.World, actor *core.Actor, action core.Act
 	}
 
 	if actor.Position == pos {
-		return 0.0
+		return 0
 	}
 
 	lookAhead := 4
@@ -39,7 +39,7 @@ func (m Movement) Evaluate(world *core.World, actor *core.Actor, action core.Act
 		return 0
 	}
 
-	targetWeight := float32(targetCount) / float32(len(enemies))
+	targetWeight := float32(targetCount) / (float32(len(enemies)) + 0.001)
 	aooPenalty := float32(m.estimateOpportunityAttackDamageAt(pos))
 
 	score = int(distWeight*4.0 + targetWeight*6.0 - aooPenalty*0.5 + 0.5)
@@ -53,7 +53,7 @@ func (m Movement) Evaluate(world *core.World, actor *core.Actor, action core.Act
 
 func (m Movement) estimateOpportunityAttackDamageAt(_ grid.Position) float64 {
 	// TODO: Implement AOO here
-	return 0.0
+	return 0
 }
 
 func (m Movement) closestAt(src *core.Actor, dst grid.Position, enemies []*core.Actor) (int, int) {

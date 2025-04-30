@@ -11,10 +11,6 @@ type AI interface {
 	Play()
 }
 
-var DefaultMetrics = []metrics.AIMetric{
-	metrics.DamageDone{},
-}
-
 type Score struct {
 	Action       core.Action
 	Position     grid.Position
@@ -37,6 +33,7 @@ func ScorePosition(world *core.World, actor *core.Actor, action core.Action, pos
 		Movement:     movement.Evaluate(world, actor, action, pos, affected),
 	}
 	score.Total = score.DamageDone + score.FriendlyFire + score.Movement
+	score.Total = max(score.Total, 0)
 	return score
 }
 
