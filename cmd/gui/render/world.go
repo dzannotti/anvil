@@ -38,6 +38,8 @@ func drawCell(cell *core.WorldCell, e *core.Encounter) {
 		occupant, _ := cell.Occupant()
 		drawActor(occupant, occupant == e.ActiveActor())
 	}
+	pos := fmt.Sprintf("%d,%d", cell.Position.X, cell.Position.Y)
+	DrawString(pos, RectFromPos(cell.Position).Expand(-5, -5), Subtext1, 13, AlignTopLeft)
 }
 
 func drawActor(actor *core.Actor, selected bool) {
