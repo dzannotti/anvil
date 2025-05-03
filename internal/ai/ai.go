@@ -7,7 +7,6 @@ import (
 
 	"anvil/internal/ai/metrics"
 	"anvil/internal/core"
-	"anvil/internal/core/tags"
 	"anvil/internal/grid"
 )
 
@@ -54,41 +53,12 @@ func ScoreAction(world *core.World, actor *core.Actor, action core.Action) []Sco
 	return scores
 }
 
-func ScorePlan(world *core.World, actor *core.Actor, move core.Action) []Score {
-	scores := make([]Score, 0, len(actor.Actions))
-	valid := move.ValidPositions(actor.Position)
-	plan := metrics.Plan{}
-	for _, pos := range valid {
-		score := Score{
-			Action:   move,
-			Position: pos,
-			Metrics:  make(map[string]int),
-		}
-		score.Metrics["Plan"] = plan.Evaluate(world, actor, move, pos, []grid.Position{})
-		score.Total = score.Metrics["Plan"]
-		scores = append(scores, score)
-	}
-	slices.SortFunc(scores, func(a Score, b Score) int { return b.Total - a.Total })
-	return scores
-}
-
 func ScoreChoices(world *core.World, actor *core.Actor) []Score {
 	scores := make([]Score, 0, len(actor.Actions))
-	var move core.Action
 	for _, a := range actor.Actions {
-		if a.Tags().MatchTag(tags.Move) {
-			move = a
-		}
 		scores = append(scores, ScoreAction(world, actor, a)...)
 	}
 	slices.SortFunc(scores, func(a Score, b Score) int { return b.Total - a.Total })
-	if move == nil {
-		return scores
-	}
-	plan := ScorePlan(world, actor, move)
-	if len(plan) > 0 && plan[0].Total > scores[0].Total {
-		return []Score{plan[0]}
-	}
 	return scores
 }
 
@@ -101,6 +71,9 @@ func CalculateBestAIAction(world *core.World, actor *core.Actor) (Score, bool) {
 }
 
 func PickBestAction(world *core.World, actor *core.Actor) (core.Action, grid.Position) {
+	if !actor.CanAct() {
+		return nil, grid.Position{}
+	}
 	choice, ok := CalculateBestAIAction(world, actor)
 	if !ok {
 		return nil, grid.Position{}

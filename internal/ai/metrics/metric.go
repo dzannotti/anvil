@@ -13,6 +13,7 @@ var Default = []AIMetric{
 	DamageDone{},
 	FriendlyFire{},
 	Movement{},
+	Plan{},
 }
 
 func targetsAffected(world *core.World, pos []grid.Position) []*core.Actor {

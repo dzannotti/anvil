@@ -7,6 +7,8 @@ import (
 	"anvil/internal/tag"
 )
 
+const planWeight = float32(0.8)
+
 type Plan struct{}
 
 func (p Plan) Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, _ []grid.Position) int {
@@ -30,7 +32,7 @@ func (p Plan) Evaluate(world *core.World, actor *core.Actor, action core.Action,
 			dmg := damage.Evaluate(world, actor, suba, p, affected)
 			friendly := friendly.Evaluate(world, actor, suba, p, affected)
 			score := dmg + friendly
-			best = max(score, best)
+			best = max(int(float32(score)*planWeight), best)
 		}
 	}
 	actor.Position = oldPos
