@@ -9,8 +9,6 @@ import (
 	"anvil/internal/tag"
 )
 
-var hitFriendliesPenalty = float32(-3)
-
 type FireballAction struct {
 	base.Action
 }
@@ -23,26 +21,6 @@ func NewFireballAction(owner *core.Actor) FireballAction {
 	}
 	a.Tags().Add(tag.ContainerFromTag(tags.Attack))
 	return a
-}
-
-func (a FireballAction) ScoreAt(pos grid.Position) float32 {
-	targets := a.targetsAt(pos)
-	if len(targets) == 0 {
-		return 0.0
-	}
-	avgDmg := a.AverageDamage()
-	score := float32(0)
-	for _, t := range targets {
-		if t.IsDead() {
-			continue
-		}
-		damageRatio := float32(avgDmg) / float32(t.HitPoints)
-		if !a.Owner().IsHostileTo(t) {
-			damageRatio = damageRatio * hitFriendliesPenalty
-		}
-		score = score + damageRatio
-	}
-	return max(min(score, 1), 0)
 }
 
 func (a FireballAction) Perform(pos []grid.Position) {
@@ -81,19 +59,6 @@ func (a FireballAction) ValidPositions(from grid.Position) []grid.Position {
 		valid = append(valid, pos)
 	}
 	return valid
-}
-
-func (a FireballAction) TargetCountAt(pos grid.Position) int {
-	targets := a.targetsAt(pos)
-	count := 0
-	for _, t := range targets {
-		if !a.Owner().IsHostileTo(t) {
-			count = count + int(hitFriendliesPenalty)
-			continue
-		}
-		count = count + 1
-	}
-	return max(count, 0)
 }
 
 func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {

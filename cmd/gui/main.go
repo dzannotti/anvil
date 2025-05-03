@@ -135,7 +135,7 @@ func client(_ net.Conn) {
 		ui.DrawWorld(world, encounter)
 		am.Draw(camera)
 		camera.End()
-		ui.DrawHeading(encounter)
+		ui.DrawHeading(world, encounter)
 		ui.DrawActions(encounter.ActiveActor(), am.SetActive, am.Active, endTurn)
 		overhead.Draw()
 		log.Draw()

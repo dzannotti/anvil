@@ -1,12 +1,10 @@
 package core
 
 import (
-	"github.com/adam-lavrik/go-imath/ix"
 	"github.com/google/uuid"
 
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
-	"anvil/internal/grid"
 	"anvil/internal/tag"
 )
 
@@ -38,14 +36,6 @@ func (a Actor) IsDead() bool {
 
 func (a Actor) CanAct() bool {
 	return !a.MatchCondition(tags.Incapacitated)
-}
-
-func (a Actor) TargetCountAt(pos grid.Position) int {
-	c := 0
-	for _, a := range a.Actions {
-		c = ix.Max(a.TargetCountAt(pos), c)
-	}
-	return c
 }
 
 func (a Actor) SpellSaveDC() int {

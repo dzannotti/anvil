@@ -94,6 +94,7 @@ var (
 	Move  = tag.FromString("Move")
 	Dodge = tag.FromString("Dodge")
 	Help  = tag.FromString("Help")
+	Dash  = tag.FromString("Dash")
 
 	// School
 	Evocation = tag.FromString("School.Evocation")

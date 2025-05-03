@@ -24,6 +24,7 @@
 - [x] refactor team to have a struct (we need IsHostileTo and replace all team != other team to support neutrals)
 - [x] death saving throws for PC
 - [x] fire ball
+- [ ] consider/poc using ids instead of references
 - [ ] attacks of opportunity
 - [ ] finesse
 - [ ] unarmed strike
