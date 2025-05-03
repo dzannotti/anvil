@@ -34,7 +34,13 @@ func (am *ActionManager) Draw(cam Camera) {
 	for _, choice := range ai.ScoreAction(world, actor, am.Active) {
 		choices[choice.Position] = choice
 	}
-	best, bestPos := ai.PickBestAction(world, actor)
+	aiChoice, aiOk := ai.CalculateBestAIAction(world, actor)
+	var best core.Action
+	var bestPos grid.Position
+	if aiOk {
+		best = aiChoice.Action
+		bestPos = aiChoice.Position
+	}
 	for _, pos := range valid {
 		rect := RectFromPos(pos)
 
@@ -47,6 +53,9 @@ func (am *ActionManager) Draw(cam Camera) {
 		choice, ok := choices[pos]
 		if !ok {
 			choice = ai.Score{}
+		}
+		if ok && aiOk && choice.Action.Name() == aiChoice.Action.Name() && choice.Position == aiChoice.Position {
+			choice = aiChoice
 		}
 		DrawString(fmt.Sprintf("%d", choice.Total), rect.Expand(0, -7), color, 14, AlignBottom)
 	}

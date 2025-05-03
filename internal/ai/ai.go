@@ -1,10 +1,14 @@
 package ai
 
 import (
+	"reflect"
+	"slices"
+	"strings"
+
 	"anvil/internal/ai/metrics"
 	"anvil/internal/core"
+	"anvil/internal/core/tags"
 	"anvil/internal/grid"
-	"slices"
 )
 
 type AI interface {
@@ -12,28 +16,32 @@ type AI interface {
 }
 
 type Score struct {
-	Action       core.Action
-	Position     grid.Position
-	DamageDone   int
-	FriendlyFire int
-	Movement     int
-	Total        int
+	Action   core.Action
+	Position grid.Position
+	Metrics  map[string]int
+	Total    int
 }
 
 func ScorePosition(world *core.World, actor *core.Actor, action core.Action, pos grid.Position) Score {
-	dmgDone := metrics.DamageDone{}
-	friendlyFire := metrics.FriendlyFire{}
-	movement := metrics.Movement{}
 	affected := action.AffectedPositions([]grid.Position{pos})
+
 	score := Score{
-		Action:       action,
-		Position:     pos,
-		DamageDone:   dmgDone.Evaluate(world, actor, action, pos, affected),
-		FriendlyFire: friendlyFire.Evaluate(world, actor, action, pos, affected),
-		Movement:     movement.Evaluate(world, actor, action, pos, affected),
+		Action:   action,
+		Position: pos,
+		Metrics:  make(map[string]int),
 	}
-	score.Total = score.DamageDone + score.FriendlyFire + score.Movement
+
+	for _, metric := range metrics.Default {
+		typeName := strings.ReplaceAll(reflect.TypeOf(metric).String(), "metrics.", "")
+		score.Metrics[typeName] = metric.Evaluate(world, actor, action, pos, affected)
+	}
+
+	for _, value := range score.Metrics {
+		score.Total += value
+	}
+
 	score.Total = max(score.Total, 0)
+
 	return score
 }
 
@@ -46,21 +54,55 @@ func ScoreAction(world *core.World, actor *core.Actor, action core.Action) []Sco
 	return scores
 }
 
-func ScoreChoices(world *core.World, actor *core.Actor) []Score {
+func ScorePlan(world *core.World, actor *core.Actor, move core.Action) []Score {
 	scores := make([]Score, 0, len(actor.Actions))
-	for _, a := range actor.Actions {
-		scores = append(scores, ScoreAction(world, actor, a)...)
+	valid := move.ValidPositions(actor.Position)
+	plan := metrics.Plan{}
+	for _, pos := range valid {
+		score := Score{
+			Action:   move,
+			Position: pos,
+			Metrics:  make(map[string]int),
+		}
+		score.Metrics["Plan"] = plan.Evaluate(world, actor, move, pos, []grid.Position{})
+		score.Total = score.Metrics["Plan"]
+		scores = append(scores, score)
 	}
 	slices.SortFunc(scores, func(a Score, b Score) int { return b.Total - a.Total })
 	return scores
 }
 
-func PickBestAction(world *core.World, actor *core.Actor) (core.Action, grid.Position) {
+func ScoreChoices(world *core.World, actor *core.Actor) []Score {
+	scores := make([]Score, 0, len(actor.Actions))
+	var move core.Action
+	for _, a := range actor.Actions {
+		if a.Tags().MatchTag(tags.Move) {
+			move = a
+		}
+		scores = append(scores, ScoreAction(world, actor, a)...)
+	}
+	slices.SortFunc(scores, func(a Score, b Score) int { return b.Total - a.Total })
+	plan := ScorePlan(world, actor, move)
+	if len(plan) > 0 && plan[0].Total > scores[0].Total {
+		return []Score{plan[0]}
+	}
+	return scores
+}
+
+func CalculateBestAIAction(world *core.World, actor *core.Actor) (Score, bool) {
 	choices := ScoreChoices(world, actor)
 	if len(choices) == 0 || choices[0].Total < 1 {
+		return Score{}, false
+	}
+	return choices[0], true
+}
+
+func PickBestAction(world *core.World, actor *core.Actor) (core.Action, grid.Position) {
+	choice, ok := CalculateBestAIAction(world, actor)
+	if !ok {
 		return nil, grid.Position{}
 	}
-	return choices[0].Action, choices[0].Position
+	return choice.Action, choice.Position
 }
 
 func Play(state *core.GameState) {

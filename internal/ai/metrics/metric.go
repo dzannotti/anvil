@@ -9,6 +9,12 @@ type AIMetric interface {
 	Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, affected []grid.Position) int
 }
 
+var Default = []AIMetric{
+	DamageDone{},
+	FriendlyFire{},
+	Movement{},
+}
+
 func targetsAffected(world *core.World, pos []grid.Position) []*core.Actor {
 	targets := make([]*core.Actor, 0, len(pos))
 	for _, p := range pos {
