@@ -82,6 +82,9 @@ func ScoreChoices(world *core.World, actor *core.Actor) []Score {
 		scores = append(scores, ScoreAction(world, actor, a)...)
 	}
 	slices.SortFunc(scores, func(a Score, b Score) int { return b.Total - a.Total })
+	if move == nil {
+		return scores
+	}
 	plan := ScorePlan(world, actor, move)
 	if len(plan) > 0 && plan[0].Total > scores[0].Total {
 		return []Score{plan[0]}
