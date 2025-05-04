@@ -93,7 +93,7 @@ func (am *ActionManager) ProcessInput(cam Camera) bool {
 		return false
 	}
 	fmt.Println("Performing action")
-	am.Active.Perform([]grid.Position{mousePos})
+	go am.Active.Perform([]grid.Position{mousePos})
 	am.SetActive(nil)
 	if am.Encounter.IsOver() {
 		am.EndTurn()

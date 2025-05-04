@@ -118,6 +118,13 @@ func client(_ net.Conn) {
 
 	keyBinds := ui.KeyBinds{
 		SelectAction: func(i int) {
+			if world.Request != nil {
+				if i > len(world.Request.Options) {
+					return
+				}
+				world.Request.Answer(world.Request.Options[i-1])
+				return
+			}
 			actor := encounter.ActiveActor()
 			if i > len(actor.Actions) {
 				endTurn()
@@ -139,6 +146,7 @@ func client(_ net.Conn) {
 		ui.DrawActions(gameState, encounter.ActiveActor(), am.SetActive, am.Active, endTurn)
 		overhead.Draw()
 		log.Draw()
+		ui.DrawRequest(world, window)
 		window.EndFrame()
 		consumed := ui.ProcessInput()
 		if !consumed {
