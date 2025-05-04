@@ -65,6 +65,9 @@ run:
 	@echo Running application...
 	@go run $(GOSRC)/main.go
 
+cli:
+	@make run
+
 gui:
 	@echo Running gui application...
 	@go run $(GOGUISRC)

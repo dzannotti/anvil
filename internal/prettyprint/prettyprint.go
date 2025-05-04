@@ -29,7 +29,6 @@ func shouldPrintEnd() bool {
 		core.AttributeChangedType,
 		core.SpendResourceType,
 		core.ConditionChangedType,
-		core.MoveStepType,
 		core.DeathSavingThrowResultType,
 		core.TargetType,
 	}

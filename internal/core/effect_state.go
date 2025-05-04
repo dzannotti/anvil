@@ -2,6 +2,7 @@ package core
 
 import (
 	"anvil/internal/expression"
+	"anvil/internal/grid"
 	"anvil/internal/tag"
 )
 
@@ -20,6 +21,7 @@ const (
 	ConditionRemoved     = "ConditionRemoved"
 	TurnStarted          = "TurnStarted"
 	TurnEnded            = "TurnEnded"
+	BeforeMoveStep       = "BeforeMoveStep"
 	Serialize            = "serialize"
 	Deserialize          = "deserialize"
 )
@@ -105,4 +107,11 @@ type SerializeState struct {
 		ID   string
 		Data any
 	}
+}
+
+type MoveState struct {
+	Source  *Actor
+	From    grid.Position
+	To      grid.Position
+	CanMove bool
 }

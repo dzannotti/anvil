@@ -1,10 +1,11 @@
 package base
 
 import (
+	"math"
+
 	"anvil/internal/core"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
-	"math"
 )
 
 type Action struct {
@@ -76,8 +77,7 @@ func (a Action) Commit() {
 		panic("Attempt to commit action without affording cost")
 	}
 	for tag, amount := range a.cost {
-		a.owner.Resources.Consume(tag, amount)
-		a.owner.Log.Add(core.SpendResourceType, core.SpendResourceEvent{Source: a.owner, Resource: tag, Amount: amount})
+		a.owner.ConsumeResource(tag, amount)
 	}
 }
 
