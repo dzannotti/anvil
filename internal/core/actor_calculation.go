@@ -133,7 +133,7 @@ func (a *Actor) DamageRoll(ds []DamageSource, crit bool) *expression.Expression 
 	return res
 }
 
-func (a *Actor) Move(to grid.Position) {
+func (a *Actor) Move(to grid.Position, action Action) {
 	a.Log.Start(MoveStepType, MoveStepEvent{World: a.World, Source: a, From: a.Position, To: to})
 	defer a.Log.End()
 	before := MoveState{
@@ -141,6 +141,7 @@ func (a *Actor) Move(to grid.Position) {
 		From:    a.Position,
 		To:      to,
 		CanMove: true,
+		Action:  action,
 	}
 	a.Effects.Evaluate(BeforeMoveStep, &before)
 	a.Log.Add(ConfirmType, ConfirmEvent{Actor: a, Confirm: before.CanMove})

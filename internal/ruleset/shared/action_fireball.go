@@ -23,12 +23,14 @@ func NewFireballAction(owner *core.Actor) FireballAction {
 	return a
 }
 
-func (a FireballAction) Perform(pos []grid.Position) {
+func (a FireballAction) Perform(pos []grid.Position, commitCost bool) {
 	targets := a.targetsAt(pos[0])
 	a.Owner().Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: a.Owner(), Target: pos})
 	a.Owner().Log.Add(core.TargetType, core.TargetEvent{Target: targets})
 	defer a.Owner().Log.End()
-	a.Commit()
+	if commitCost {
+		a.Commit()
+	}
 	dmg := a.Owner().DamageRoll(a.Damage(), false)
 	for _, t := range targets {
 		currDmg := dmg.Clone()

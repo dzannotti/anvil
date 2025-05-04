@@ -92,7 +92,7 @@ func Play(state *core.GameState) {
 		if action == nil {
 			break
 		}
-		action.Perform([]grid.Position{pos})
+		action.Perform([]grid.Position{pos}, true)
 		if state.Encounter.IsOver() {
 			break
 		}

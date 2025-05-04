@@ -62,7 +62,7 @@ func (a Action) CanAfford() bool {
 	return a.owner.Resources.CanAfford(a.cost)
 }
 
-func (a Action) Perform(_ []grid.Position) {}
+func (a Action) Perform(_ []grid.Position, _ bool) {}
 
 func (a Action) ValidPositions(_ grid.Position) []grid.Position {
 	return []grid.Position{}

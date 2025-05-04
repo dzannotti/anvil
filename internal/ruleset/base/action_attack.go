@@ -30,12 +30,14 @@ func NewAttackAction(owner *core.Actor, name string, ds []core.DamageSource, rea
 	return a
 }
 
-func (a AttackAction) Perform(pos []grid.Position) {
+func (a AttackAction) Perform(pos []grid.Position, commitCost bool) {
 	target, _ := a.owner.World.ActorAt(pos[0])
 	a.owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: a.owner, Target: pos})
 	a.owner.Log.Add(core.TargetType, core.TargetEvent{Target: []*core.Actor{target}})
 	defer a.owner.Log.End()
-	a.Commit()
+	if commitCost {
+		a.Commit()
+	}
 	result := a.owner.AttackRoll(target, a.tags)
 	if result.Success {
 		dmg := a.owner.DamageRoll(a.damage, result.Critical)

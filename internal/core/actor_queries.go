@@ -61,3 +61,17 @@ func (a Actor) HasAction(aa Action) bool {
 	}
 	return false
 }
+
+func (a Actor) BestWeaponAttack() Action {
+	var best Action
+	bestDamage := 0
+	for _, act := range a.Actions {
+		if !act.Tags().MatchAllTag(tag.ContainerFromTag(tags.Attack, tags.Melee, tags.Weapon)) {
+			continue
+		}
+		if act.AverageDamage() > bestDamage {
+			best = act
+		}
+	}
+	return best
+}

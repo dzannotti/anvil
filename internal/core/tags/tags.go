@@ -90,6 +90,7 @@ var (
 	Attack       = tag.FromString("Attack")
 	WeaponAttack = tag.FromString("Attack.Weapon")
 	Spell        = tag.FromString("Attack.Spell")
+	Teleport     = tag.FromString("Teleport")
 
 	Move  = tag.FromString("Move")
 	Dodge = tag.FromString("Dodge")

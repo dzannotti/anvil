@@ -111,6 +111,7 @@ type SerializeState struct {
 
 type MoveState struct {
 	Source  *Actor
+	Action  Action
 	From    grid.Position
 	To      grid.Position
 	CanMove bool

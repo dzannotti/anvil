@@ -8,7 +8,7 @@ import (
 type Action interface {
 	Name() string
 	Tags() *tag.Container
-	Perform(pos []grid.Position)
+	Perform(pos []grid.Position, commitCost bool)
 
 	ValidPositions(from grid.Position) []grid.Position
 	AffectedPositions(target []grid.Position) []grid.Position
