@@ -87,3 +87,8 @@ func (a *Actor) Die() {
 	a.AddCondition(tags.Dead, &Effect{Name: "Dead"})
 	a.Log.Add(ConfirmType, ConfirmEvent{Confirm: true})
 }
+
+func (a *Actor) ConsumeResource(t tag.Tag, amount int) {
+	a.Resources.Consume(t, amount)
+	a.Log.Add(SpendResourceType, SpendResourceEvent{Source: a, Resource: t, Amount: amount})
+}

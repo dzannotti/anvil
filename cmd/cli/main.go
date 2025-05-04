@@ -21,9 +21,16 @@ func main() {
 
 	start := time.Now()
 	encounter.Start()
+	go func() {
+		for {
+			if gameState.World.Request != nil {
+				gameState.World.Request.AnswerWithDefault()
+			}
+			time.Sleep(2 * time.Millisecond)
+		}
+	}()
 	for !encounter.IsOver() {
 		ai.Play(gameState)
-		encounter.EndTurn()
 	}
 	encounter.End()
 	total := time.Since(start)

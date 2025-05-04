@@ -6,6 +6,7 @@ import (
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
 	"anvil/internal/expression"
+	"anvil/internal/grid"
 	"anvil/internal/tag"
 )
 
@@ -130,4 +131,23 @@ func (a *Actor) DamageRoll(ds []DamageSource, crit bool) *expression.Expression 
 	after := AfterDamageRollState{Source: a, Result: res}
 	a.Effects.Evaluate(AfterDamageRoll, &after)
 	return res
+}
+
+func (a *Actor) Move(to grid.Position, action Action) {
+	a.Log.Start(MoveStepType, MoveStepEvent{World: a.World, Source: a, From: a.Position, To: to})
+	defer a.Log.End()
+	before := MoveState{
+		Source:  a,
+		From:    a.Position,
+		To:      to,
+		CanMove: true,
+		Action:  action,
+	}
+	a.Effects.Evaluate(BeforeMoveStep, &before)
+	a.Log.Add(ConfirmType, ConfirmEvent{Actor: a, Confirm: before.CanMove})
+	if before.CanMove {
+		a.World.RemoveOccupant(a.Position, a)
+		a.Position = to
+		a.World.AddOccupant(to, a)
+	}
 }

@@ -24,7 +24,7 @@ func NewMoveAction(owner *core.Actor) *MoveAction {
 	return a
 }
 
-func (a MoveAction) Perform(pos []grid.Position) {
+func (a MoveAction) Perform(pos []grid.Position, commitCost bool) {
 	src := a.owner
 	world := src.World
 	path, ok := world.FindPath(src.Position, pos[0])
@@ -34,14 +34,10 @@ func (a MoveAction) Perform(pos []grid.Position) {
 	src.Log.Start(core.MoveType, core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
 	defer src.Log.End()
 	for _, node := range path.Path[1:] {
-		src.Resources.Consume(tags.WalkSpeed, 1)
-		src.Log.Add(core.SpendResourceType, core.SpendResourceEvent{Source: src, Resource: tags.WalkSpeed, Amount: 1})
-		src.Log.Start(core.MoveStepType, core.MoveStepEvent{World: world, Source: src, From: src.Position, To: node})
-		// TODO: Implement AOO here
-		world.RemoveOccupant(src.Position, src)
-		src.Position = node
-		src.World.AddOccupant(node, src)
-		src.Log.End()
+		if commitCost {
+			src.ConsumeResource(tags.WalkSpeed, 1)
+		}
+		src.Move(node, a)
 	}
 }
 

@@ -9,7 +9,8 @@ import (
 )
 
 type World struct {
-	Grid *grid.Grid[WorldCell]
+	Grid    *grid.Grid[WorldCell]
+	Request *Request
 }
 
 func NewWorld(width int, height int) *World {
@@ -123,4 +124,20 @@ func (w World) FloodFill(start grid.Position, radius int) []grid.Position {
 		return false
 	}
 	return shapes.FloodFill(start, radius, isBlocked)
+}
+
+func (w *World) Ask(actor *Actor, text string, options []RequestOption) RequestOption {
+	if w.Request != nil {
+		panic("There is already a pending request. Please wait until it is resolved.")
+	}
+
+	w.Request = &Request{
+		Target:   actor,
+		Text:     text,
+		Options:  options,
+		Response: make(chan RequestOption),
+	}
+	selectedOption := <-w.Request.Response
+	w.Request = nil
+	return selectedOption
 }

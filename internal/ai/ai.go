@@ -82,6 +82,7 @@ func PickBestAction(world *core.World, actor *core.Actor) (core.Action, grid.Pos
 }
 
 func Play(state *core.GameState) {
+	defer state.Encounter.EndTurn()
 	actor := state.Encounter.ActiveActor()
 	if !actor.CanAct() {
 		return
@@ -91,7 +92,7 @@ func Play(state *core.GameState) {
 		if action == nil {
 			break
 		}
-		action.Perform([]grid.Position{pos})
+		action.Perform([]grid.Position{pos}, true)
 		if state.Encounter.IsOver() {
 			break
 		}

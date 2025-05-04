@@ -164,3 +164,9 @@ func (e *Effect) WithDeserialize(handler func(*Effect, *SerializeState)) {
 		handler(e, state.(*SerializeState))
 	}
 }
+
+func (e *Effect) WithBeforeMoveStep(handler func(*Effect, *MoveState)) {
+	e.Handlers.get()[BeforeMoveStep] = func(e *Effect, state any) {
+		handler(e, state.(*MoveState))
+	}
+}
