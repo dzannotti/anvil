@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"math"
 	"reflect"
 	"slices"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"anvil/internal/ai/metrics"
 	"anvil/internal/core"
 	"anvil/internal/grid"
+	"anvil/internal/mathi"
 )
 
 type AI interface {
@@ -39,7 +41,7 @@ func ScorePosition(world *core.World, actor *core.Actor, action core.Action, pos
 		score.Total += value
 	}
 
-	score.Total = max(score.Total, 0)
+	score.Total = mathi.Clamp(score.Total, 0, math.MaxInt)
 
 	return score
 }

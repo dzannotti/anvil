@@ -1,13 +1,13 @@
 package core
 
 import (
-	"github.com/adam-lavrik/go-imath/ix"
-
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
 	"anvil/internal/expression"
 	"anvil/internal/grid"
+	"anvil/internal/mathi"
 	"anvil/internal/tag"
+	"math"
 )
 
 func (a *Actor) ArmorClass() *expression.Expression {
@@ -79,8 +79,8 @@ func (a *Actor) TakeDamage(damage expression.Expression) {
 	before := BeforeTakeDamageState{Expression: &expr, Source: a}
 	a.Evaluate(BeforeTakeDamage, &before)
 	res := expr.Evaluate()
-	actual := a.HitPoints - ix.Max(a.HitPoints-res.Value, 0)
-	a.HitPoints = ix.Max(a.HitPoints-actual, 0)
+	actual := a.HitPoints - mathi.Clamp(a.HitPoints-res.Value, 0, math.MaxInt)
+	a.HitPoints = mathi.Clamp(a.HitPoints-actual, 0, math.MaxInt)
 	a.Log.Start(TakeDamageType, TakeDamageEvent{Target: a, Damage: &expr})
 	after := AfterTakeDamageState{Result: res, Source: a, ActualDamage: actual}
 	a.Effects.Evaluate(AfterTakeDamage, &after)

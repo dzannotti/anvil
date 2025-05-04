@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/adam-lavrik/go-imath/ix"
-
 	"anvil/internal/core/tags"
 	"anvil/internal/expression"
+	"anvil/internal/mathi"
 	"anvil/internal/tag"
 )
 
@@ -18,7 +17,7 @@ func printValue(value int, first bool) string {
 	if value > 0 {
 		return fmt.Sprintf("+ %d", value)
 	}
-	return fmt.Sprintf("- %d", ix.Abs(value))
+	return fmt.Sprintf("- %d", mathi.Abs(value))
 }
 
 func formatDiceRolls(term expression.Term) string {

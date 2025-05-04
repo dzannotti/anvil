@@ -1,6 +1,6 @@
 package grid
 
-import "github.com/adam-lavrik/go-imath/ix"
+import "anvil/internal/mathi"
 
 type Grid[cell any] struct {
 	Width  int
@@ -45,10 +45,10 @@ func (g Grid[cell]) IsValidPosition(pos Position) bool {
 }
 
 func (g Grid[cell]) CellsInRange(origin Position, radius int) []*cell {
-	minX := ix.Max(0, origin.X-radius)
-	minY := ix.Max(0, origin.Y-radius)
-	maxX := ix.Min(g.Width-1, origin.X+radius)
-	maxY := ix.Min(g.Height-1, origin.Y+radius)
+	minX := mathi.Max(0, origin.X-radius)
+	minY := mathi.Max(0, origin.Y-radius)
+	maxX := mathi.Min(g.Width-1, origin.X+radius)
+	maxY := mathi.Min(g.Height-1, origin.Y+radius)
 	size := (maxX - minX + 1) * (maxY - minY + 1)
 	cells := make([]*cell, 0, size)
 	for x := minX; x <= maxX; x++ {

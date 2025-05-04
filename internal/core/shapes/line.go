@@ -1,20 +1,19 @@
 package shapes
 
 import (
-	"github.com/adam-lavrik/go-imath/ix"
-
 	"anvil/internal/grid"
+	"anvil/internal/mathi"
 )
 
 func Line(from grid.Position, to grid.Position) []grid.Position {
-	maxSteps := ix.Max(ix.Abs(to.X-from.X), ix.Abs(to.Y-from.Y)) + 1
+	maxSteps := mathi.Max(mathi.Abs(to.X-from.X), mathi.Abs(to.Y-from.Y)) + 1
 	result := make([]grid.Position, 0, maxSteps)
 
 	x0, y0 := from.X, from.Y
 	x1, y1 := to.X, to.Y
 
-	dx := ix.Abs(x1 - x0)
-	dy := ix.Abs(y1 - y0)
+	dx := mathi.Abs(x1 - x0)
+	dy := mathi.Abs(y1 - y0)
 
 	sx := -1
 	if x0 < x1 {

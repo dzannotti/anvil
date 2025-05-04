@@ -1,11 +1,10 @@
 package core
 
 import (
-	"github.com/google/uuid"
-
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
 	"anvil/internal/tag"
+	"anvil/internal/uuid"
 )
 
 func (a Actor) Enemies() []*Actor {
@@ -48,7 +47,7 @@ func (a Actor) IsHostileTo(o *Actor) bool {
 
 func (a *Actor) ID() string {
 	if a.id == "" {
-		a.id = uuid.New().String()
+		a.id = uuid.New()
 	}
 	return a.id
 }

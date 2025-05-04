@@ -25,7 +25,7 @@
 - [x] death saving throws for PC
 - [x] fire ball
 - [x] attacks of opportunity
-- [ ] reduce number of deps
+- [x] reduce number of deps
 - [ ] finesse
 - [ ] unarmed strike
 - [ ] fire bolt
