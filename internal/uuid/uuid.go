@@ -9,7 +9,7 @@ import (
 func New() string {
 	uuid := make([]byte, 16)
 	if _, err := io.ReadFull(rand.Reader, uuid); err != nil {
-		return ""
+		panic("Failed to generate secure random UUID: " + err.Error())
 	}
 
 	// Set version (4) and variant bits according to RFC 4122
