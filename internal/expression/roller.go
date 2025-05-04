@@ -1,9 +1,8 @@
 package expression
 
 import (
+	"anvil/internal/mathi"
 	"math/rand"
-
-	"github.com/adam-lavrik/go-imath/ix"
 )
 
 type DiceRoller interface {
@@ -13,8 +12,8 @@ type DiceRoller interface {
 type defaultRoller struct{}
 
 func (rng defaultRoller) Roll(sides int) int {
-	sign := ix.Sign(sides)
-	sides = ix.Abs(sides)
+	sign := mathi.Sign(sides)
+	sides = mathi.Abs(sides)
 	if sides == 0 {
 		return 0
 	}

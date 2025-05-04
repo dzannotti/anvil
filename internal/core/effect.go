@@ -3,7 +3,7 @@ package core
 import (
 	"sync"
 
-	"github.com/google/uuid"
+	"anvil/internal/uuid"
 )
 
 type Priority int
@@ -60,7 +60,7 @@ func (e *Effect) Evaluate(event string, state any) {
 
 func (e *Effect) ID() string {
 	if e.id == "" {
-		e.id = uuid.New().String()
+		e.id = uuid.New()
 	}
 	return e.id
 }

@@ -4,9 +4,8 @@ import (
 	"math"
 	"slices"
 
-	"github.com/adam-lavrik/go-imath/ix"
-
 	"anvil/internal/grid"
+	"anvil/internal/mathi"
 )
 
 type Result struct {
@@ -140,8 +139,8 @@ func reconstructPath(cameFrom []*grid.Position, end grid.Position, width int, co
 	}
 }
 func heuristic(a, b grid.Position) int {
-	dx := ix.Abs(a.X - b.X)
-	dy := ix.Abs(a.Y - b.Y)
+	dx := mathi.Abs(a.X - b.X)
+	dy := mathi.Abs(a.Y - b.Y)
 	// Chebyshev distance - maximum of dx and dy
-	return 10 * ix.Max(dx, dy)
+	return 10 * mathi.Max(dx, dy)
 }

@@ -3,9 +3,7 @@ module anvil
 go 1.24
 
 require (
-	github.com/adam-lavrik/go-imath v0.0.0-20210910152346-265a42a96f0b
 	github.com/gen2brain/raylib-go/raylib v0.0.0-20250409052854-a4292f0f0412
-	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.10.0
 	github.com/zyedidia/generic v1.2.1
 	golang.org/x/text v0.24.0

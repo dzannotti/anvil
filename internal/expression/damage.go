@@ -5,8 +5,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/adam-lavrik/go-imath/ix"
-
+	"anvil/internal/mathi"
 	"anvil/internal/tag"
 )
 
@@ -55,7 +54,7 @@ func (e *Expression) MaxDice(source string) {
 		newTerm := term.Clone()
 		newTerm.Source = source
 		newTerm.Type = TypeScalarMax
-		newTerm.Value = ix.Abs(term.Sides * term.Times)
+		newTerm.Value = mathi.Abs(term.Sides * term.Times)
 		terms = append(terms, newTerm)
 	}
 	e.Terms = terms

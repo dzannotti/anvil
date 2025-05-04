@@ -1,10 +1,9 @@
 package expression
 
 import (
+	"anvil/internal/mathi"
 	"fmt"
 	"strings"
-
-	"github.com/adam-lavrik/go-imath/ix"
 )
 
 func (e *Expression) Evaluate() *Expression {
@@ -35,8 +34,8 @@ func (e Expression) evaluateDice(term *Term) {
 }
 
 func (e Expression) evaluateDiceRoll(term *Term) {
-	sign := ix.Sign(term.Times)
-	times := ix.Abs(term.Times)
+	sign := mathi.Sign(term.Times)
+	times := mathi.Abs(term.Times)
 	term.Values = make([]int, times)
 	term.Value = 0
 	for i := 0; i < times; i++ {
@@ -50,10 +49,10 @@ func (e Expression) evaluateD20Roll(term *Term) {
 	values := []int{e.rng.Roll(term.Sides), e.rng.Roll(term.Sides)}
 	term.Values = values
 	if len(term.HasAdvantage) > 0 {
-		term.Value = max(values[0], values[1])
+		term.Value = mathi.Max(values[0], values[1])
 		return
 	}
-	term.Value = min(values[0], values[1])
+	term.Value = mathi.Min(values[0], values[1])
 }
 
 func (e Expression) IsCriticalSuccess() bool {

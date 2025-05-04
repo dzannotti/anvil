@@ -1,6 +1,6 @@
 package grid
 
-import "github.com/adam-lavrik/go-imath/ix"
+import "anvil/internal/mathi"
 
 type Position struct {
 	X int
@@ -23,5 +23,5 @@ func (p Position) Subtract(other Position) Position {
 
 // Chebyshev  Distance
 func (p Position) Distance(other Position) int {
-	return max(ix.Abs(p.X-other.X), ix.Abs(p.Y-other.Y))
+	return mathi.Max(mathi.Abs(p.X-other.X), mathi.Abs(p.Y-other.Y))
 }

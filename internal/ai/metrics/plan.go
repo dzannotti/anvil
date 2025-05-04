@@ -4,6 +4,7 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/grid"
+	"anvil/internal/mathi"
 	"anvil/internal/tag"
 )
 
@@ -32,7 +33,7 @@ func (p Plan) Evaluate(world *core.World, actor *core.Actor, action core.Action,
 			dmg := damage.Evaluate(world, actor, suba, p, affected)
 			friendly := friendly.Evaluate(world, actor, suba, p, affected)
 			score := dmg + friendly
-			best = max(int(float32(score)*planWeight), best)
+			best = mathi.Max(int(float32(score)*planWeight), best)
 		}
 	}
 	actor.Position = oldPos

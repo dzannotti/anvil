@@ -3,6 +3,7 @@ package metrics
 import (
 	"anvil/internal/core"
 	"anvil/internal/grid"
+	"anvil/internal/mathi"
 )
 
 const BaseDamageScore = 20
@@ -26,7 +27,7 @@ func (d DamageDone) Evaluate(world *core.World, actor *core.Actor, action core.A
 	}
 	score := BaseDamageScore
 	for _, t := range los {
-		score += min(damage, t.HitPoints)
+		score += mathi.Min(damage, t.HitPoints)
 	}
 	return score
 }

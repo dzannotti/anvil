@@ -3,9 +3,8 @@ package core
 import (
 	"maps"
 
-	"github.com/adam-lavrik/go-imath/ix"
-
 	"anvil/internal/core/tags"
+	"anvil/internal/mathi"
 	"anvil/internal/tag"
 )
 
@@ -69,7 +68,7 @@ func (r Resources) remainingSpeed(t tag.Tag) int {
 	r.init()
 	m := r.Max[t]
 	total := r.maxSpeed() - r.Current[tags.UsedSpeed]
-	remaining := ix.Min(m-r.Current[tags.UsedSpeed], total)
+	remaining := mathi.Min(m-r.Current[tags.UsedSpeed], total)
 	if remaining <= 0 {
 		return 0
 	}

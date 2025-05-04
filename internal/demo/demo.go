@@ -6,6 +6,7 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
+	"anvil/internal/mathi"
 	"anvil/internal/ruleset/actor"
 	"anvil/internal/ruleset/fighter"
 	"anvil/internal/ruleset/item/armor"
@@ -29,7 +30,7 @@ func setupWorld(world *core.World) {
 			grid.Position{X: 0, Y: y},
 			grid.Position{X: world.Width() - 1, Y: y})
 	}
-	limit := min(world.Width()-3, world.Height()-3)
+	limit := mathi.Min(world.Width()-3, world.Height()-3)
 	for y := 1; y < limit; y++ {
 		walls = append(walls, grid.Position{X: world.Width() - 1 - y, Y: y})
 	}
