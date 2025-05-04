@@ -24,14 +24,15 @@
 - [x] refactor team to have a struct (we need IsHostileTo and replace all team != other team to support neutrals)
 - [x] death saving throws for PC
 - [x] fire ball
-- [ ] consider/poc using ids instead of references
-- [ ] attacks of opportunity
+- [x] attacks of opportunity
+- [ ] reduce number of deps
 - [ ] finesse
 - [ ] unarmed strike
 - [ ] fire bolt
 - [ ] prone
 - [ ] instant death (overkill)
 - [ ] resistance/vulnerability
+- [ ] consider/poc using ids instead of references
 - [ ] something with temp hit points
 - [ ] lucky?
 - [ ] action that gives poison
