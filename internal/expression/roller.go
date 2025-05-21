@@ -1,8 +1,9 @@
 package expression
 
 import (
-	"anvil/internal/mathi"
 	"math/rand"
+
+	"anvil/internal/mathi"
 )
 
 type DiceRoller interface {

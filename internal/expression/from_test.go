@@ -1,8 +1,9 @@
 package expression
 
 import (
-	"anvil/internal/tag"
 	"testing"
+
+	"anvil/internal/tag"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -55,7 +55,13 @@ func drawActor(actor *core.Actor, selected bool) {
 	}
 	FillCircle(centerPos, CellSize-14, Blue)
 	shortName := fmt.Sprintf("%c%c", actor.Name[0], actor.Name[len(actor.Name)-1])
-	DrawString(shortName, Rectangle{X: pos.X * CellSize, Y: pos.Y * CellSize, Width: CellSize, Height: CellSize}, Crust, 15, AlignMiddle)
+	DrawString(
+		shortName,
+		Rectangle{X: pos.X * CellSize, Y: pos.Y * CellSize, Width: CellSize, Height: CellSize},
+		Crust,
+		15,
+		AlignMiddle,
+	)
 	DrawHealthbar(actor.Position, actor.HitPoints, actor.MaxHitPoints)
 }
 

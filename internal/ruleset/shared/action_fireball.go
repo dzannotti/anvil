@@ -17,7 +17,15 @@ func NewFireballAction(owner *core.Actor) FireballAction {
 	tc := tag.ContainerFromTag(tags.Spell, tags.Evocation)
 	cost := map[tag.Tag]int{tags.SpellSlot3: 1, tags.Action: 1}
 	a := FireballAction{
-		Action: base.MakeAction(owner, "Fireball", tc, cost, 30, 4, []core.DamageSource{{Times: 8, Sides: 6, Source: "Fireball", Tags: tag.ContainerFromTag(tags.Fire)}}),
+		Action: base.MakeAction(
+			owner,
+			"Fireball",
+			tc,
+			cost,
+			30,
+			4,
+			[]core.DamageSource{{Times: 8, Sides: 6, Source: "Fireball", Tags: tag.ContainerFromTag(tags.Fire)}},
+		),
 	}
 	a.Tags().Add(tag.ContainerFromTag(tags.Attack))
 	return a

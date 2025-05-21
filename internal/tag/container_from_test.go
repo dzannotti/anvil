@@ -65,7 +65,7 @@ func TestContainer_From(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			container := tt.setup()
-			assert.Equal(t, len(tt.expected), len(container.Strings()))
+			assert.Len(t, container.Strings(), len(tt.expected))
 			for i, expectedTag := range tt.expected {
 				assert.True(t, expectedTag.MatchExact(tag.FromString(container.Strings()[i])))
 			}

@@ -1,15 +1,23 @@
 package stats_test
 
 import (
+	"testing"
+
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAttribute_Value(t *testing.T) {
-	attributes := stats.Attributes{Strength: 10, Dexterity: 11, Constitution: 12, Intelligence: 13, Wisdom: 14, Charisma: 15}
+	attributes := stats.Attributes{
+		Strength:     10,
+		Dexterity:    11,
+		Constitution: 12,
+		Intelligence: 13,
+		Wisdom:       14,
+		Charisma:     15,
+	}
 	assert.Equal(t, 10, attributes.Value(tags.Strength))
 	assert.Equal(t, 11, attributes.Value(tags.Dexterity))
 	assert.Equal(t, 12, attributes.Value(tags.Constitution))

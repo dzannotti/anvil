@@ -85,7 +85,12 @@ func (log *ScrollText) Draw() {
 		scrollRatio := log.Scroll / float32(totalContentHeight-int(log.Rect.Height))
 		scrollbarY := int(float32(barY+padding) + scrollRatio*float32(scrollAreaHeight-scrollbarHeight))
 
-		scrollbarRect := rl.NewRectangle(float32(barX), float32(scrollbarY), float32(barWidth), float32(scrollbarHeight))
+		scrollbarRect := rl.NewRectangle(
+			float32(barX),
+			float32(scrollbarY),
+			float32(barWidth),
+			float32(scrollbarHeight),
+		)
 		rl.DrawRectangleRec(scrollbarRect, rl.Gray)
 		rl.DrawRectangleLinesEx(scrollbarRect, 1, rl.DarkGray)
 	}

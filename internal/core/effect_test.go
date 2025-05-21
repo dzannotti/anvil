@@ -1,8 +1,9 @@
 package core
 
 import (
-	"anvil/internal/expression"
 	"testing"
+
+	"anvil/internal/expression"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"slices"
+	"strconv"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 
@@ -57,7 +58,7 @@ func (am *ActionManager) Draw(cam Camera) {
 		if ok && aiOk && choice.Action.Name() == aiChoice.Action.Name() && choice.Position == aiChoice.Position {
 			choice = aiChoice
 		}
-		DrawString(fmt.Sprintf("%d", choice.Total), rect.Expand(0, -7), color, 14, AlignBottom)
+		DrawString(strconv.Itoa(choice.Total), rect.Expand(0, -7), color, 14, AlignBottom)
 	}
 	if am.Active.Tags().MatchTag(tags.Move) {
 		am.drawPath(actor, cam)

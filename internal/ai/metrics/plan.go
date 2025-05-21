@@ -12,7 +12,13 @@ const planWeight = float32(0.8)
 
 type Plan struct{}
 
-func (p Plan) Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, _ []grid.Position) int {
+func (p Plan) Evaluate(
+	world *core.World,
+	actor *core.Actor,
+	action core.Action,
+	pos grid.Position,
+	_ []grid.Position,
+) int {
 	if !action.Tags().MatchTag(tags.Move) {
 		return 0
 	}

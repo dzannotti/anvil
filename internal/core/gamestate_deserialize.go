@@ -15,7 +15,13 @@ type CreateAction func(*Actor, SerializedAction) Action
 type CreateItem func(*Actor, SerializedItem) Item
 type CreateEffect func(SerializedEffect) *Effect
 
-func (gs *GameState) Load(r io.Reader, hub *eventbus.Hub, createAction CreateAction, createEffect CreateEffect, createItem CreateItem) (*GameState, error) {
+func (gs *GameState) Load(
+	r io.Reader,
+	hub *eventbus.Hub,
+	createAction CreateAction,
+	createEffect CreateEffect,
+	createItem CreateItem,
+) (*GameState, error) {
 	decoder := json.NewDecoder(r)
 
 	var serialized struct {
@@ -48,7 +54,13 @@ func deserializeWorld(w *SerializedWorld, e *Encounter) *World {
 	return world
 }
 
-func deserializeEncounter(hub *eventbus.Hub, e *SerializedEncounter, createAction CreateAction, createEffect CreateEffect, createItem CreateItem) *Encounter {
+func deserializeEncounter(
+	hub *eventbus.Hub,
+	e *SerializedEncounter,
+	createAction CreateAction,
+	createEffect CreateEffect,
+	createItem CreateItem,
+) *Encounter {
 	encounter := &Encounter{
 		Round:           e.Round,
 		Turn:            e.Turn,
@@ -68,7 +80,13 @@ func deserializeEncounter(hub *eventbus.Hub, e *SerializedEncounter, createActio
 	return encounter
 }
 
-func deserializeActor(hub *eventbus.Hub, a *SerializedActor, createAction CreateAction, createEffect CreateEffect, createItem CreateItem) *Actor {
+func deserializeActor(
+	hub *eventbus.Hub,
+	a *SerializedActor,
+	createAction CreateAction,
+	createEffect CreateEffect,
+	createItem CreateItem,
+) *Actor {
 	actor := &Actor{
 		id:                 a.ID,
 		Name:               a.Name,

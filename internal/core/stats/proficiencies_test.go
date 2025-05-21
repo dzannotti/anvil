@@ -1,9 +1,10 @@
 package stats_test
 
 import (
+	"testing"
+
 	"anvil/internal/core/stats"
 	"anvil/internal/tag"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 )

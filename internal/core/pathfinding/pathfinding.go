@@ -30,7 +30,13 @@ var offsets = []grid.Position{
 	{X: 1, Y: 1},   // down-right
 }
 
-func FindPath(start grid.Position, end grid.Position, width int, height int, movementCost func(grid.Position) int) (*Result, bool) {
+func FindPath(
+	start grid.Position,
+	end grid.Position,
+	width int,
+	height int,
+	movementCost func(grid.Position) int,
+) (*Result, bool) {
 	size := width * height
 	gCost := make([]int, size)
 	cameFrom := make([]*grid.Position, size)

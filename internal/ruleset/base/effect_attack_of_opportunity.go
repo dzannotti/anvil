@@ -14,7 +14,11 @@ func NewAttackOfOpportunityEffect() *core.Effect {
 		if s.Action != nil && s.Action.Tags().MatchTag(tags.Teleport) {
 			return
 		}
-		enemies := s.Source.World.ActorsInRange(s.From, 1, func(other *core.Actor) bool { return other.IsHostileTo(s.Source) })
+		enemies := s.Source.World.ActorsInRange(
+			s.From,
+			1,
+			func(other *core.Actor) bool { return other.IsHostileTo(s.Source) },
+		)
 		options := []core.RequestOption{
 			{Value: true, Label: "Yes", Default: true},
 			{Value: false, Label: "No"},

@@ -57,7 +57,16 @@ func New(hub *eventbus.Hub) *core.GameState {
 		tags.WalkSpeed:  5,
 		tags.SpellSlot3: 1,
 	}}
-	cedric := actor.NewPCActor(hub, world, grid.Position{X: 6, Y: 6}, "Cedric", 12, stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10}, stats.Proficiencies{Bonus: 2}, cres)
+	cedric := actor.NewPCActor(
+		hub,
+		world,
+		grid.Position{X: 6, Y: 6},
+		"Cedric",
+		12,
+		stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10},
+		stats.Proficiencies{Bonus: 2},
+		cres,
+	)
 	cedric.SpellCastingSource = tags.Intelligence
 	cedric.Equip(weapon.NewGreatAxe())
 	cedric.Equip(armor.NewChainMail())

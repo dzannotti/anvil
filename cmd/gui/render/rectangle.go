@@ -21,7 +21,8 @@ func (r Rectangle) Position() Vector2i {
 
 func (r Rectangle) IsMouseOver() bool {
 	mousePos := rl.GetMousePosition()
-	return mousePos.X >= float32(r.X) && mousePos.X <= float32(r.X+r.Width) && mousePos.Y >= float32(r.Y) && mousePos.Y <= float32(r.Y+r.Height)
+	return mousePos.X >= float32(r.X) && mousePos.X <= float32(r.X+r.Width) && mousePos.Y >= float32(r.Y) &&
+		mousePos.Y <= float32(r.Y+r.Height)
 }
 
 func (r Rectangle) Expand(x int, y int) Rectangle {

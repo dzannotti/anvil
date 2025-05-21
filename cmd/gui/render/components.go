@@ -6,7 +6,15 @@ func DrawButton(rect Rectangle, text string, align TextAlignment, fontSize int, 
 	DrawToggleButton(rect, text, align, fontSize, onClick, enabled, false)
 }
 
-func DrawToggleButton(rect Rectangle, text string, align TextAlignment, fontSize int, onClick func(), enabled bool, selected bool) {
+func DrawToggleButton(
+	rect Rectangle,
+	text string,
+	align TextAlignment,
+	fontSize int,
+	onClick func(),
+	enabled bool,
+	selected bool,
+) {
 	mo := rect.IsMouseOver()
 	color := colorButtonBackground
 	textColor := Crust

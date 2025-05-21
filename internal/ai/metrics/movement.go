@@ -1,15 +1,22 @@
 package metrics
 
 import (
+	"math"
+
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/grid"
-	"math"
 )
 
 type Movement struct{}
 
-func (m Movement) Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, _ []grid.Position) int {
+func (m Movement) Evaluate(
+	world *core.World,
+	actor *core.Actor,
+	action core.Action,
+	pos grid.Position,
+	_ []grid.Position,
+) int {
 	if !action.Tags().MatchTag(tags.Move) {
 		return 0
 	}
@@ -20,7 +27,11 @@ func (m Movement) Evaluate(world *core.World, actor *core.Actor, action core.Act
 
 	lookAhead := 4
 	speed := actor.Resources.Remaining(tags.WalkSpeed)
-	enemies := world.ActorsInRange(pos, speed*lookAhead, func(other *core.Actor) bool { return other.IsHostileTo(actor) })
+	enemies := world.ActorsInRange(
+		pos,
+		speed*lookAhead,
+		func(other *core.Actor) bool { return other.IsHostileTo(actor) },
+	)
 
 	score := 0
 

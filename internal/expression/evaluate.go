@@ -1,9 +1,10 @@
 package expression
 
 import (
-	"anvil/internal/mathi"
 	"fmt"
 	"strings"
+
+	"anvil/internal/mathi"
 )
 
 func (e *Expression) Evaluate() *Expression {
@@ -38,7 +39,7 @@ func (e Expression) evaluateDiceRoll(term *Term) {
 	times := mathi.Abs(term.Times)
 	term.Values = make([]int, times)
 	term.Value = 0
-	for i := 0; i < times; i++ {
+	for i := range times {
 		term.Values[i] = e.rng.Roll(term.Sides)
 		term.Value += term.Values[i]
 	}

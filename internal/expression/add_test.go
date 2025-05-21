@@ -167,7 +167,7 @@ func TestExpression_Add(t *testing.T) {
 			expression := tt.setup()
 
 			if len(tt.expected.terms) > 0 {
-				assert.Equal(t, len(tt.expected.terms), len(expression.Terms))
+				assert.Len(t, expression.Terms, len(tt.expected.terms))
 				for i, term := range tt.expected.terms {
 					assert.Equal(t, term.Type, expression.Terms[i].Type)
 					assert.Equal(t, term.Source, expression.Terms[i].Source)

@@ -297,11 +297,22 @@ func printEffect(e core.EffectEvent) string {
 }
 
 func printAttributeChange(e core.AttributeChangeEvent) string {
-	return fmt.Sprintf("🔀 %s %s changed from %d to %d", e.Source.Name, tags.ToReadable(e.Attribute), e.OldValue, e.Value)
+	return fmt.Sprintf(
+		"🔀 %s %s changed from %d to %d",
+		e.Source.Name,
+		tags.ToReadable(e.Attribute),
+		e.OldValue,
+		e.Value,
+	)
 }
 
 func printSavingThrow(e core.SavingThrowEvent) string {
-	return fmt.Sprintf("🍥 %s rolls a %s saving throw against DC %d", e.Source.Name, tags.ToReadable(e.Attribute), e.DifficultyClass)
+	return fmt.Sprintf(
+		"🍥 %s rolls a %s saving throw against DC %d",
+		e.Source.Name,
+		tags.ToReadable(e.Attribute),
+		e.DifficultyClass,
+	)
 }
 
 func printSpendResource(e core.SpendResourceEvent) string {
@@ -324,7 +335,9 @@ func printConditionChanged(e core.ConditionChangedEvent) string {
 
 func printMove(e core.MoveEvent) string {
 	sb := strings.Builder{}
-	sb.WriteString(fmt.Sprintf("🚶 %s wants to move from %s to %s", e.Source.Name, printPosition(e.From), printPosition(e.To)))
+	sb.WriteString(
+		fmt.Sprintf("🚶 %s wants to move from %s to %s", e.Source.Name, printPosition(e.From), printPosition(e.To)),
+	)
 	sb.WriteString("\n")
 	sb.WriteString(indent(printWorld(e.World, e.Path.Path)))
 	return sb.String()
