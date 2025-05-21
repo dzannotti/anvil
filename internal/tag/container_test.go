@@ -9,8 +9,6 @@ import (
 )
 
 func TestTagContainer_Id(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name          string
 		initialTag    string
@@ -35,8 +33,6 @@ func TestTagContainer_Id(t *testing.T) {
 }
 
 func TestTagContainer_Clone(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name          string
 		initialTag    string

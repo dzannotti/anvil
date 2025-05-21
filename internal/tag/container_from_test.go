@@ -9,8 +9,6 @@ import (
 )
 
 func TestContainer_From(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		setup    func() tag.Container

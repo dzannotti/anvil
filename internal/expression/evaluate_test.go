@@ -7,8 +7,6 @@ import (
 )
 
 func TestExpression_Evaluate(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		setup    func() Expression

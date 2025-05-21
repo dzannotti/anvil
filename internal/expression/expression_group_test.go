@@ -14,7 +14,7 @@ func TestExpression_ExpressionGroup(t *testing.T) {
 		expr.AddDamageScalar(2, "Damage", tag.ContainerFromString("Slashing"))
 		res := expr.EvaluateGroup()
 		assert.Equal(t, 2, res.Value)
-		assert.Equal(t, 1, len(res.Terms))
+		assert.Len(t, res.Terms, 1)
 		assert.Equal(t, res.Terms[0].Tags, tag.ContainerFromString("Slashing"))
 	})
 	t.Run("groups by tags", func(t *testing.T) {
@@ -24,7 +24,7 @@ func TestExpression_ExpressionGroup(t *testing.T) {
 		expr.AddDamageScalar(3, "Damage", tag.ContainerFromString("Magical"))
 		res := expr.EvaluateGroup()
 		assert.Equal(t, 9, res.Value)
-		assert.Equal(t, 2, len(res.Terms))
+		assert.Len(t, res.Terms, 2)
 		assert.Equal(t, res.Terms[0].Tags, tag.ContainerFromString("Slashing"))
 		assert.Equal(t, res.Terms[1].Tags, tag.ContainerFromString("Magical"))
 	})
@@ -35,7 +35,7 @@ func TestExpression_ExpressionGroup(t *testing.T) {
 		expr.AddDamageScalar(2, "Damage", tag.ContainerFromString("Slashing"))
 		res := expr.EvaluateGroup()
 		assert.Equal(t, 7, res.Value)
-		assert.Equal(t, 1, len(res.Terms))
+		assert.Len(t, res.Terms, 1)
 		assert.Equal(t, res.Terms[0].Tags, tag.ContainerFromString("Slashing"))
 	})
 

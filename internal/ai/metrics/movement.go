@@ -33,8 +33,6 @@ func (m Movement) Evaluate(
 		func(other *core.Actor) bool { return other.IsHostileTo(actor) },
 	)
 
-	score := 0
-
 	distNow, distThen := m.closestAt(actor, pos, enemies)
 
 	if distThen >= distNow {
@@ -53,7 +51,7 @@ func (m Movement) Evaluate(
 	targetWeight := float32(targetCount) / (float32(len(enemies)) + 0.001)
 	aooPenalty := float32(m.estimateOpportunityAttackDamageAt(pos))
 
-	score = int(distWeight*4.0 + targetWeight*6.0 - aooPenalty*0.5 + 0.5)
+	score := int(distWeight*4.0 + targetWeight*6.0 - aooPenalty*0.5 + 0.5)
 
 	if score < 1 {
 		return 0

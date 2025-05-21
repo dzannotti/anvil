@@ -22,7 +22,7 @@ func (log *ScrollText) AddLine(line string) {
 
 	// Automatically scroll to the bottom
 	totalHeight := len(log.Lines) * log.LineHeight
-	visibleHeight := int(log.Rect.Height)
+	visibleHeight := log.Rect.Height
 	maxScroll := float32(totalHeight - visibleHeight)
 	if maxScroll < 0 {
 		maxScroll = 0
@@ -43,7 +43,7 @@ func (log *ScrollText) Draw() {
 	}
 
 	// Clamp scroll
-	maxScroll := float32(len(log.Lines)*log.LineHeight - int(log.Rect.Height))
+	maxScroll := float32(len(log.Lines)*log.LineHeight - log.Rect.Height)
 	if maxScroll < 0 {
 		maxScroll = 0
 	}
@@ -56,9 +56,9 @@ func (log *ScrollText) Draw() {
 
 	// Start drawing lines with clipping
 	rl.BeginScissorMode(int32(log.Rect.X), int32(log.Rect.Y), int32(log.Rect.Width), int32(log.Rect.Height))
-	y := int(log.Rect.Y) + log.Padding - int(log.Scroll)
+	y := log.Rect.Y + log.Padding - int(log.Scroll)
 	for _, line := range log.Lines {
-		pos := Vector2i{X: int(log.Rect.X) + log.Padding, Y: y}
+		pos := Vector2i{X: log.Rect.X + log.Padding, Y: y}
 		DrawText(line, pos, log.TextColor, log.FontSize)
 		y += log.LineHeight
 	}
@@ -73,7 +73,7 @@ func (log *ScrollText) Draw() {
 	scrollAreaHeight := barHeight - padding*2
 
 	totalContentHeight := len(log.Lines) * log.LineHeight
-	if totalContentHeight > int(log.Rect.Height) {
+	if totalContentHeight > log.Rect.Height {
 		visibleRatio := float32(log.Rect.Height) / float32(totalContentHeight)
 		scrollbarHeight := int(visibleRatio * float32(scrollAreaHeight))
 
@@ -82,7 +82,7 @@ func (log *ScrollText) Draw() {
 			scrollbarHeight = 16
 		}
 
-		scrollRatio := log.Scroll / float32(totalContentHeight-int(log.Rect.Height))
+		scrollRatio := log.Scroll / float32(totalContentHeight-log.Rect.Height)
 		scrollbarY := int(float32(barY+padding) + scrollRatio*float32(scrollAreaHeight-scrollbarHeight))
 
 		scrollbarRect := rl.NewRectangle(

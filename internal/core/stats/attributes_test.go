@@ -27,7 +27,6 @@ func TestAttribute_Value(t *testing.T) {
 }
 
 func TestAttribute_Modifier(t *testing.T) {
-	t.Parallel()
 	t.Run("should calculate positive modifiers correctly", func(t *testing.T) {
 		assert.Equal(t, 2, stats.AttributeModifier(15))
 		assert.Equal(t, 4, stats.AttributeModifier(18))

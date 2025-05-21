@@ -30,7 +30,6 @@ func TestProficiencies_Add(t *testing.T) {
 }
 
 func TestProficiencies_Has(t *testing.T) {
-	t.Parallel()
 	t.Run("should return true for added proficiency", func(t *testing.T) {
 		prof := stats.Proficiencies{Bonus: 2}
 		prof.Add(tag.FromString("test"))

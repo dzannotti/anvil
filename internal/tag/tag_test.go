@@ -9,8 +9,6 @@ import (
 )
 
 func TestTag_New(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		input    string
@@ -77,8 +75,6 @@ func TestTag_New(t *testing.T) {
 }
 
 func TestTag_MatchExact(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		tag1     string
@@ -109,8 +105,6 @@ func TestTag_MatchExact(t *testing.T) {
 }
 
 func TestTag_Match(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		tag1     string
@@ -141,8 +135,6 @@ func TestTag_Match(t *testing.T) {
 }
 
 func TestTag_String(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		input    string

@@ -9,8 +9,6 @@ import (
 )
 
 func TestExpression_Add(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		setup    func() Expression

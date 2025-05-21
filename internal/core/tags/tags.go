@@ -11,14 +11,11 @@ import (
 )
 
 var (
-	// Defenses.
 	Defense    = tag.FromString("Actor.Defense")
 	HitPoints  = tag.FromString("Actor.Defense.HitPoints")
 	ArmorClass = tag.FromString("Actor.Defense.ArmorClass")
+	Actor      = tag.FromString("Actor")
 
-	Actor = tag.FromString("Actor")
-
-	// Resources.
 	Resource        = tag.FromString("Actor.Resource")
 	Action          = tag.FromString("Actor.Resource.Action")
 	Reaction        = tag.FromString("Actor.Resource.Reaction")
@@ -31,7 +28,6 @@ var (
 	FlySpeed        = tag.FromString("Actor.Resource.Speed.Fly")
 	SwimSpeed       = tag.FromString("Actor.Resource.Speed.Swim")
 
-	// Spell Slots.
 	SpellSlot1 = tag.FromString("Actor.Resource.SpellSlot.1")
 	SpellSlot2 = tag.FromString("Actor.Resource.SpellSlot.2")
 	SpellSlot3 = tag.FromString("Actor.Resource.SpellSlot.3")
@@ -42,7 +38,6 @@ var (
 	SpellSlot8 = tag.FromString("Actor.Resource.SpellSlot.8")
 	SpellSlot9 = tag.FromString("Actor.Resource.SpellSlot.9")
 
-	// Attributes.
 	Attribute    = tag.FromString("Actor.Attribute")
 	Strength     = tag.FromString("Actor.Attribute.Strength")
 	Dexterity    = tag.FromString("Actor.Attribute.Dexterity")
@@ -51,7 +46,6 @@ var (
 	Wisdom       = tag.FromString("Actor.Attribute.Wisdom")
 	Charisma     = tag.FromString("Actor.Attribute.Charisma")
 
-	// Proficiencies.
 	ProficiencyAcrobatics     = tag.FromString("Proficiency.Acrobatics")
 	ProficiencyAnimalHandling = tag.FromString("Proficiency.AnimalHandling")
 	ProficiencyArcana         = tag.FromString("Proficiency.Arcana")
@@ -74,7 +68,6 @@ var (
 	ProficiencySaveWisdom       = tag.FromString("Proficiency.Save.Wisdom")
 	ProficiencySaveCharisma     = tag.FromString("Proficiency.Save.Charisma")
 
-	// Damage.
 	DamageKind  = tag.FromString("Damage.Kind")
 	Slashing    = tag.FromString("Damage.Kind.Slashing")
 	Piercing    = tag.FromString("Damage.Kind.Piercing")
@@ -86,7 +79,6 @@ var (
 	Melee  = tag.FromString("Melee")
 	Ranged = tag.FromString("Ranged")
 
-	// Action.
 	Attack       = tag.FromString("Attack")
 	WeaponAttack = tag.FromString("Attack.Weapon")
 	Spell        = tag.FromString("Attack.Spell")
@@ -97,10 +89,8 @@ var (
 	Help  = tag.FromString("Help")
 	Dash  = tag.FromString("Dash")
 
-	// School.
 	Evocation = tag.FromString("School.Evocation")
 
-	// Item.
 	Weapon        = tag.FromString("Item.Weapon")
 	Finesse       = tag.FromString("Item.Weapon.Finesse")
 	NaturalWeapon = tag.FromString("Item.Weapon.Natural")
@@ -114,7 +104,6 @@ var (
 	HeavyArmor   = tag.FromString("Item.Armor.Heavy")
 	Shield       = tag.FromString("Item.Armor.Shield")
 
-	// Condition.
 	Condition     = tag.FromString("Condition")
 	Poisoned      = tag.FromString("Condition.Poisoned")
 	Stable        = tag.FromString("Condition.Stable")

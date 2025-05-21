@@ -4,11 +4,8 @@ import (
 	"strings"
 )
 
-func indent(text string, level ...int) string {
+func indent(text string) string {
 	depth := 0
-	if len(level) > 0 {
-		depth = level[0]
-	}
 	spacing := strings.Repeat("│  ", max(0, depth))
 	lines := strings.Split(text, "\n")
 	lines[0] = spacing + "├─" + lines[0]

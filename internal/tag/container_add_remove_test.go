@@ -9,8 +9,6 @@ import (
 )
 
 func TestTagContainer_AddTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name           string
 		initialTagStr  string
@@ -42,8 +40,6 @@ func TestTagContainer_AddTag(t *testing.T) {
 }
 
 func TestTagContainer_Add(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name           string
 		initialTagStr  string
@@ -81,8 +77,6 @@ func TestTagContainer_Add(t *testing.T) {
 }
 
 func TestTagContainer_RemoveTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name           string
 		initialTagStr  string

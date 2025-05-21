@@ -63,7 +63,7 @@ func (am *ActionManager) Draw(cam Camera) {
 	if am.Active.Tags().MatchTag(tags.Move) {
 		am.drawPath(actor, cam)
 	}
-	am.drawAffected(actor, cam)
+	am.drawAffected(cam)
 }
 
 func (am *ActionManager) drawPath(actor *core.Actor, cam Camera) {
@@ -102,7 +102,7 @@ func (am *ActionManager) ProcessInput(cam Camera) bool {
 	return true
 }
 
-func (am *ActionManager) drawAffected(actor *core.Actor, cam Camera) {
+func (am *ActionManager) drawAffected(cam Camera) {
 	worldPos := cam.GetMouseGridPosition()
 	affected := am.Active.AffectedPositions([]grid.Position{worldPos})
 	for _, pos := range affected {
