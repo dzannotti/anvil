@@ -46,17 +46,12 @@ func (c *Container) AddTag(tags ...Tag) {
 
 func (c *Container) Add(container ...Container) {
 	for _, other := range container {
-		for _, t := range other.tags {
-			if c.HasTag(t) {
-				continue
-			}
-			c.tags = append(c.tags, t)
-		}
+		c.AddTag(other.tags...)
 	}
 }
 
 func (c *Container) RemoveTag(tags ...Tag) {
-	newTags := make([]Tag, 0)
+	newTags := make([]Tag, 0, len(c.tags))
 	for _, t := range c.tags {
 		if slices.Contains(tags, t) {
 			continue
@@ -125,5 +120,7 @@ func (c *Container) IsEmpty() bool {
 }
 
 func (c *Container) ID() string {
-	return strings.Join(c.AsStrings(), "-")
+	strs := c.AsStrings()
+	slices.Sort(strs)
+	return strings.Join(strs, "-")
 }

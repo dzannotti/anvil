@@ -141,3 +141,16 @@ func TestContainer_IsEmpty(t *testing.T) {
 		assert.False(t, c.IsEmpty())
 	})
 }
+
+func TestContainer_ID(t *testing.T) {
+	t.Run("returns tag id from tag", func(t *testing.T) {
+		c := tag.ContainerFromString("ability.damage", "item.weapon")
+		assert.Equal(t, "ability.damage-item.weapon", c.ID())
+	})
+
+	t.Run("the order of tags is idempotent", func(t *testing.T) {
+		c1 := tag.ContainerFromString("ability.damage", "item.weapon")
+		c2 := tag.ContainerFromString("item.weapon", "ability.damage")
+		assert.Equal(t, c1.ID(), c2.ID())
+	})
+}
