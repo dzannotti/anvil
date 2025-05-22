@@ -9,19 +9,17 @@ import (
 )
 
 func TestTagContainer_Id(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name          string
 		initialTag    string
 		additionalTag string
-		expectedId    string
+		expectedID    string
 	}{
 		{
 			name:          "should combine all tags returning id",
 			initialTag:    "ability.damage.fire",
 			additionalTag: "ability.damage.frost",
-			expectedId:    "ability.damage.fire-ability.damage.frost",
+			expectedID:    "ability.damage.fire-ability.damage.frost",
 		},
 	}
 
@@ -29,14 +27,12 @@ func TestTagContainer_Id(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			container := tag.ContainerFromString(tt.initialTag)
 			container.AddTag(tag.FromString(tt.additionalTag))
-			assert.Equal(t, tt.expectedId, container.ID())
+			assert.Equal(t, tt.expectedID, container.ID())
 		})
 	}
 }
 
 func TestTagContainer_Clone(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name          string
 		initialTag    string

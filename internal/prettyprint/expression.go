@@ -149,12 +149,12 @@ func printTerms(terms []expression.Term, indent string) []string {
 }
 
 func printExpression(exp *expression.Expression, start ...bool) string {
-	lines := make([]string, 1)
+	lines := []string{}
 	space := ""
 	if len(start) > 0 && start[0] {
 		space = " "
 	}
-	lines[0] = fmt.Sprintf("%s%d", space, exp.Value)
+	lines = append(lines, fmt.Sprintf("%s%d", space, exp.Value))
 	lines = append(lines, printTerms(exp.Terms, "")...)
 	return strings.Join(lines, "\n")
 }

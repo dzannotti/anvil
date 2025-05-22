@@ -17,9 +17,11 @@ func NewDagger() *Weapon {
 
 func NewGreatAxe() *Weapon {
 	return &Weapon{
-		name:   "Great Axe",
-		tags:   tag.ContainerFromTag(tags.Melee, tags.MartialAxe),
-		damage: []core.DamageSource{{Times: 2, Sides: 6, Source: "Great Axe", Tags: tag.ContainerFromTag(tags.Slashing)}},
-		reach:  1,
+		name: "Great Axe",
+		tags: tag.ContainerFromTag(tags.Melee, tags.MartialAxe),
+		damage: []core.DamageSource{
+			{Times: 2, Sides: 6, Source: "Great Axe", Tags: tag.ContainerFromTag(tags.Slashing)},
+		},
+		reach: 1,
 	}
 }

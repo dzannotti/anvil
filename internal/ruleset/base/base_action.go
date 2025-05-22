@@ -18,7 +18,15 @@ type Action struct {
 	damage    []core.DamageSource
 }
 
-func MakeAction(owner *core.Actor, name string, t tag.Container, cost map[tag.Tag]int, castRange int, reach int, damage []core.DamageSource) Action {
+func MakeAction(
+	owner *core.Actor,
+	name string,
+	t tag.Container,
+	cost map[tag.Tag]int,
+	castRange int,
+	reach int,
+	damage []core.DamageSource,
+) Action {
 	return Action{
 		owner:     owner,
 		name:      name,

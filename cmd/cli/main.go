@@ -41,5 +41,10 @@ func main() {
 	}
 	fmt.Println("Winner:", string(winner))
 	msPerRound := float32(total.Seconds()*1000) / float32(encounter.Round+1)
-	fmt.Printf("%.2fms (%d rounds %.2fms)\n", float32(total.Microseconds())/float32(1000), encounter.Round+1, msPerRound)
+	fmt.Printf(
+		"%.2fms (%d rounds %.2fms)\n",
+		float32(total.Microseconds())/float32(1000),
+		encounter.Round+1,
+		msPerRound,
+	)
 }

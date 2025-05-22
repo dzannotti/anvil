@@ -1,8 +1,9 @@
 package expression
 
 import (
+	"math/rand/v2"
+
 	"anvil/internal/mathi"
-	"math/rand"
 )
 
 type DiceRoller interface {
@@ -17,5 +18,5 @@ func (rng defaultRoller) Roll(sides int) int {
 	if sides == 0 {
 		return 0
 	}
-	return (rand.Intn(sides) + 1) * sign
+	return (rand.IntN(sides) + 1) * sign
 }

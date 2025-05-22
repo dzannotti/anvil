@@ -5,7 +5,7 @@ func (e Encounter) IsOver() bool {
 	teams := []TeamID{TeamPlayers, TeamEnemies}
 	for _, t := range teams {
 		if !e.IsTeamDead(t) {
-			alive = alive + 1
+			alive++
 		}
 	}
 	return alive <= 1

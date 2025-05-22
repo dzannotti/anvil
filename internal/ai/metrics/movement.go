@@ -1,15 +1,22 @@
 package metrics
 
 import (
+	"math"
+
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/grid"
-	"math"
 )
 
 type Movement struct{}
 
-func (m Movement) Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, _ []grid.Position) int {
+func (m Movement) Evaluate(
+	world *core.World,
+	actor *core.Actor,
+	action core.Action,
+	pos grid.Position,
+	_ []grid.Position,
+) int {
 	if !action.Tags().MatchTag(tags.Move) {
 		return 0
 	}
@@ -20,9 +27,11 @@ func (m Movement) Evaluate(world *core.World, actor *core.Actor, action core.Act
 
 	lookAhead := 4
 	speed := actor.Resources.Remaining(tags.WalkSpeed)
-	enemies := world.ActorsInRange(pos, speed*lookAhead, func(other *core.Actor) bool { return other.IsHostileTo(actor) })
-
-	score := 0
+	enemies := world.ActorsInRange(
+		pos,
+		speed*lookAhead,
+		func(other *core.Actor) bool { return other.IsHostileTo(actor) },
+	)
 
 	distNow, distThen := m.closestAt(actor, pos, enemies)
 
@@ -42,7 +51,7 @@ func (m Movement) Evaluate(world *core.World, actor *core.Actor, action core.Act
 	targetWeight := float32(targetCount) / (float32(len(enemies)) + 0.001)
 	aooPenalty := float32(m.estimateOpportunityAttackDamageAt(pos))
 
-	score = int(distWeight*4.0 + targetWeight*6.0 - aooPenalty*0.5 + 0.5)
+	score := int(distWeight*4.0 + targetWeight*6.0 - aooPenalty*0.5 + 0.5)
 
 	if score < 1 {
 		return 0

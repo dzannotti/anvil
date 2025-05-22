@@ -12,8 +12,8 @@ type CellCreator[cell any] = func(pos Position) cell
 
 func New[cell any](width int, height int, creator CellCreator[cell]) *Grid[cell] {
 	cells := make([]cell, width*height)
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
+	for x := range width {
+		for y := range height {
 			cells[x+y*width] = creator(Position{X: x, Y: y})
 		}
 	}

@@ -1,15 +1,14 @@
 package expression
 
 import (
-	"anvil/internal/tag"
 	"testing"
+
+	"anvil/internal/tag"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestExpression_New(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		setup    func() Expression

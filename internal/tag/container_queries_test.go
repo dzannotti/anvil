@@ -9,8 +9,6 @@ import (
 )
 
 func TestTagContainer_MatchTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name      string
 		container string
@@ -40,8 +38,6 @@ func TestTagContainer_MatchTag(t *testing.T) {
 }
 
 func TestTagContainer_MatchAnyTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name       string
 		container1 string
@@ -78,8 +74,6 @@ func TestTagContainer_MatchAnyTag(t *testing.T) {
 }
 
 func TestTagContainer_MatchAllTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name       string
 		container1 string
@@ -122,8 +116,6 @@ func TestTagContainer_MatchAllTag(t *testing.T) {
 }
 
 func TestTagContainer_HasTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name      string
 		container tag.Container
@@ -152,8 +144,6 @@ func TestTagContainer_HasTag(t *testing.T) {
 }
 
 func TestTag_HasAnyTag(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name       string
 		container1 tag.Container
@@ -182,8 +172,6 @@ func TestTag_HasAnyTag(t *testing.T) {
 }
 
 func TestTag_HasAllTags(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name       string
 		container1 tag.Container

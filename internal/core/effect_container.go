@@ -28,9 +28,9 @@ func (c *EffectContainer) Evaluate(event string, state any) {
 	}
 }
 
-func (c EffectContainer) Find(ID string) *Effect {
+func (c *EffectContainer) Find(id string) *Effect {
 	for _, effect := range c.effects {
-		if effect.ID() == ID {
+		if effect.ID() == id {
 			return effect
 		}
 	}

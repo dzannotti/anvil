@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"slices"
+	"strconv"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 
@@ -23,6 +24,7 @@ func (am *ActionManager) SetActive(action core.Action) {
 	am.Active = action
 }
 
+//nolint:cyclop // reason: cyclop here is allowed
 func (am *ActionManager) Draw(cam Camera) {
 	if am.Active == nil {
 		return
@@ -57,12 +59,12 @@ func (am *ActionManager) Draw(cam Camera) {
 		if ok && aiOk && choice.Action.Name() == aiChoice.Action.Name() && choice.Position == aiChoice.Position {
 			choice = aiChoice
 		}
-		DrawString(fmt.Sprintf("%d", choice.Total), rect.Expand(0, -7), color, 14, AlignBottom)
+		DrawString(strconv.Itoa(choice.Total), rect.Expand(0, -7), color, 14, AlignBottom)
 	}
 	if am.Active.Tags().MatchTag(tags.Move) {
 		am.drawPath(actor, cam)
 	}
-	am.drawAffected(actor, cam)
+	am.drawAffected(cam)
 }
 
 func (am *ActionManager) drawPath(actor *core.Actor, cam Camera) {
@@ -101,7 +103,7 @@ func (am *ActionManager) ProcessInput(cam Camera) bool {
 	return true
 }
 
-func (am *ActionManager) drawAffected(actor *core.Actor, cam Camera) {
+func (am *ActionManager) drawAffected(cam Camera) {
 	worldPos := cam.GetMouseGridPosition()
 	affected := am.Active.AffectedPositions([]grid.Position{worldPos})
 	for _, pos := range affected {

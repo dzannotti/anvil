@@ -5,7 +5,7 @@ type mockRoller struct {
 	mockReturnIdx int
 }
 
-func (rng *mockRoller) Roll(sides int) int {
+func (rng *mockRoller) Roll(_ int) int {
 	val := rng.mockReturns[rng.mockReturnIdx]
 	rng.mockReturnIdx++
 	return val

@@ -7,8 +7,6 @@ import (
 )
 
 func TestTerm_ShouldModifyRoll(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		term     Term
@@ -52,8 +50,6 @@ func TestTerm_ShouldModifyRoll(t *testing.T) {
 }
 
 func TestTerm_Clone(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name         string
 		originalTerm Term

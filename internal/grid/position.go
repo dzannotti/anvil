@@ -21,7 +21,6 @@ func (p Position) Subtract(other Position) Position {
 	}
 }
 
-// Chebyshev  Distance
 func (p Position) Distance(other Position) int {
 	return mathi.Max(mathi.Abs(p.X-other.X), mathi.Abs(p.Y-other.Y))
 }
