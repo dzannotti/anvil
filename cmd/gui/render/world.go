@@ -11,8 +11,8 @@ const CellSize = 52
 
 func DrawWorld(w *core.World, e *core.Encounter) {
 	drawGrid(w.Width(), w.Height())
-	for x := 0; x < w.Width(); x++ {
-		for y := 0; y < w.Height(); y++ {
+	for x := range w.Width() {
+		for y := range w.Height() {
 			pos := grid.Position{X: x, Y: y}
 			FillRectangle(RectFromPos(pos).Expand(-1, -1), Surface2)
 			cell, _ := w.At(pos)

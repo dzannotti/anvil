@@ -6,7 +6,6 @@ import (
 	"anvil/internal/tag"
 )
 
-// This map may seems useless but we might end up having multiple poison conditions and we only want to remove one.
 type Conditions struct {
 	Sources map[tag.Tag][]*Effect
 }

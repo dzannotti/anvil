@@ -96,7 +96,7 @@ func (log *ScrollText) Draw() {
 	}
 }
 
-func (log *ScrollText) Write(p []byte) (n int, err error) {
+func (log *ScrollText) Write(p []byte) (int, error) {
 	lines := bytes.Split(p, []byte{'\n'})
 	for i, line := range lines {
 		if i == len(lines)-1 && len(line) == 0 {

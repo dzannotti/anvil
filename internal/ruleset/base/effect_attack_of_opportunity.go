@@ -7,6 +7,7 @@ import (
 	"anvil/internal/tag"
 )
 
+//nolint:gocognit
 func NewAttackOfOpportunityEffect() *core.Effect {
 	fx := &core.Effect{Name: "Attack Of Opportunity"}
 
@@ -34,7 +35,8 @@ func NewAttackOfOpportunityEffect() *core.Effect {
 				continue
 			}
 			response := s.Source.World.Ask(other, "Take attack of opportunity?", options)
-			if !response.Value.(bool) {
+			b, ok := response.Value.(bool)
+			if !ok || !b {
 				continue
 			}
 			baseAttack := other.BestWeaponAttack()

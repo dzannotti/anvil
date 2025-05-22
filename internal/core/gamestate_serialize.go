@@ -82,8 +82,8 @@ func serializeWorld(w *World) *SerializedWorld {
 		Cells:  make([]SerializedWorldCell, 0, w.Width()*w.Height()),
 	}
 
-	for x := 0; x < w.Width(); x++ {
-		for y := 0; y < w.Height(); y++ {
+	for x := range w.Width() {
+		for y := range w.Height() {
 			pos := grid.Position{X: x, Y: y}
 			cell, ok := w.At(pos)
 			if !ok {

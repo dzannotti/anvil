@@ -1,7 +1,7 @@
 package expression
 
 import (
-	"math/rand"
+	"math/rand/v2"
 
 	"anvil/internal/mathi"
 )
@@ -18,5 +18,5 @@ func (rng defaultRoller) Roll(sides int) int {
 	if sides == 0 {
 		return 0
 	}
-	return (rand.Intn(sides) + 1) * sign
+	return (rand.IntN(sides) + 1) * sign
 }

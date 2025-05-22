@@ -38,7 +38,7 @@ func (e *Encounter) EndTurn() {
 		e.endRound()
 		return
 	}
-	e.Turn = e.Turn + 1
+	e.Turn++
 	if e.Turn >= len(e.InitiativeOrder) {
 		e.endRound()
 		e.startRound()
@@ -47,7 +47,7 @@ func (e *Encounter) EndTurn() {
 }
 
 func (e *Encounter) startRound() {
-	e.Round = e.Round + 1
+	e.Round++
 	e.Log.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
 	e.Turn = 0
 }

@@ -24,6 +24,7 @@ func (am *ActionManager) SetActive(action core.Action) {
 	am.Active = action
 }
 
+//nolint:cyclop // reason: cyclop here is allowed
 func (am *ActionManager) Draw(cam Camera) {
 	if am.Active == nil {
 		return

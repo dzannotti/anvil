@@ -13,6 +13,8 @@ import (
 	"anvil/internal/tag"
 )
 
+const PrefixFork = "├─ "
+
 var eventStack []eventbus.Message
 
 func shouldPrintEnd() bool {
@@ -51,7 +53,7 @@ func Print(out io.Writer, ev eventbus.Message) {
 	}
 	extraPrefix := ""
 	if ev.Depth > 0 {
-		extraPrefix = "├─ "
+		extraPrefix = PrefixFork
 	}
 	eventString := printMessage(ev)
 	lines := strings.Split(eventString, "\n")
@@ -62,6 +64,7 @@ func Print(out io.Writer, ev eventbus.Message) {
 	}
 }
 
+//nolint:cyclop // reason: cyclop here is allowed
 func printMessage(ev eventbus.Message) string {
 	switch ev.Kind {
 	case core.EncounterType:
@@ -124,7 +127,7 @@ func printWorld(w *core.World, path []grid.Position) string {
 	sb := strings.Builder{}
 	sb.WriteString("🌍 World\n")
 	for y := range w.Height() {
-		for x := 0; x < w.Width(); x++ {
+		for x := range w.Width() {
 			pos := grid.Position{X: x, Y: y}
 			cell, _ := w.At(pos)
 			if cell.Tile == core.Wall {

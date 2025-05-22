@@ -16,6 +16,7 @@ import (
 	"anvil/internal/prettyprint"
 )
 
+//nolint:cyclop // reason: cyclop here is allowed
 func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
 	var pos grid.Position
 	var text string

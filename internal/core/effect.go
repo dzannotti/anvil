@@ -45,7 +45,10 @@ func (e *Effect) Evaluate(event string, state any) {
 		wg.Wait()
 	}
 	if !exists && event == Serialize {
-		save := state.(*SerializeState)
+		save, ok := state.(*SerializeState)
+		if !ok {
+			panic("Can't save nil state")
+		}
 		save.State = struct {
 			Kind string
 			ID   string
@@ -77,7 +80,11 @@ func (e *Effect) WithBeforeAttackRoll(handler func(*Effect, *BeforeAttackRollSta
 
 func (e *Effect) WithAfterAttackRoll(handler func(*Effect, *AfterAttackRollState)) {
 	e.Handlers.get()[AfterAttackRoll] = func(e *Effect, state any) {
-		handler(e, state.(*AfterAttackRollState))
+		s, ok := state.(*AfterAttackRollState)
+		if !ok {
+			panic("invalid state type")
+		}
+		handler(e, s)
 	}
 }
 

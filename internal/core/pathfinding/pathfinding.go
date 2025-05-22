@@ -30,6 +30,7 @@ var offsets = []grid.Position{
 	{X: 1, Y: 1},   // down-right
 }
 
+//nolint:gocognit,cyclop // reason: cyclop here is allowed
 func FindPath(
 	start grid.Position,
 	end grid.Position,
@@ -95,7 +96,7 @@ func FindPath(
 
 			moveCost := cost * 10
 			if isDiagonal {
-				moveCost = moveCost + 4
+				moveCost += 4
 			}
 
 			neighborIdx := idx(neighborPos)
@@ -104,7 +105,7 @@ func FindPath(
 			if tentativeG < gCost[neighborIdx] {
 				gCost[neighborIdx] = tentativeG
 				if isDiagonal {
-					gCost[neighborIdx] = gCost[neighborIdx] - 1
+					gCost[neighborIdx]++
 				}
 
 				cameFrom[neighborIdx] = &current.pos

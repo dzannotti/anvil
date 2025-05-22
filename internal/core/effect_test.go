@@ -39,8 +39,8 @@ func TestEffect_Evaluate(t *testing.T) {
 		expr := expression.FromScalar(10, "test")
 		state := &testState{Expression: &expr}
 		e.withHandler("modify", func(_ *Effect, s any) {
-			state := s.(*testState) // panics if not the correct typ
-			state.Expression.AddScalar(5, "test")
+			estate := s.(*testState) // panics if not the correct typ
+			estate.Expression.AddScalar(5, "test")
 		})
 		e.Evaluate("modify", state)
 		state.Expression.Evaluate()

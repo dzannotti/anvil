@@ -5,6 +5,7 @@ import (
 	"anvil/internal/core/tags"
 )
 
+//nolint:funlen,gocognit,cyclop // reason: this function is long for a valid reason
 func NewDeathSavingThrowEffect() *core.Effect {
 	fx := &core.Effect{Name: "Death Saving Throw", Priority: core.PriorityLast}
 	success := 0
@@ -45,7 +46,9 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		if !ok {
 			panic("could not deserialize dst")
 		}
+
 		success = int(data["Success"].(float64))
+
 		failures = int(data["Failures"].(float64))
 	})
 
@@ -82,7 +85,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		if s.Result.IsCriticalSuccess() {
 			amount = 2
 		}
-		failures = failures + amount
+		failures += amount
 		s.Source.Log.Start(
 			core.DeathSavingThrowAutomaticType,
 			core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: true},
@@ -105,7 +108,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		defer s.Source.Log.End()
 		result := s.Source.SaveThrow(tags.HitPoints, 10)
 		if result.Success {
-			success = success + 1
+			success++
 			if result.Critical {
 				reset()
 				s.Source.Log.Start(
@@ -118,9 +121,9 @@ func NewDeathSavingThrowEffect() *core.Effect {
 				return
 			}
 		} else {
-			failures = failures + 1
+			failures++
 			if result.Critical {
-				failures = failures + 1
+				failures++
 			}
 		}
 		s.Source.Log.Add(

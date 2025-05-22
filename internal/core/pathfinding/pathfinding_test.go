@@ -53,7 +53,7 @@ func TestBasicPathFinding(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			navCost := func(pos grid.Position) int {
+			navCost := func(_ grid.Position) int {
 				return 1
 			}
 			result, ok := FindPath(tt.start, tt.end, 5, 5, navCost)
@@ -145,7 +145,7 @@ func TestPathOptimality(t *testing.T) {
 	t.Run("should prefer diagonal movement when it's shorter", func(t *testing.T) {
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 2, Y: 2}
-		navCost := func(pos grid.Position) int {
+		navCost := func(_ grid.Position) int {
 			return 1
 		}
 		result, ok := FindPath(start, end, 5, 5, navCost)

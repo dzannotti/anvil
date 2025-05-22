@@ -72,10 +72,10 @@ func (e Expression) IsCriticalFailure() bool {
 
 func (e Expression) SetCriticalSuccess(source string) {
 	e.Terms[0].IsCritical = 1
-	e.Terms[0].Source = e.Terms[0].Source + fmt.Sprintf(" as Critical success (%s)", source)
+	e.Terms[0].Source += fmt.Sprintf(" as Critical success (%s)", source)
 }
 
 func (e Expression) SetCriticalFailure(source string) {
 	e.Terms[0].IsCritical = -1
-	e.Terms[0].Source = e.Terms[0].Source + fmt.Sprintf(" as Critical failure (%s)", source)
+	e.Terms[0].Source += fmt.Sprintf(" as Critical failure (%s)", source)
 }
