@@ -41,8 +41,8 @@ func TestExpression_ExpressionGroup(t *testing.T) {
 
 	t.Run("should halve damage for match tags", func(t *testing.T) {
 		expr := Expression{rng: &mockRoller{mockReturns: []int{5}}}
-		expr.AddDamageDice(1, 6, "Damage", tag.ContainerFromStrings([]string{"Slashing", "fire"}))
-		expr.AddDamageScalar(2, "Damage", tag.ContainerFromStrings([]string{"Slashing", "fire"}))
+		expr.AddDamageDice(1, 6, "Damage", tag.ContainerFromString("Slashing", "fire"))
+		expr.AddDamageScalar(2, "Damage", tag.ContainerFromString("Slashing", "fire"))
 		expr.ReplaceWith(3, "Bad Luck")
 		res := expr.EvaluateGroup()
 		assert.Len(t, expr.Terms, 1)
@@ -51,8 +51,8 @@ func TestExpression_ExpressionGroup(t *testing.T) {
 
 	t.Run("should double dice damage", func(t *testing.T) {
 		expr := Expression{rng: &mockRoller{mockReturns: []int{5, 3, 20, 18}}}
-		expr.AddDamageDice(1, 6, "Damage", tag.ContainerFromStrings([]string{"Slashing", "fire"}))
-		expr.AddDamageScalar(2, "Damage", tag.ContainerFromStrings([]string{"Slashing", "fire"}))
+		expr.AddDamageDice(1, 6, "Damage", tag.ContainerFromString("Slashing", "fire"))
+		expr.AddDamageScalar(2, "Damage", tag.ContainerFromString("Slashing", "fire"))
 		expr.AddDamageDice(1, 6, "Damage", tag.ContainerFromString("Slashing"))
 		expr.AddDamageScalar(4, "Damage", tag.ContainerFromString("slashing"))
 		expr.DoubleDice("Critical")
@@ -62,8 +62,8 @@ func TestExpression_ExpressionGroup(t *testing.T) {
 
 	t.Run("should max dice damage", func(t *testing.T) {
 		expr := Expression{rng: &mockRoller{mockReturns: []int{5, 3}}}
-		expr.AddDamageDice(1, 6, "Damage", tag.ContainerFromStrings([]string{"Slashing", "fire"}))
-		expr.AddDamageScalar(2, "Damage", tag.ContainerFromStrings([]string{"Slashing", "fire"}))
+		expr.AddDamageDice(1, 6, "Damage", tag.ContainerFromString("Slashing", "fire"))
+		expr.AddDamageScalar(2, "Damage", tag.ContainerFromString("Slashing", "fire"))
 		expr.AddDamageDice(1, 6, "Damage", tag.ContainerFromString("Slashing"))
 		expr.AddDamageScalar(4, "Damage", tag.ContainerFromString("slashing"))
 		expr.MaxDice("Critical")

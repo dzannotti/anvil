@@ -19,8 +19,8 @@ func (w Weapon) Name() string {
 	return w.name
 }
 
-func (w Weapon) Tags() tag.Container {
-	return w.tags
+func (w Weapon) Tags() *tag.Container {
+	return &w.tags
 }
 
 func (w Weapon) OnEquip(a *core.Actor) {
