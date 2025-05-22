@@ -10,16 +10,49 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Install raylib
-        run: sudo apt-get install libgl1-mesa-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev libwayland-dev libxkbcommon-dev
       - uses: actions/checkout@v4
-      - name: Set up Go
+
+      - name: Cache raylib dependencies
+        uses: actions/cache@v4
+        id: cache-raylib
+        with:
+          path: ~/raylib-deps
+          key: ubuntu-raylib-deps-v1
+
+      - name: Install raylib dependencies
+        run: |
+          if [ "${{ steps.cache-raylib.outputs.cache-hit }}" != "true" ]; then
+            # Cache miss - download and install packages, then cache them
+            sudo apt-get update -qq
+            mkdir -p ~/raylib-deps
+            cd ~/raylib-deps
+
+            # Download all required packages
+            apt-get download \
+              libgl1-mesa-dev libxi-dev libxcursor-dev \
+              libxrandr-dev libxinerama-dev libwayland-dev libxkbcommon-dev \
+              libegl-dev libegl-mesa0 libegl1 libgl-dev libgles-dev libgles1 libgles2 \
+              libglvnd-core-dev libglvnd-dev libglx-dev libopengl-dev libopengl0 \
+              libpthread-stubs0-dev libwayland-bin libx11-dev libxau-dev libxcb1-dev \
+              libxdmcp-dev libxext-dev libxfixes-dev libxrender-dev x11proto-dev \
+              xorg-sgml-doctools xtrans-dev 2>/dev/null || true
+
+            # Install packages
+            sudo dpkg -i *.deb 2>/dev/null || true
+            sudo apt-get install -f -y -qq
+          else
+            # Cache hit - install from cached packages
+            echo "Installing from cache..."
+            sudo dpkg -i ~/raylib-deps/*.deb 2>/dev/null || true
+            sudo apt-get install -f -y -qq
+          fi
+      - name: Setup Go
         uses: actions/setup-go@v4
         with:
           go-version: "1.24"
           cache: true
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v8
         with:
           version: latest
           args: --timeout=5m

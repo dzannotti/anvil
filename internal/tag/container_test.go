@@ -78,7 +78,7 @@ func TestContainer_HasAnyTag(t *testing.T) {
 	})
 }
 
-func TestContainer_HasAllTags(t *testing.T) {
+func TestContainer_HasAllTag(t *testing.T) {
 	t.Run("should match all container tag", func(t *testing.T) {
 		c := tag.ContainerFromString("ability.damage", "item.weapon")
 		assert.True(t, c.HasAllTag(tag.ContainerFromString("item.weapon", "ability.damage")))
