@@ -105,6 +105,11 @@ func TestContainer_MatchTag(t *testing.T) {
 		c := tag.ContainerFromString("ability.damage")
 		assert.False(t, c.MatchTag(tag.FromString("ability.damage.fire")))
 	})
+
+	t.Run("does not match partial component", func(t *testing.T) {
+		c := tag.ContainerFromString("ability.damage.fire")
+		assert.False(t, c.MatchTag(tag.FromString("ability.dam")))
+	})
 }
 
 func TestContainer_MatchAnyTags(t *testing.T) {
