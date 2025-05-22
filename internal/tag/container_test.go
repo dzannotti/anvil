@@ -136,6 +136,7 @@ func TestContainer_IsEmpty(t *testing.T) {
 		c := tag.Container{}
 		assert.True(t, c.IsEmpty())
 	})
+
 	t.Run("returns false if not empty", func(t *testing.T) {
 		c := tag.ContainerFromString("ability.damage")
 		assert.False(t, c.IsEmpty())

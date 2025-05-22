@@ -40,6 +40,7 @@ func TestTag_MatchExact(t *testing.T) {
 		tt := tag.FromString("ability.damage")
 		assert.True(t, tt.MatchExact(tag.FromString("ability.damage")))
 	})
+	
 	t.Run("not-exact match", func(t *testing.T) {
 		tt := tag.FromString("ability.damage")
 		assert.False(t, tt.MatchExact(tag.FromString("ability")))
@@ -56,6 +57,11 @@ func TestTag_Match(t *testing.T) {
 	t.Run("does not matches more specific tag", func(t *testing.T) {
 		tt := tag.FromString("ability.damage")
 		assert.False(t, tt.Match(tag.FromString("ability.damage.fire")))
+	})
+
+	t.Run("does not match partial component", func(t *testing.T) {
+		c := tag.ContainerFromString("ability.damage.fire")
+		assert.False(t, c.MatchTag(tag.FromString("ability.dam")))
 	})
 }
 

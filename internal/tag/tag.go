@@ -34,7 +34,10 @@ func (t Tag) MatchExact(other Tag) bool {
 }
 
 func (t Tag) Match(other Tag) bool {
-	return strings.HasPrefix(t.value, other.value)
+	if t.value == other.value {
+		return true
+	}
+	return strings.HasPrefix(t.value, other.value+".")
 }
 
 func normalize(value string) string {

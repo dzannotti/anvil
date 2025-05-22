@@ -26,11 +26,11 @@ func NewChainMail() *ChainMail {
 	return &ChainMail{tags: tag.ContainerFromTag(tags.MediumArmor)}
 }
 
-func (c ChainMail) Name() string {
+func (c *ChainMail) Name() string {
 	return "Chain Mail"
 }
 
-func (c ChainMail) Tags() *tag.Container {
+func (c *ChainMail) Tags() *tag.Container {
 	return &c.tags
 }
 
