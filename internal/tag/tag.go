@@ -5,6 +5,10 @@ import (
 	"strings"
 )
 
+type Tag struct {
+	value string
+}
+
 var (
 	whitespace  = regexp.MustCompile(`\s`)
 	specialChar = regexp.MustCompile(`[@#$%\-^&*]`)
@@ -13,12 +17,16 @@ var (
 	boundaryDot = regexp.MustCompile(`^\.|\.$`)
 )
 
-type Tag struct {
-	value string
+func FromString(val string) Tag {
+	return Tag{value: normalize(val)}
 }
 
-func FromString(value string) Tag {
-	return Tag{value: normalize(value)}
+func (t Tag) AsString() string {
+	return t.value
+}
+
+func (t Tag) AsStrings() []string {
+	return strings.Split(t.value, ".")
 }
 
 func (t Tag) MatchExact(other Tag) bool {
@@ -26,15 +34,10 @@ func (t Tag) MatchExact(other Tag) bool {
 }
 
 func (t Tag) Match(other Tag) bool {
-	return strings.HasPrefix(t.value, other.value)
-}
-
-func (t Tag) String() string {
-	return t.value
-}
-
-func (t Tag) Strings() []string {
-	return strings.Split(t.value, ".")
+	if t.value == other.value {
+		return true
+	}
+	return strings.HasPrefix(t.value, other.value+".")
 }
 
 func normalize(value string) string {

@@ -81,7 +81,7 @@ deps:
 
 loc:
 	@echo Counting LOC...
-	@npx sloc --keys source --forwat cli-table --format-option no-head --exclude ".*_test.go" .
+	@npx sloc --keys source --format cli-table --format-option no-head --exclude ".*_test.go" .
 
 tdd:
 	@echo Running tests...

@@ -125,7 +125,7 @@ func ToReadable(tag tag.Tag) string {
 		"defense",
 	}
 	keep := []string{}
-	for _, part := range tag.Strings() {
+	for _, part := range tag.AsStrings() {
 		if slices.Contains(ignore, cases.Lower(language.Und).String(part)) {
 			continue
 		}

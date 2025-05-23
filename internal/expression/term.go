@@ -46,7 +46,7 @@ func (t Term) Clone() Term {
 	newTerm.Values = append(make([]int, 0), t.Values...)
 	newTerm.HasAdvantage = append(make([]string, 0), t.HasAdvantage...)
 	newTerm.HasDisadvantage = append(make([]string, 0), t.HasDisadvantage...)
-	newTerm.Tags = t.Tags.Clone()
+	newTerm.Tags = t.Tags
 	return newTerm
 }
 

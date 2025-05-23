@@ -91,8 +91,8 @@ func formatTags(term expression.Term) string {
 	if term.Tags.IsEmpty() {
 		return ""
 	}
-	termTags := make([]string, len(term.Tags.Strings()))
-	for i, t := range term.Tags.Strings() {
+	termTags := make([]string, len(term.Tags.AsStrings()))
+	for i, t := range term.Tags.AsStrings() {
 		termTags[i] = tags.ToReadable(tag.FromString(t))
 	}
 	return fmt.Sprintf(" (%s)", strings.Join(termTags, ", "))

@@ -171,7 +171,7 @@ func serializeEffect(fx *Effect) SerializedEffect {
 func serializeTagMap(m map[tag.Tag]int) map[string]int {
 	sm := make(map[string]int, len(m))
 	for t, v := range m {
-		sm[t.String()] = v
+		sm[t.AsString()] = v
 	}
 	return sm
 }
@@ -179,9 +179,9 @@ func serializeTagMap(m map[tag.Tag]int) map[string]int {
 func serializeConditions(c Conditions) map[string][]string {
 	sc := make(map[string][]string, len(c.Sources))
 	for t, v := range c.Sources {
-		sc[t.String()] = make([]string, len(v))
+		sc[t.AsString()] = make([]string, len(v))
 		for i, e := range v {
-			sc[t.String()][i] = e.ID()
+			sc[t.AsString()][i] = e.ID()
 		}
 	}
 	return sc
