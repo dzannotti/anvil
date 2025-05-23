@@ -51,12 +51,16 @@ func (c *Container) Add(container ...Container) {
 }
 
 func (c *Container) RemoveTag(tags ...Tag) {
-	newTags := make([]Tag, 0, len(c.tags))
+	removeSet := make(map[Tag]struct{}, len(tags))
+	for _, t := range tags {
+		removeSet[t] = struct{}{}
+	}
+
+	newTags := c.tags[:0]
 	for _, t := range c.tags {
-		if slices.Contains(tags, t) {
-			continue
+		if _, shouldRemove := removeSet[t]; !shouldRemove {
+			newTags = append(newTags, t)
 		}
-		newTags = append(newTags, t)
 	}
 	c.tags = newTags
 }
