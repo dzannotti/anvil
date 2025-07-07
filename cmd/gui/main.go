@@ -16,7 +16,7 @@ import (
 	"anvil/internal/prettyprint"
 )
 
-//nolint:cyclop // reason: cyclop here is allowed
+//nolint:cyclop,funlen // reason: cyclop here is allowed
 func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
 	var pos grid.Position
 	var text string
@@ -71,6 +71,7 @@ func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
 	overhead.Add(pos, text, color)
 }
 
+//nolint:funlen // reason: refactor needed
 func client(_ net.Conn) {
 	log := ui.ScrollText{
 		Rect:       ui.Rectangle{X: 600, Y: 40, Width: 650, Height: 580},

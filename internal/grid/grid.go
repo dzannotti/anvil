@@ -25,26 +25,19 @@ func New[cell any](width int, height int, creator CellCreator[cell]) *Grid[cell]
 	}
 }
 
-func (g Grid[cell]) fromPos(pos Position) int {
-	return pos.X + pos.Y*g.Width
-}
-
-func (g Grid[cell]) fromTuple(x int, y int) int {
+func (g *Grid[cell]) fromXY(x int, y int) int {
 	return x + y*g.Width
 }
 
-func (g Grid[cell]) At(pos Position) (*cell, bool) {
-	if !g.IsValidPosition(pos) {
-		return nil, false
-	}
-	return &g.cells[g.fromPos(pos)], true
+func (g *Grid[cell]) At(pos Position) *cell {
+	return &g.cells[g.fromXY(pos.X, pos.Y)]
 }
 
-func (g Grid[cell]) IsValidPosition(pos Position) bool {
+func (g *Grid[cell]) IsValidPosition(pos Position) bool {
 	return pos.X >= 0 && pos.X < g.Width && pos.Y >= 0 && pos.Y < g.Height
 }
 
-func (g Grid[cell]) CellsInRange(origin Position, radius int) []*cell {
+func (g *Grid[cell]) CellsInRange(origin Position, radius int) []*cell {
 	minX := mathi.Max(0, origin.X-radius)
 	minY := mathi.Max(0, origin.Y-radius)
 	maxX := mathi.Min(g.Width-1, origin.X+radius)
@@ -53,7 +46,7 @@ func (g Grid[cell]) CellsInRange(origin Position, radius int) []*cell {
 	cells := make([]*cell, 0, size)
 	for x := minX; x <= maxX; x++ {
 		for y := minY; y <= maxY; y++ {
-			cells = append(cells, &g.cells[g.fromTuple(x, y)])
+			cells = append(cells, &g.cells[g.fromXY(x, y)])
 		}
 	}
 	return cells

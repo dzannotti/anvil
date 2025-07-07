@@ -19,8 +19,8 @@ var Default = []AIMetric{
 func targetsAffected(world *core.World, pos []grid.Position) []*core.Actor {
 	targets := make([]*core.Actor, 0, len(pos))
 	for _, p := range pos {
-		actor, ok := world.ActorAt(p)
-		if ok {
+		actor := world.ActorAt(p)
+		if actor != nil {
 			targets = append(targets, actor)
 		}
 	}

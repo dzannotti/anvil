@@ -8,7 +8,6 @@ import (
 )
 
 type Actor struct {
-	id                 string
 	Log                LogWriter
 	Encounter          *Encounter
 	Position           grid.Position

@@ -1,0 +1,61 @@
+[default]
+extend-ignore-identifiers-re = [
+  # Go specific
+  "gofmt",
+  "goimports",
+  "golangci",
+  "gotestsum",
+  "testify",
+  "recv",
+  "func",
+  "chan",
+  "goroutine",
+  "goroutines",
+  "struct",
+  "structs",
+  "impl",
+  "deps",
+
+  # Project specific
+  "spellbinder",
+  "cli",
+  "gui",
+
+  # Common abbreviations
+  "config",
+  "repo",
+  "init",
+  "cmd",
+  "args",
+  "env",
+  "usr",
+  "src",
+  "pkg",
+  "tmp",
+  "dir",
+  "dirs",
+  "exe",
+  "yml",
+  "json",
+  "url",
+  "urls",
+  "api",
+  "apis"
+]
+
+[files]
+extend-exclude = [
+  "*.out",
+  "*.html",
+  "coverage.*",
+  "bin/",
+  ".git/",
+  "go.mod",
+  "go.sum",
+  ".vscode/spellright.dict"
+]
+
+[default.extend-words]
+# Custom dictionary for game-specific terms
+spellbinder = "spellbinder"
+makefile = "makefile"

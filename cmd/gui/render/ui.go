@@ -8,7 +8,7 @@ var whenClicked func()
 var systemFont rl.Font
 
 func Init() {
-	systemFont = rl.LoadFont("font.ttf")
+	systemFont = rl.LoadFont("data/fonts/font.ttf")
 	rl.SetTextureFilter(systemFont.Texture, rl.FilterBilinear)
 }
 

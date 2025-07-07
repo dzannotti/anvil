@@ -14,7 +14,7 @@ func (p *Proficiencies) Add(tag tag.Tag) {
 }
 
 func (p Proficiencies) Has(tags tag.Container) bool {
-	return tags.MatchAnyTag(p.Skills)
+	return tags.MatchAny(p.Skills)
 }
 
 func (p Proficiencies) Value(tags tag.Container) int {

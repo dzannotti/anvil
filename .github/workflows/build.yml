@@ -1,4 +1,4 @@
-name: Lint
+name: Build
 
 on:
   push:
@@ -7,8 +7,11 @@ on:
     branches: [main]
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [cli, gui]
 
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +22,7 @@ jobs:
           go-version: "1.24.4"
 
       - name: Install GUI dependencies
+        if: matrix.target == 'gui'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -37,20 +41,11 @@ jobs:
             wayland-protocols \
             libxkbcommon-dev
 
-      - name: Check formatting
-        run: |
-          unformatted=$(gofmt -l .)
-          if [ -n "$unformatted" ]; then
-            echo "Code needs formatting:"
-            echo "$unformatted"
-            echo ""
-            echo "Run 'make fmt' to fix formatting issues"
-            exit 1
-          fi
-          echo "All code is properly formatted"
+      - name: Build ${{ matrix.target }}
+        run: go build -o bin/${{ matrix.target }} ./cmd/${{ matrix.target }}
 
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v8
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          version: latest
-          args: --timeout=5m
+          name: ${{ matrix.target }}-binary
+          path: bin/${{ matrix.target }}

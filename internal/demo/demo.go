@@ -35,7 +35,8 @@ func setupWorld(world *core.World) {
 		walls = append(walls, grid.Position{X: world.Width() - 1 - y, Y: y})
 	}
 	for _, p := range walls {
-		if cell, ok := world.At(p); ok {
+		cell := world.At(p)
+		if cell != nil {
 			cell.Tile = core.Wall
 		}
 	}

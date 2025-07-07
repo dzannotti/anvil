@@ -29,11 +29,11 @@ func (c *WorldCell) RemoveOccupant(actor *Actor) {
 	})
 }
 
-func (c *WorldCell) Occupant() (*Actor, bool) {
+func (c *WorldCell) Occupant() *Actor {
 	if len(c.Occupants) == 0 {
-		return nil, false
+		return nil
 	}
-	return c.Occupants[0], true
+	return c.Occupants[0]
 }
 
 func (c *WorldCell) IsOccupied() bool {

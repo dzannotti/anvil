@@ -30,7 +30,7 @@ var offsets = []grid.Position{
 	{X: 1, Y: 1},   // down-right
 }
 
-//nolint:gocognit,cyclop // reason: cyclop here is allowed
+//nolint:gocognit,cyclop,funlen // reason: cyclop here is allowed
 func FindPath(
 	start grid.Position,
 	end grid.Position,

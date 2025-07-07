@@ -2,8 +2,6 @@ package core
 
 import (
 	"sync"
-
-	"anvil/internal/uuid"
 )
 
 type Priority int
@@ -27,7 +25,6 @@ func (h *Handlers) get() Handlers {
 }
 
 type Effect struct {
-	id       string
 	Name     string
 	Handlers Handlers
 	Priority Priority
@@ -44,28 +41,6 @@ func (e *Effect) Evaluate(event string, state any) {
 		}()
 		wg.Wait()
 	}
-	if !exists && event == Serialize {
-		save, ok := state.(*SerializeState)
-		if !ok {
-			panic("Can't save nil state")
-		}
-		save.State = struct {
-			Kind string
-			ID   string
-			Data any
-		}{
-			Kind: e.Name,
-			ID:   e.ID(),
-			Data: nil,
-		}
-	}
-}
-
-func (e *Effect) ID() string {
-	if e.id == "" {
-		e.id = uuid.New()
-	}
-	return e.id
 }
 
 func (e *Effect) withHandler(event string, handler func(*Effect, any)) {
