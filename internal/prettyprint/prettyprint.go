@@ -60,6 +60,7 @@ func Print(out io.Writer, event eventbus.Message) {
 		fmt.Fprintf(out, "%s\n", eventString)
 		return
 	}
+
 	fmt.Fprintf(out, "%s\n", indent(eventString, event.Depth-1))
 }
 

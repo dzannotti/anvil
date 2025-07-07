@@ -10,7 +10,6 @@ const (
 	TreeEnd       = "└─ "
 	TreeEndCircle = "└─○"
 	TreeVertical  = "│  "
-	TreeVertical1 = "│ "
 	TreeBranch    = " ├─ "
 	TreeBranchEnd = " └─ "
 	TreeSpace     = "    "
@@ -89,9 +88,11 @@ func (tb *TreeBuilder) AddIndentedBlock(text string) {
 
 	// Subsequent lines get vertical continuation
 	for i := 1; i < len(lines); i++ {
-		if lines[i] != "" {
-			tb.lines = append(tb.lines, spacing+TreeVertical+lines[i])
+		if lines[i] == "" {
+			continue
 		}
+
+		tb.lines = append(tb.lines, spacing+TreeVertical+lines[i])
 	}
 }
 

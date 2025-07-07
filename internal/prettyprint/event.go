@@ -173,6 +173,7 @@ func printConfirm(c core.ConfirmEvent) string {
 	if c.Confirm {
 		return "✅ Confirmed"
 	}
+
 	return "❌ Denied"
 }
 
@@ -206,6 +207,7 @@ func formatRollResult(success, critical bool, value, against int) string {
 	if critical {
 		sb.WriteString("💥 Critical")
 	}
+
 	sb.WriteString(map[bool]string{true: " Success", false: " Failure"}[success])
 	return fmt.Sprintf("%s %d vs %d", sb.String(), value, against)
 }
@@ -273,10 +275,12 @@ func printConditionChanged(e core.ConditionChangedEvent) string {
 		emoji = "➖"
 		text = "loses condition"
 	}
+
 	from := ""
 	if e.From != nil {
 		from = fmt.Sprintf("from %s", e.From.Name)
 	}
+
 	return fmt.Sprintf("%s %s %s %s %s", emoji, e.Source.Name, text, tags.ToReadable(e.Condition), from)
 }
 
@@ -307,6 +311,7 @@ func printDeathSavingThrowAutomaticResult(e core.DeathSavingThrowAutomaticEvent)
 	if e.Failure {
 		status = "failure"
 	}
+
 	return fmt.Sprintf("⚰️ %s automatic death save throw %s", e.Source.Name, status)
 }
 
