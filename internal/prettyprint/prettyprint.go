@@ -10,7 +10,6 @@ import (
 	"anvil/internal/eventbus"
 )
 
-
 type EventFormatter func(eventbus.Message) string
 
 var eventStack []eventbus.Message

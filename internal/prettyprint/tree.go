@@ -6,15 +6,15 @@ import (
 
 // Tree drawing constants
 const (
-	TreeFork       = "├─ "
-	TreeEnd        = "└─ "
-	TreeEndCircle  = "└─○"
-	TreeVertical   = "│  "
-	TreeVertical1  = "│ "
-	TreeBranch     = " ├─ "
-	TreeBranchEnd  = " └─ "
-	TreeSpace      = "    "
-	TreeContinue   = " │   "
+	TreeFork      = "├─ "
+	TreeEnd       = "└─ "
+	TreeEndCircle = "└─○"
+	TreeVertical  = "│  "
+	TreeVertical1 = "│ "
+	TreeBranch    = " ├─ "
+	TreeBranchEnd = " └─ "
+	TreeSpace     = "    "
+	TreeContinue  = " │   "
 )
 
 type TreeBuilder struct {
@@ -83,10 +83,10 @@ func (tb *TreeBuilder) AddIndentedBlock(text string) {
 	}
 
 	spacing := strings.Repeat(TreeVertical, tb.depth)
-	
+
 	// First line gets the fork
 	tb.lines = append(tb.lines, spacing+TreeFork+lines[0])
-	
+
 	// Subsequent lines get vertical continuation
 	for i := 1; i < len(lines); i++ {
 		if lines[i] != "" {
