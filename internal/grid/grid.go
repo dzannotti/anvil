@@ -1,7 +1,5 @@
 package grid
 
-import "anvil/internal/mathi"
-
 type Grid[cell any] struct {
 	Width  int
 	Height int
@@ -37,17 +35,15 @@ func (g *Grid[cell]) IsValidPosition(pos Position) bool {
 	return pos.X >= 0 && pos.X < g.Width && pos.Y >= 0 && pos.Y < g.Height
 }
 
-func (g *Grid[cell]) CellsInRange(origin Position, radius int) []*cell {
-	minX := mathi.Max(0, origin.X-radius)
-	minY := mathi.Max(0, origin.Y-radius)
-	maxX := mathi.Min(g.Width-1, origin.X+radius)
-	maxY := mathi.Min(g.Height-1, origin.Y+radius)
-	size := (maxX - minX + 1) * (maxY - minY + 1)
-	cells := make([]*cell, 0, size)
-	for x := minX; x <= maxX; x++ {
-		for y := minY; y <= maxY; y++ {
-			cells = append(cells, &g.cells[g.fromXY(x, y)])
+func (g *Grid[cell]) Cells(positions []Position) []*cell {
+	cells := make([]*cell, 0, len(positions))
+	for _, pos := range positions {
+		if !g.IsValidPosition(pos) {
+			continue
 		}
+
+		cells = append(cells, g.At(pos))
 	}
+
 	return cells
 }

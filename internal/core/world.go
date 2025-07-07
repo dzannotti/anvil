@@ -47,7 +47,7 @@ func (w World) IsValidPosition(pos grid.Position) bool {
 
 func (w World) ActorsInRange(pos grid.Position, radius int, filter func(*Actor) bool) []*Actor {
 	actors := make([]*Actor, 0, 10)
-	cells := w.Grid.CellsInRange(pos, radius)
+	cells := w.Grid.Cells(shapes.Square(pos, radius, radius))
 	for _, cell := range cells {
 		other := cell.Occupant()
 		if other == nil || !filter(other) {
