@@ -21,6 +21,25 @@ jobs:
         with:
           go-version: "1.24.4"
 
+      - name: Install GUI dependencies
+        if: matrix.target == 'gui'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libegl1-mesa-dev \
+            libgl1-mesa-dev \
+            libgles2-mesa-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libwayland-dev \
+            libwayland-client0 \
+            libwayland-cursor0 \
+            libwayland-egl1 \
+            wayland-protocols
+
       - name: Build ${{ matrix.target }}
         run: go build -o bin/${{ matrix.target }} ./cmd/${{ matrix.target }}
 
