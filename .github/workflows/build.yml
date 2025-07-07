@@ -38,7 +38,8 @@ jobs:
             libwayland-client0 \
             libwayland-cursor0 \
             libwayland-egl1 \
-            wayland-protocols
+            wayland-protocols \
+            libxkbcommon-dev
 
       - name: Build ${{ matrix.target }}
         run: go build -o bin/${{ matrix.target }} ./cmd/${{ matrix.target }}
