@@ -189,3 +189,135 @@ func TestExpression_Evaluate(t *testing.T) {
 		})
 	}
 }
+
+func TestExpression_CriticalHits(t *testing.T) {
+	t.Run("IsCriticalSuccess", func(t *testing.T) {
+		tests := []struct {
+			name     string
+			setup    func() Expression
+			expected bool
+		}{
+			{
+				name: "returns true when IsCritical is 1",
+				setup: func() Expression {
+					expr := Expression{}
+					expr.AddD20("Attack")
+					expr.SetCriticalSuccess("Natural 20")
+					return expr
+				},
+				expected: true,
+			},
+			{
+				name: "returns true when value equals sides (natural 20)",
+				setup: func() Expression {
+					expr := Expression{Rng: &mockRoller{mockReturns: []int{20}}}
+					expr.AddD20("Attack")
+					expr.Evaluate()
+					return expr
+				},
+				expected: true,
+			},
+			{
+				name: "returns false for normal roll",
+				setup: func() Expression {
+					expr := Expression{Rng: &mockRoller{mockReturns: []int{15}}}
+					expr.AddD20("Attack")
+					expr.Evaluate()
+					return expr
+				},
+				expected: false,
+			},
+			{
+				name: "returns false for empty expression",
+				setup: func() Expression {
+					return Expression{}
+				},
+				expected: false,
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				expr := tt.setup()
+				result := expr.IsCriticalSuccess()
+				assert.Equal(t, tt.expected, result)
+			})
+		}
+	})
+
+	t.Run("IsCriticalFailure", func(t *testing.T) {
+		tests := []struct {
+			name     string
+			setup    func() Expression
+			expected bool
+		}{
+			{
+				name: "returns true when IsCritical is -1",
+				setup: func() Expression {
+					expr := Expression{}
+					expr.AddD20("Attack")
+					expr.SetCriticalFailure("Cursed")
+					return expr
+				},
+				expected: true,
+			},
+			{
+				name: "returns true when first value is 1 (natural 1)",
+				setup: func() Expression {
+					expr := Expression{Rng: &mockRoller{mockReturns: []int{1}}}
+					expr.AddD20("Attack")
+					expr.Evaluate()
+					return expr
+				},
+				expected: true,
+			},
+			{
+				name: "returns false for normal roll",
+				setup: func() Expression {
+					expr := Expression{Rng: &mockRoller{mockReturns: []int{15}}}
+					expr.AddD20("Attack")
+					expr.Evaluate()
+					return expr
+				},
+				expected: false,
+			},
+			{
+				name: "returns false for empty expression",
+				setup: func() Expression {
+					return Expression{}
+				},
+				expected: false,
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				expr := tt.setup()
+				result := expr.IsCriticalFailure()
+				assert.Equal(t, tt.expected, result)
+			})
+		}
+	})
+
+	t.Run("SetCriticalSuccess", func(t *testing.T) {
+		expr := Expression{}
+		expr.AddD20("Attack")
+		
+		expr.SetCriticalSuccess("Natural 20")
+		
+		assert.Equal(t, 1, expr.Components[0].IsCritical)
+		assert.Contains(t, expr.Components[0].Source, "as Critical success (Natural 20)")
+		assert.True(t, expr.IsCriticalSuccess())
+	})
+
+	t.Run("SetCriticalFailure", func(t *testing.T) {
+		expr := Expression{}
+		expr.AddD20("Attack")
+		
+		expr.SetCriticalFailure("Cursed")
+		
+		assert.Equal(t, -1, expr.Components[0].IsCritical)
+		assert.Contains(t, expr.Components[0].Source, "as Critical failure (Cursed)")
+		assert.True(t, expr.IsCriticalFailure())
+	})
+}

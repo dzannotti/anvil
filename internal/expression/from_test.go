@@ -96,3 +96,43 @@ func TestExpression_New(t *testing.T) {
 		})
 	}
 }
+
+func TestFromDamageResult(t *testing.T) {
+	tests := []struct {
+		name  string
+		setup func() Expression
+	}{
+		{
+			name: "creates clone of damage result",
+			setup: func() Expression {
+				expr := Expression{Value: 12}
+				expr.AddDamageConstant(8, "Fire", tag.NewContainerFromString("fire"))
+				expr.AddDamageConstant(4, "Cold", tag.NewContainerFromString("cold"))
+				return expr
+			},
+		},
+		{
+			name: "creates clone of empty expression",
+			setup: func() Expression {
+				return Expression{Value: 0}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			original := tt.setup()
+			result := FromDamageResult(original)
+
+			// Should be equal but not the same object
+			assert.Equal(t, original.Value, result.Value)
+			assert.Equal(t, len(original.Components), len(result.Components))
+			
+			// Verify it's a deep copy
+			if len(result.Components) > 0 {
+				result.Components[0].Value = 999
+				assert.NotEqual(t, result.Components[0].Value, original.Components[0].Value)
+			}
+		})
+	}
+}

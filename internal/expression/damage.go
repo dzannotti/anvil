@@ -71,7 +71,7 @@ func (e *Expression) MaxDice(source string) {
 	e.Components = components
 }
 
-func (e *Expression) IsDamageType(t tag.Tag) bool {
+func (e *Expression) HasDamageType(t tag.Tag) bool {
 	for _, component := range e.Components {
 		if component.Tags.MatchTag(t) {
 			return true
