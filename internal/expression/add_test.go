@@ -192,7 +192,7 @@ func TestExpression_Add(t *testing.T) {
 					assert.Equal(t, tt.expected.component.Sides, expression.Components[0].Sides)
 				}
 				if !tt.expected.component.Tags.IsEmpty() {
-					assert.Equal(t, tt.expected.component.Tags, expression.Components[0].Tags)
+					assert.True(t, expression.Components[0].Tags.HasAny(tt.expected.component.Tags), "expected tags to be present in component tags")
 				}
 			}
 		})

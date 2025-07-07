@@ -5,11 +5,11 @@ import "anvil/internal/tag"
 type ComponentType string
 
 const (
-	TypeConstant      ComponentType = "constant"
+	TypeConstant       ComponentType = "constant"
 	TypeDamageConstant ComponentType = "constant-damage"
-	TypeDice          ComponentType = "dice"
-	TypeDice20        ComponentType = "dice-20"
-	TypeDamageDice    ComponentType = "dice-damage"
+	TypeDice           ComponentType = "dice"
+	TypeDice20         ComponentType = "dice-d20"
+	TypeDamageDice     ComponentType = "dice-damage"
 )
 
 type Component struct {
@@ -68,4 +68,3 @@ func (c Component) Clone() Component {
 		IsCritical:      c.IsCritical,
 	}
 }
-

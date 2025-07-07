@@ -2,8 +2,8 @@ package expression
 
 import (
 	"fmt"
-	"strings"
 
+	"anvil/internal/core/tags"
 	"anvil/internal/mathi"
 )
 
@@ -20,7 +20,7 @@ func (e *Expression) Evaluate() *Expression {
 }
 
 func (e *Expression) evaluateComponent(component *Component) {
-	if strings.Contains(string(component.Type), string(TypeConstant)) {
+	if component.Tags.MatchTag(tags.ComponentConstant) {
 		return
 	}
 	e.evaluateDice(component)

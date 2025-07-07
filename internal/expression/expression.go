@@ -1,6 +1,9 @@
 package expression
 
-import "anvil/internal/tag"
+import (
+	"anvil/internal/core/tags"
+	"anvil/internal/tag"
+)
 
 type Expression struct {
 	Components []Component
@@ -20,11 +23,29 @@ func (e *Expression) Clone() Expression {
 	}
 }
 
-func (e *Expression) primaryTags(tags tag.Container) tag.Container {
+func (e *Expression) primaryTags(inputTags tag.Container) tag.Container {
 	if len(e.Components) > 0 {
-		if tags.IsEmpty() || tags.HasTag(tag.FromString("primary")) {
+		if inputTags.IsEmpty() || inputTags.HasTag(tag.FromString("primary")) {
 			return e.Components[0].Tags
 		}
 	}
-	return tags
+	return inputTags
+}
+
+func (e *Expression) primaryTagsForGrouping(inputTags tag.Container) tag.Container {
+	var resultTags tag.Container
+	
+	if len(e.Components) > 0 {
+		if inputTags.IsEmpty() || inputTags.HasTag(tag.FromString("primary")) {
+			resultTags = e.Components[0].Tags.Clone()
+		} else {
+			resultTags = inputTags.Clone()
+		}
+	} else {
+		resultTags = inputTags.Clone()
+	}
+	
+	// Filter out component type tags for grouping purposes
+	resultTags.RemoveTag(tags.ComponentType, tags.ComponentConstant, tags.ComponentDamageConstant, tags.ComponentDice, tags.ComponentDice20, tags.ComponentDamageDice)
+	return resultTags
 }

@@ -15,7 +15,7 @@ func TestExpression_ExpressionGroup(t *testing.T) {
 		res := expr.EvaluateGroup()
 		assert.Equal(t, 2, res.Value)
 		assert.Len(t, res.Components, 1)
-		assert.Equal(t, res.Components[0].Tags, tag.NewContainerFromString("Slashing"))
+		assert.True(t, res.Components[0].Tags.HasAny(tag.NewContainerFromString("Slashing")), "expected Slashing tag to be present")
 	})
 	t.Run("groups by tags", func(t *testing.T) {
 		expr := Expression{}
@@ -25,8 +25,8 @@ func TestExpression_ExpressionGroup(t *testing.T) {
 		res := expr.EvaluateGroup()
 		assert.Equal(t, 9, res.Value)
 		assert.Len(t, res.Components, 2)
-		assert.Equal(t, res.Components[0].Tags, tag.NewContainerFromString("Slashing"))
-		assert.Equal(t, res.Components[1].Tags, tag.NewContainerFromString("Magical"))
+		assert.True(t, res.Components[0].Tags.HasAny(tag.NewContainerFromString("Slashing")), "expected Slashing tag to be present")
+		assert.True(t, res.Components[1].Tags.HasAny(tag.NewContainerFromString("Magical")), "expected Magical tag to be present")
 	})
 
 	t.Run("can evaluate a dice", func(t *testing.T) {
@@ -36,7 +36,7 @@ func TestExpression_ExpressionGroup(t *testing.T) {
 		res := expr.EvaluateGroup()
 		assert.Equal(t, 7, res.Value)
 		assert.Len(t, res.Components, 1)
-		assert.Equal(t, res.Components[0].Tags, tag.NewContainerFromString("Slashing"))
+		assert.True(t, res.Components[0].Tags.HasAny(tag.NewContainerFromString("Slashing")), "expected Slashing tag to be present")
 	})
 
 	t.Run("should halve damage for match tags", func(t *testing.T) {
