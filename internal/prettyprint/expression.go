@@ -51,16 +51,19 @@ func formatBranch(indent string, last bool) string {
 	return indent + TreeContinue
 }
 
-func formatAdvantage(term expression.Term, indent string, last bool) []string {
-	if len(term.HasAdvantage) == 0 {
+func formatAdvantageDisadvantage(term expression.Term, indent string, last bool) []string {
+	advantages := term.HasAdvantage
+	disadvantages := term.HasDisadvantage
+
+	if len(advantages) == 0 && len(disadvantages) == 0 {
 		return nil
 	}
 
 	formatted := make([]string, 0)
 	baseIndent := formatBranch(indent, last)
-	totalItems := len(term.HasAdvantage) + len(term.HasDisadvantage)
+	totalItems := len(advantages) + len(disadvantages)
 
-	for idx, source := range term.HasAdvantage {
+	for idx, source := range advantages {
 		isLast := idx == totalItems-1
 		branch := TreeFork
 		if isLast {
@@ -69,19 +72,10 @@ func formatAdvantage(term expression.Term, indent string, last bool) []string {
 		formatted = append(formatted, fmt.Sprintf("\n%s%sAdvantage: %s", baseIndent, branch, source))
 	}
 
-	return formatted
-}
-
-func formatDisadvantage(term expression.Term, indent string, last bool) []string {
-	if len(term.HasDisadvantage) == 0 {
-		return nil
-	}
-
-	formatted := make([]string, 0)
-	baseIndent := formatBranch(indent, last)
-
-	for idx, source := range term.HasDisadvantage {
-		isLast := idx == len(term.HasDisadvantage)-1
+	// Add disadvantages
+	for idx, source := range disadvantages {
+		globalIdx := len(advantages) + idx
+		isLast := globalIdx == totalItems-1
 		branch := TreeFork
 		if isLast {
 			branch = TreeEnd
@@ -103,26 +97,14 @@ func formatTags(term expression.Term) string {
 	return fmt.Sprintf(" (%s)", strings.Join(termTags, ", "))
 }
 
-func printTerm(term expression.Term, indent string, last, first bool) []string {
-	branch := TreeBranch
-	if last {
-		branch = TreeBranchEnd
-	}
-	result := make([]string, 0)
-	value := printValue(term.Value, first)
+func buildTermSource(term expression.Term, indent string, last bool) string {
 	source := strings.Builder{}
 	source.WriteString(term.Source)
 
 	if strings.Contains(string(term.Type), "dice") {
-		advantages := formatAdvantage(term, indent, last)
-		disadvantages := formatDisadvantage(term, indent, last)
-
-		if len(advantages) > 0 {
-			source.WriteString(strings.Join(advantages, ""))
-		}
-
-		if len(disadvantages) > 0 {
-			source.WriteString(strings.Join(disadvantages, ""))
+		advDisadv := formatAdvantageDisadvantage(term, indent, last)
+		if len(advDisadv) > 0 {
+			source.WriteString(strings.Join(advDisadv, ""))
 		}
 	}
 
@@ -130,17 +112,33 @@ func printTerm(term expression.Term, indent string, last, first bool) []string {
 		source.WriteString(formatTags(term))
 	}
 
-	result = append(result, fmt.Sprintf("%s%s%s%s %s", indent, branch, value, formatDice(term), source.String()))
+	return source.String()
+}
 
+func getChildIndent(indent string, last bool) string {
+	if last {
+		return indent + TreeSpace
+	}
+	return indent + TreeContinue
+}
+
+func printTerm(term expression.Term, indent string, last, first bool) []string {
+	branch := TreeBranch
+	if last {
+		branch = TreeBranchEnd
+	}
+
+	result := make([]string, 0)
+	value := printValue(term.Value, first)
+	source := buildTermSource(term, indent, last)
+
+	// Build the main line
+	result = append(result, fmt.Sprintf("%s%s%s%s %s", indent, branch, value, formatDice(term), source))
+
+	// Add child terms if any
 	if len(term.Terms) > 0 {
-		newIndent := indent
-		if last {
-			newIndent += TreeSpace
-		} else {
-			newIndent += TreeContinue
-		}
-
-		result = append(result, printTerms(term.Terms, newIndent)...)
+		childIndent := getChildIndent(indent, last)
+		result = append(result, printTerms(term.Terms, childIndent)...)
 	}
 
 	return result
@@ -165,12 +163,12 @@ func printExpression(exp *expression.Expression, start ...bool) string {
 	}
 
 	tb.AddRawLine(fmt.Sprintf("%s%d", space, exp.Value))
-	
+
 	// Add terms using the existing logic
 	termLines := printTerms(exp.Terms, "")
 	for _, line := range termLines {
 		tb.AddRawLine(line)
 	}
-	
+
 	return tb.String()
 }
