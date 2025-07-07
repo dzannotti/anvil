@@ -22,7 +22,7 @@ func NewFightingStyleDefense() *core.Effect {
 		if !trigger {
 			return
 		}
-		s.Expression.AddScalar(1, fx.Name)
+		s.Expression.AddConstant(1, fx.Name)
 	})
 	return fx
 }

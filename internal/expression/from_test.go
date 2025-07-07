@@ -12,15 +12,15 @@ func TestExpression_New(t *testing.T) {
 	tests := []struct {
 		name     string
 		setup    func() Expression
-		expected Term
+		expected Component
 	}{
 		{
-			name: "can create from scalar",
+			name: "can create from constant",
 			setup: func() Expression {
-				return FromScalar(3, "Damage")
+				return FromConstant(3, "Damage")
 			},
-			expected: Term{
-				Type:   TypeScalar,
+			expected: Component{
+				Type:   TypeConstant,
 				Source: "Damage",
 				Value:  3,
 			},
@@ -30,7 +30,7 @@ func TestExpression_New(t *testing.T) {
 			setup: func() Expression {
 				return FromDice(2, 6, "Damage")
 			},
-			expected: Term{
+			expected: Component{
 				Type:   TypeDice,
 				Source: "Damage",
 				Sides:  6,
@@ -42,7 +42,7 @@ func TestExpression_New(t *testing.T) {
 			setup: func() Expression {
 				return FromD20("Damage")
 			},
-			expected: Term{
+			expected: Component{
 				Type:   TypeDice20,
 				Source: "Damage",
 				Sides:  20,
@@ -50,12 +50,12 @@ func TestExpression_New(t *testing.T) {
 			},
 		},
 		{
-			name: "can create from damage scalar",
+			name: "can create from damage constant",
 			setup: func() Expression {
-				return FromDamageScalar(2, "Damage", tag.NewContainerFromString("slashing"))
+				return FromDamageConstant(2, "Damage", tag.NewContainerFromString("slashing"))
 			},
-			expected: Term{
-				Type:   TypeDamageScalar,
+			expected: Component{
+				Type:   TypeDamageConstant,
 				Source: "Damage",
 				Tags:   tag.NewContainerFromString("slashing"),
 				Value:  2,
@@ -66,7 +66,7 @@ func TestExpression_New(t *testing.T) {
 			setup: func() Expression {
 				return FromDamageDice(2, 6, "Damage", tag.NewContainerFromString("slashing"))
 			},
-			expected: Term{
+			expected: Component{
 				Type:   TypeDamageDice,
 				Source: "Damage",
 				Tags:   tag.NewContainerFromString("slashing"),
@@ -79,19 +79,19 @@ func TestExpression_New(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			expression := tt.setup()
-			assert.Equal(t, tt.expected.Type, expression.Terms[0].Type)
-			assert.Equal(t, tt.expected.Source, expression.Terms[0].Source)
+			assert.Equal(t, tt.expected.Type, expression.Components[0].Type)
+			assert.Equal(t, tt.expected.Source, expression.Components[0].Source)
 			if tt.expected.Value > 0 {
-				assert.Equal(t, tt.expected.Value, expression.Terms[0].Value)
+				assert.Equal(t, tt.expected.Value, expression.Components[0].Value)
 			}
 			if tt.expected.Times > 0 {
-				assert.Equal(t, tt.expected.Times, expression.Terms[0].Times)
+				assert.Equal(t, tt.expected.Times, expression.Components[0].Times)
 			}
 			if tt.expected.Sides > 0 {
-				assert.Equal(t, tt.expected.Sides, expression.Terms[0].Sides)
+				assert.Equal(t, tt.expected.Sides, expression.Components[0].Sides)
 			}
 			if !tt.expected.Tags.IsEmpty() {
-				assert.Equal(t, tt.expected.Tags, expression.Terms[0].Tags)
+				assert.Equal(t, tt.expected.Tags, expression.Components[0].Tags)
 			}
 		})
 	}

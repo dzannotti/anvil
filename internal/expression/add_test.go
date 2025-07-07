@@ -13,23 +13,23 @@ func TestExpression_Add(t *testing.T) {
 		name     string
 		setup    func() Expression
 		expected struct {
-			term  Term
-			terms []Term
+			component  Component
+			components []Component
 		}
 	}{
 		{
-			name: "can add a scalar",
+			name: "can add a constant",
 			setup: func() Expression {
 				exp := Expression{}
-				exp.AddScalar(2, "Damage")
+				exp.AddConstant(2, "Damage")
 				return exp
 			},
 			expected: struct {
-				term  Term
-				terms []Term
+				component  Component
+				components []Component
 			}{
-				term: Term{
-					Type:   TypeScalar,
+				component: Component{
+					Type:   TypeConstant,
 					Source: "Damage",
 					Value:  2,
 				},
@@ -43,10 +43,10 @@ func TestExpression_Add(t *testing.T) {
 				return exp
 			},
 			expected: struct {
-				term  Term
-				terms []Term
+				component  Component
+				components []Component
 			}{
-				term: Term{
+				component: Component{
 					Type:   TypeDice,
 					Source: "Damage",
 					Sides:  6,
@@ -62,10 +62,10 @@ func TestExpression_Add(t *testing.T) {
 				return exp
 			},
 			expected: struct {
-				term  Term
-				terms []Term
+				component  Component
+				components []Component
 			}{
-				term: Term{
+				component: Component{
 					Type:   TypeDice20,
 					Source: "Damage",
 					Sides:  20,
@@ -74,18 +74,18 @@ func TestExpression_Add(t *testing.T) {
 			},
 		},
 		{
-			name: "can add a damage scalar",
+			name: "can add a damage constant",
 			setup: func() Expression {
 				exp := Expression{}
-				exp.AddDamageScalar(2, "Damage", tag.NewContainerFromString("slashing"))
+				exp.AddDamageConstant(2, "Damage", tag.NewContainerFromString("slashing"))
 				return exp
 			},
 			expected: struct {
-				term  Term
-				terms []Term
+				component  Component
+				components []Component
 			}{
-				term: Term{
-					Type:   TypeDamageScalar,
+				component: Component{
+					Type:   TypeDamageConstant,
 					Source: "Damage",
 					Tags:   tag.NewContainerFromString("slashing"),
 					Value:  2,
@@ -100,10 +100,10 @@ func TestExpression_Add(t *testing.T) {
 				return exp
 			},
 			expected: struct {
-				term  Term
-				terms []Term
+				component  Component
+				components []Component
 			}{
-				term: Term{
+				component: Component{
 					Type:   TypeDamageDice,
 					Source: "Damage",
 					Tags:   tag.NewContainerFromString("slashing"),
@@ -113,39 +113,39 @@ func TestExpression_Add(t *testing.T) {
 			},
 		},
 		{
-			name: "can replace an expression with a term",
+			name: "can replace an expression with a component",
 			setup: func() Expression {
 				exp := Expression{}
-				exp.AddScalar(2, "Damage")
+				exp.AddConstant(2, "Damage")
 				exp.ReplaceWith(3, "Bad Luck")
 				return exp
 			},
 			expected: struct {
-				term  Term
-				terms []Term
+				component  Component
+				components []Component
 			}{
-				term: Term{
-					Type:   TypeScalarReplace,
+				component: Component{
+					Type:   TypeConstant,
 					Source: "Bad Luck",
 					Value:  3,
 				},
 			},
 		},
 		{
-			name: "can add multiple terms",
+			name: "can add multiple components",
 			setup: func() Expression {
 				exp := Expression{}
-				exp.AddScalar(2, "First")
+				exp.AddConstant(2, "First")
 				exp.AddDice(1, 6, "Second")
 				return exp
 			},
 			expected: struct {
-				term  Term
-				terms []Term
+				component  Component
+				components []Component
 			}{
-				terms: []Term{
+				components: []Component{
 					{
-						Type:   TypeScalar,
+						Type:   TypeConstant,
 						Source: "First",
 						Value:  2,
 					},
@@ -164,35 +164,35 @@ func TestExpression_Add(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			expression := tt.setup()
 
-			if len(tt.expected.terms) > 0 {
-				assert.Len(t, expression.Terms, len(tt.expected.terms))
-				for i, term := range tt.expected.terms {
-					assert.Equal(t, term.Type, expression.Terms[i].Type)
-					assert.Equal(t, term.Source, expression.Terms[i].Source)
-					if term.Value > 0 {
-						assert.Equal(t, term.Value, expression.Terms[i].Value)
+			if len(tt.expected.components) > 0 {
+				assert.Len(t, expression.Components, len(tt.expected.components))
+				for i, component := range tt.expected.components {
+					assert.Equal(t, component.Type, expression.Components[i].Type)
+					assert.Equal(t, component.Source, expression.Components[i].Source)
+					if component.Value > 0 {
+						assert.Equal(t, component.Value, expression.Components[i].Value)
 					}
-					if term.Times > 0 {
-						assert.Equal(t, term.Times, expression.Terms[i].Times)
+					if component.Times > 0 {
+						assert.Equal(t, component.Times, expression.Components[i].Times)
 					}
-					if term.Sides > 0 {
-						assert.Equal(t, term.Sides, expression.Terms[i].Sides)
+					if component.Sides > 0 {
+						assert.Equal(t, component.Sides, expression.Components[i].Sides)
 					}
 				}
 			} else {
-				assert.Equal(t, tt.expected.term.Type, expression.Terms[0].Type)
-				assert.Equal(t, tt.expected.term.Source, expression.Terms[0].Source)
-				if tt.expected.term.Value > 0 {
-					assert.Equal(t, tt.expected.term.Value, expression.Terms[0].Value)
+				assert.Equal(t, tt.expected.component.Type, expression.Components[0].Type)
+				assert.Equal(t, tt.expected.component.Source, expression.Components[0].Source)
+				if tt.expected.component.Value > 0 {
+					assert.Equal(t, tt.expected.component.Value, expression.Components[0].Value)
 				}
-				if tt.expected.term.Times > 0 {
-					assert.Equal(t, tt.expected.term.Times, expression.Terms[0].Times)
+				if tt.expected.component.Times > 0 {
+					assert.Equal(t, tt.expected.component.Times, expression.Components[0].Times)
 				}
-				if tt.expected.term.Sides > 0 {
-					assert.Equal(t, tt.expected.term.Sides, expression.Terms[0].Sides)
+				if tt.expected.component.Sides > 0 {
+					assert.Equal(t, tt.expected.component.Sides, expression.Components[0].Sides)
 				}
-				if !tt.expected.term.Tags.IsEmpty() {
-					assert.Equal(t, tt.expected.term.Tags, expression.Terms[0].Tags)
+				if !tt.expected.component.Tags.IsEmpty() {
+					assert.Equal(t, tt.expected.component.Tags, expression.Components[0].Tags)
 				}
 			}
 		})

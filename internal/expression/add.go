@@ -4,48 +4,54 @@ import (
 	"anvil/internal/tag"
 )
 
-func (e *Expression) AddScalar(value int, source string, terms ...Term) {
-	term := makeTerm(TypeScalar, source, terms...)
-	term.Value = value
-	e.Terms = append(e.Terms, term)
+func (e *Expression) AddConstant(value int, source string, components ...Component) {
+	e.Components = append(e.Components, Component{
+		Type:       TypeConstant,
+		Source:     source,
+		Value:      value,
+		Components: components,
+	})
 }
 
-func (e *Expression) AddDice(times int, sides int, source string, terms ...Term) {
-	term := makeTerm(TypeDice, source, terms...)
-	term.Times = times
-	term.Sides = sides
-	term.Tags = e.primaryTags(tag.NewContainerFromString("primary"))
-	e.Terms = append(e.Terms, term)
+func (e *Expression) AddDice(times int, sides int, source string, components ...Component) {
+	e.Components = append(e.Components, Component{
+		Type:       TypeDice,
+		Source:     source,
+		Times:      times,
+		Sides:      sides,
+		Tags:       e.primaryTags(tag.NewContainerFromString("primary")),
+		Components: components,
+	})
 }
 
-func (e *Expression) AddD20(source string, terms ...Term) {
-	term := makeTerm(TypeDice20, source, terms...)
-	term.Times = 1
-	term.Sides = 20
-	term.Tags = e.primaryTags(tag.NewContainerFromString("primary"))
-	e.Terms = append(e.Terms, term)
+func (e *Expression) AddD20(source string, components ...Component) {
+	e.Components = append(e.Components, Component{
+		Type:       TypeDice20,
+		Source:     source,
+		Times:      1,
+		Sides:      20,
+		Tags:       e.primaryTags(tag.NewContainerFromString("primary")),
+		Components: components,
+	})
 }
 
-func (e *Expression) AddDamageScalar(value int, source string, tags tag.Container, terms ...Term) {
-	term := makeTerm(TypeDamageScalar, source, terms...)
-	term.Value = value
-	term.Tags = e.primaryTags(tags)
-	e.Terms = append(e.Terms, term)
+func (e *Expression) AddDamageConstant(value int, source string, tags tag.Container, components ...Component) {
+	e.Components = append(e.Components, Component{
+		Type:       TypeDamageConstant,
+		Source:     source,
+		Value:      value,
+		Tags:       e.primaryTags(tags),
+		Components: components,
+	})
 }
 
-func (e *Expression) AddDamageDice(times int, sides int, source string, tags tag.Container, terms ...Term) {
-	term := makeTerm(TypeDamageDice, source, terms...)
-	term.Times = times
-	term.Sides = sides
-	term.Tags = e.primaryTags(tags)
-	e.Terms = append(e.Terms, term)
-}
-
-func (e Expression) primaryTags(tags tag.Container) tag.Container {
-	if len(e.Terms) > 0 {
-		if tags.IsEmpty() || tags.HasTag(tag.FromString("primary")) {
-			return e.Terms[0].Tags
-		}
-	}
-	return tags
+func (e *Expression) AddDamageDice(times int, sides int, source string, tags tag.Container, components ...Component) {
+	e.Components = append(e.Components, Component{
+		Type:       TypeDamageDice,
+		Source:     source,
+		Times:      times,
+		Sides:      sides,
+		Tags:       e.primaryTags(tags),
+		Components: components,
+	})
 }

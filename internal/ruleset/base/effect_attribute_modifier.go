@@ -17,17 +17,17 @@ func NewAttributeModifierEffect() *core.Effect {
 		strMod := stats.AttributeModifier(str.Value)
 		dexMod := stats.AttributeModifier(dex.Value)
 		if tc.MatchTag(tags.Finesse) || tc.MatchTag(tags.Ranged) {
-			e.AddScalar(dexMod, "Attribute Modifier (Dexterity)", dex.Terms...)
+			e.AddConstant(dexMod, "Attribute Modifier (Dexterity)", dex.Components...)
 			return
 		}
-		e.AddScalar(strMod, "Attribute Modifier (Strength)", str.Terms...)
+		e.AddConstant(strMod, "Attribute Modifier (Strength)", str.Components...)
 	}
 
 	applySpellModifier := func(src *core.Actor, e *expression.Expression) {
 		attr := src.Attribute(src.SpellCastingSource)
 		attrMod := stats.AttributeModifier(attr.Value)
 		attrName := tags.ToReadable(src.SpellCastingSource)
-		e.AddScalar(attrMod, fmt.Sprintf("Attribute Modifier (%s)", attrName), attr.Terms...)
+		e.AddConstant(attrMod, fmt.Sprintf("Attribute Modifier (%s)", attrName), attr.Components...)
 	}
 
 	fx := &core.Effect{Name: "Attribute Modifier", Priority: core.PriorityBase}
@@ -56,7 +56,7 @@ func NewAttributeModifierEffect() *core.Effect {
 		}
 		attr := s.Source.Attribute(s.Attribute)
 		mod := stats.AttributeModifier(attr.Value)
-		s.Expression.AddScalar(mod, "Attribute Modifier ("+tags.ToReadable(s.Attribute)+")", attr.Terms...)
+		s.Expression.AddConstant(mod, "Attribute Modifier ("+tags.ToReadable(s.Attribute)+")", attr.Components...)
 	})
 
 	return fx

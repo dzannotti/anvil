@@ -2,41 +2,36 @@ package expression
 
 import "anvil/internal/tag"
 
-func FromScalar(value int, source string, terms ...Term) Expression {
-	e := Expression{rng: defaultRoller{}}
-	e.AddScalar(value, source, terms...)
+func FromConstant(value int, source string, components ...Component) Expression {
+	e := Expression{Rng: DefaultRoller{}}
+	e.AddConstant(value, source, components...)
 	return e
 }
 
-func FromDice(times int, sides int, source string, terms ...Term) Expression {
-	e := Expression{rng: defaultRoller{}}
-	e.AddDice(times, sides, source, terms...)
+func FromDice(times int, sides int, source string, components ...Component) Expression {
+	e := Expression{Rng: DefaultRoller{}}
+	e.AddDice(times, sides, source, components...)
 	return e
 }
 
-func FromD20(source string, terms ...Term) Expression {
-	e := Expression{rng: defaultRoller{}}
-	e.AddD20(source, terms...)
+func FromD20(source string, components ...Component) Expression {
+	e := Expression{Rng: DefaultRoller{}}
+	e.AddD20(source, components...)
 	return e
 }
 
-func FromDamageScalar(value int, source string, tags tag.Container, terms ...Term) Expression {
-	e := Expression{rng: defaultRoller{}}
-	e.AddDamageScalar(value, source, tags, terms...)
+func FromDamageConstant(value int, source string, tags tag.Container, components ...Component) Expression {
+	e := Expression{Rng: DefaultRoller{}}
+	e.AddDamageConstant(value, source, tags, components...)
 	return e
 }
 
-func FromDamageDice(times int, sides int, source string, tags tag.Container, terms ...Term) Expression {
-	e := Expression{rng: defaultRoller{}}
-	e.AddDamageDice(times, sides, source, tags, terms...)
+func FromDamageDice(times int, sides int, source string, tags tag.Container, components ...Component) Expression {
+	e := Expression{Rng: DefaultRoller{}}
+	e.AddDamageDice(times, sides, source, tags, components...)
 	return e
 }
 
 func FromDamageResult(res Expression) Expression {
-	e := Expression{rng: defaultRoller{}}
-	e.Terms = append(e.Terms, res.Terms...)
-	for i := range e.Terms {
-		e.Terms[i].Terms = make([]Term, 0)
-	}
-	return e
+	return res.Clone()
 }

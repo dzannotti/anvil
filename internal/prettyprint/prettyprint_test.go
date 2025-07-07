@@ -18,7 +18,6 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 		MaxHitPoints: 20,
 	}
 
-
 	tests := []struct {
 		name      string
 		eventType string

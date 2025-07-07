@@ -1,27 +1,21 @@
 package expression
 
-import "errors"
-
-var (
-	ErrNoTerms = errors.New("no terms to evaluate")
-	ErrNo20    = errors.New("only d20 expressions can give advantage/disadvantage")
-)
-
-func (e *Expression) addD20Modifier(source string, modifiers *[]string) (bool, error) {
-	if len(e.Terms) == 0 {
-		return false, ErrNoTerms
+func (e *Expression) addD20Modifier(source string, modifiers *[]string) {
+	if len(e.Components) == 0 {
+		panic("cannot modify expression with no components")
 	}
-	if e.Terms[0].Type != TypeDice20 {
-		return false, ErrNo20
+
+	if e.Components[0].Type != TypeDice20 {
+		panic("cannot modify expression with non-d20 component")
 	}
+
 	*modifiers = append(*modifiers, source)
-	return true, nil
 }
 
-func (e *Expression) WithAdvantage(source string) (bool, error) {
-	return e.addD20Modifier(source, &e.Terms[0].HasAdvantage)
+func (e *Expression) WithAdvantage(source string) {
+	e.addD20Modifier(source, &e.Components[0].HasAdvantage)
 }
 
-func (e *Expression) WithDisadvantage(source string) (bool, error) {
-	return e.addD20Modifier(source, &e.Terms[0].HasDisadvantage)
+func (e *Expression) WithDisadvantage(source string) {
+	e.addD20Modifier(source, &e.Components[0].HasDisadvantage)
 }

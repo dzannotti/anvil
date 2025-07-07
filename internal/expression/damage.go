@@ -10,59 +10,66 @@ import (
 )
 
 func (e *Expression) HalveDamage(tag tag.Tag, source string) {
-	for i, term := range e.Terms {
-		if !term.Tags.MatchTag(tag) {
+	for i, component := range e.Components {
+		if !component.Tags.MatchTag(tag) {
 			continue
 		}
-		e.evaluateTerm(&term)
-		value := math.Floor(float64(term.Value) / 2.0)
-		src := fmt.Sprintf("Halved (%s) %s", source, term.Source)
-		e.Terms[i] = makeTerm(TypeScalarHalve, src, term)
-		e.Terms[i].Value = int(value)
-		e.Terms[i].Tags = term.Tags
+		e.evaluateComponent(&component)
+		value := math.Floor(float64(component.Value) / 2.0)
+		src := fmt.Sprintf("Halved (%s) %s", source, component.Source)
+		e.Components[i] = Component{
+			Type:       TypeConstant,
+			Source:     src,
+			Value:      int(value),
+			Tags:       component.Tags,
+			Components: []Component{component},
+		}
 	}
 }
 
 func (e *Expression) ReplaceWith(value int, source string) {
-	terms := e.Terms
-	newTerm := makeTerm(TypeScalarReplace, source, terms...)
-	newTerm.Value = value
-	e.Terms = []Term{newTerm}
+	components := e.Components
+	e.Components = []Component{{
+		Type:       TypeConstant,
+		Source:     source,
+		Value:      value,
+		Components: components,
+	}}
 }
 
 func (e *Expression) DoubleDice(source string) {
-	terms := []Term{}
-	for _, term := range e.Terms {
-		terms = append(terms, term)
-		if !strings.Contains(string(term.Type), string(TypeDice)) {
+	components := []Component{}
+	for _, component := range e.Components {
+		components = append(components, component)
+		if !strings.Contains(string(component.Type), string(TypeDice)) {
 			continue
 		}
-		newTerm := term.Clone()
-		newTerm.Source = source
-		terms = append(terms, newTerm)
+		newComponent := component.Clone()
+		newComponent.Source = source
+		components = append(components, newComponent)
 	}
-	e.Terms = terms
+	e.Components = components
 }
 
 func (e *Expression) MaxDice(source string) {
-	terms := []Term{}
-	for _, term := range e.Terms {
-		terms = append(terms, term)
-		if !strings.Contains(string(term.Type), string(TypeDice)) {
+	components := []Component{}
+	for _, component := range e.Components {
+		components = append(components, component)
+		if !strings.Contains(string(component.Type), string(TypeDice)) {
 			continue
 		}
-		newTerm := term.Clone()
-		newTerm.Source = source
-		newTerm.Type = TypeScalarMax
-		newTerm.Value = mathi.Abs(term.Sides * term.Times)
-		terms = append(terms, newTerm)
+		newComponent := component.Clone()
+		newComponent.Source = source
+		newComponent.Type = TypeConstant
+		newComponent.Value = mathi.Abs(component.Sides * component.Times)
+		components = append(components, newComponent)
 	}
-	e.Terms = terms
+	e.Components = components
 }
 
-func (e Expression) IsDamageType(t tag.Tag) bool {
-	for _, term := range e.Terms {
-		if term.Tags.MatchTag(t) {
+func (e *Expression) IsDamageType(t tag.Tag) bool {
+	for _, component := range e.Components {
+		if component.Tags.MatchTag(t) {
 			return true
 		}
 	}

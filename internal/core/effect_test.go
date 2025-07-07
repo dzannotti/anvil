@@ -36,11 +36,11 @@ func TestEffect_Evaluate(t *testing.T) {
 
 	t.Run("state is modified by handler", func(t *testing.T) {
 		e := &Effect{}
-		expr := expression.FromScalar(10, "test")
+		expr := expression.FromConstant(10, "test")
 		state := &testState{Expression: &expr}
 		e.withHandler("modify", func(_ *Effect, s any) {
 			estate := s.(*testState) // panics if not the correct type
-			estate.Expression.AddScalar(5, "test")
+			estate.Expression.AddConstant(5, "test")
 		})
 		e.Evaluate("modify", state)
 		state.Expression.Evaluate()

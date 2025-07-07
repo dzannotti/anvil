@@ -10,9 +10,9 @@ type DiceRoller interface {
 	Roll(sides int) int
 }
 
-type defaultRoller struct{}
+type DefaultRoller struct{}
 
-func (rng defaultRoller) Roll(sides int) int {
+func (rng DefaultRoller) Roll(sides int) int {
 	sign := mathi.Sign(sides)
 	sides = mathi.Abs(sides)
 	if sides == 0 {
