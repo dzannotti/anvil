@@ -14,6 +14,7 @@ func NewContainerFromString(values ...string) Container {
 	for _, v := range values {
 		c.AddTag(New(v))
 	}
+
 	return c
 }
 
@@ -31,10 +32,12 @@ func (c *Container) AsStrings() []string {
 	if len(c.tags) == 0 {
 		return []string{}
 	}
+
 	out := make([]string, len(c.tags))
 	for i, t := range c.tags {
 		out[i] = t.AsString()
 	}
+
 	return out
 }
 
@@ -43,6 +46,7 @@ func (c *Container) AddTag(tags ...Tag) {
 		if c.HasTag(t) {
 			continue
 		}
+
 		c.tags = append(c.tags, t)
 	}
 }
@@ -65,6 +69,7 @@ func (c *Container) RemoveTag(tags ...Tag) {
 			newTags = append(newTags, t)
 		}
 	}
+
 	c.tags = newTags
 }
 
@@ -74,6 +79,7 @@ func (c *Container) HasTag(other Tag) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -83,6 +89,7 @@ func (c *Container) HasAny(other Container) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -92,6 +99,7 @@ func (c *Container) HasAll(other Container) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -101,6 +109,7 @@ func (c *Container) MatchTag(tag Tag) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -110,6 +119,7 @@ func (c *Container) MatchAny(other Container) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -119,6 +129,7 @@ func (c *Container) MatchAll(other Container) bool {
 			return false
 		}
 	}
+
 	return true
 }
 

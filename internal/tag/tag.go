@@ -33,6 +33,7 @@ func (t Tag) AsStrings() []string {
 	if t.IsEmpty() {
 		return []string{}
 	}
+
 	return strings.Split(t.value, ".")
 }
 
@@ -44,9 +45,11 @@ func (t Tag) Match(other Tag) bool {
 	if other.IsEmpty() {
 		return false
 	}
+
 	if t.value == other.value {
 		return true
 	}
+
 	return strings.HasPrefix(t.value, other.value+".")
 }
 
