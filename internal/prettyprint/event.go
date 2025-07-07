@@ -115,21 +115,26 @@ func printTeam(a []*core.Actor) string {
 }
 
 func printEncounter(e core.EncounterEvent) string {
-	sb := strings.Builder{}
-	sb.WriteString("🏰 Encounter Start")
-	sb.WriteString("\n" + indent(printWorld(e.World, []grid.Position{}), 0))
+	tb := NewTreeBuilder()
+	tb.AddRawLine("🏰 Encounter Start")
+	
+	// Add world section - no closure, world continues
+	tb.AddIndentedBlock(printWorld(e.World, []grid.Position{}))
+	
+	// Add teams
 	teams := map[string][]*core.Actor{}
 	for _, c := range e.Actors {
 		teams[string(c.Team)] = append(teams[string(c.Team)], c)
 	}
-	out := []string{}
+	
 	for _, t := range teams {
-		out = append(out, indent(printTeam(t), 1))
-		out = append(out, "│ └─○")
+		tb.AddIndentedBlock(printTeam(t))
+		// Team closure should be indented under the team
+		tb.AddRawLine(TreeVertical + TreeEndCircle)
 	}
-	sb.WriteString("\n" + strings.Join(out, "\n"))
-	sb.WriteString("\n└─○")
-	return sb.String()
+	
+	// No final closure - encounter stays open for rounds
+	return tb.String()
 }
 
 func printRound(r core.RoundEvent) string {

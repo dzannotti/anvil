@@ -46,9 +46,9 @@ func formatDice(term expression.Term) string {
 
 func formatBranch(indent string, last bool) string {
 	if last {
-		return indent + "    "
+		return indent + TreeSpace
 	}
-	return indent + "│   "
+	return indent + TreeContinue
 }
 
 func formatAdvantage(term expression.Term, indent string, last bool) []string {
@@ -57,17 +57,16 @@ func formatAdvantage(term expression.Term, indent string, last bool) []string {
 	}
 
 	formatted := make([]string, 0)
-	indent = formatBranch(indent, last)
+	baseIndent := formatBranch(indent, last)
 	totalItems := len(term.HasAdvantage) + len(term.HasDisadvantage)
 
 	for idx, source := range term.HasAdvantage {
 		isLast := idx == totalItems-1
-		branch := "├─ "
+		branch := TreeFork
 		if isLast {
-			branch = "└─ "
+			branch = TreeEnd
 		}
-
-		formatted = append(formatted, fmt.Sprintf("\n%s%sAdvantage: %s", indent, branch, source))
+		formatted = append(formatted, fmt.Sprintf("\n%s%sAdvantage: %s", baseIndent, branch, source))
 	}
 
 	return formatted
@@ -79,16 +78,15 @@ func formatDisadvantage(term expression.Term, indent string, last bool) []string
 	}
 
 	formatted := make([]string, 0)
-	indent = formatBranch(indent, last)
+	baseIndent := formatBranch(indent, last)
 
 	for idx, source := range term.HasDisadvantage {
 		isLast := idx == len(term.HasDisadvantage)-1
-		branch := "├─ "
+		branch := TreeFork
 		if isLast {
-			branch = "└─ "
+			branch = TreeEnd
 		}
-
-		formatted = append(formatted, fmt.Sprintf("\n%s%sDisadvantage: %s", indent, branch, source))
+		formatted = append(formatted, fmt.Sprintf("\n%s%sDisadvantage: %s", baseIndent, branch, source))
 	}
 
 	return formatted
@@ -106,9 +104,9 @@ func formatTags(term expression.Term) string {
 }
 
 func printTerm(term expression.Term, indent string, last, first bool) []string {
-	branch := " ├─ "
+	branch := TreeBranch
 	if last {
-		branch = " └─ "
+		branch = TreeBranchEnd
 	}
 	result := make([]string, 0)
 	value := printValue(term.Value, first)
@@ -137,9 +135,9 @@ func printTerm(term expression.Term, indent string, last, first bool) []string {
 	if len(term.Terms) > 0 {
 		newIndent := indent
 		if last {
-			newIndent += "    "
+			newIndent += TreeSpace
 		} else {
-			newIndent += " │   "
+			newIndent += TreeContinue
 		}
 
 		result = append(result, printTerms(term.Terms, newIndent)...)
@@ -160,13 +158,19 @@ func printTerms(terms []expression.Term, indent string) []string {
 }
 
 func printExpression(exp *expression.Expression, start ...bool) string {
-	lines := []string{}
+	tb := NewTreeBuilder()
 	space := ""
 	if len(start) > 0 && start[0] {
 		space = " "
 	}
 
-	lines = append(lines, fmt.Sprintf("%s%d", space, exp.Value))
-	lines = append(lines, printTerms(exp.Terms, "")...)
-	return strings.Join(lines, "\n")
+	tb.AddRawLine(fmt.Sprintf("%s%d", space, exp.Value))
+	
+	// Add terms using the existing logic
+	termLines := printTerms(exp.Terms, "")
+	for _, line := range termLines {
+		tb.AddRawLine(line)
+	}
+	
+	return tb.String()
 }
