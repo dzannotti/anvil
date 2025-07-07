@@ -51,6 +51,22 @@ func printPosition(pos grid.Position) string {
 	return fmt.Sprintf("(%d, %d)", pos.X, pos.Y)
 }
 
+func printPositions(positions []grid.Position) string {
+	pos := make([]string, len(positions))
+	for i, p := range positions {
+		pos[i] = printPosition(p)
+	}
+	return strings.Join(pos, ", ")
+}
+
+func printActorNames(actors []*core.Actor) string {
+	names := make([]string, len(actors))
+	for i, a := range actors {
+		names[i] = a.Name
+	}
+	return strings.Join(names, ", ")
+}
+
 func printWorld(w *core.World, path []grid.Position) string {
 	sb := strings.Builder{}
 	sb.WriteString("🌍 World\n")
@@ -115,28 +131,33 @@ func printTeam(a []*core.Actor) string {
 }
 
 func printEncounter(e core.EncounterEvent) string {
-	sb := strings.Builder{}
-	sb.WriteString("🏰 Encounter Start")
-	sb.WriteString("\n" + indent(printWorld(e.World, []grid.Position{}), 0))
+	tb := NewTreeBuilder()
+	tb.AddRawLine("🏰 Encounter Start")
+
+	// Add world section - no closure, world continues
+	tb.AddIndentedBlock(printWorld(e.World, []grid.Position{}))
+
+	// Add teams
 	teams := map[string][]*core.Actor{}
 	for _, c := range e.Actors {
 		teams[string(c.Team)] = append(teams[string(c.Team)], c)
 	}
-	out := []string{}
+
 	for _, t := range teams {
-		out = append(out, indent(printTeam(t), 1))
-		out = append(out, "│ └─○")
+		tb.AddIndentedBlock(printTeam(t))
+		// Team closure should be indented under the team
+		tb.AddRawLine(TreeVertical + TreeEndCircle)
 	}
-	sb.WriteString("\n" + strings.Join(out, "\n"))
-	sb.WriteString("\n└─○")
-	return sb.String()
+
+	// No final closure - encounter stays open for rounds
+	return tb.String()
 }
 
 func printRound(r core.RoundEvent) string {
 	sb := strings.Builder{}
 	sb.WriteString(fmt.Sprintf("🔄 Round %d", r.Round+1))
 	sb.WriteString("\n")
-	sb.WriteString(indent(printActors(r.Actors), 1))
+	sb.WriteString(indent(printActors(r.Actors), 0))
 	return sb.String()
 }
 
@@ -152,15 +173,12 @@ func printConfirm(c core.ConfirmEvent) string {
 	if c.Confirm {
 		return "✅ Confirmed"
 	}
+
 	return "❌ Denied"
 }
 
 func printUseAction(u core.UseActionEvent) string {
-	pos := make([]string, len(u.Target))
-	for i, p := range u.Target {
-		pos[i] = printPosition(p)
-	}
-	return fmt.Sprintf("💫 %s uses %s at [%s]", u.Source.Name, u.Action.Name(), strings.Join(pos, ", "))
+	return fmt.Sprintf("💫 %s uses %s at [%s]", u.Source.Name, u.Action.Name(), printPositions(u.Target))
 }
 
 func printTakeDamage(d core.TakeDamageEvent) string {
@@ -189,21 +207,13 @@ func formatRollResult(success, critical bool, value, against int) string {
 	if critical {
 		sb.WriteString("💥 Critical")
 	}
+
 	sb.WriteString(map[bool]string{true: " Success", false: " Failure"}[success])
 	return fmt.Sprintf("%s %d vs %d", sb.String(), value, against)
 }
 
 func printCheckResult(e core.CheckResultEvent) string {
-	sb := strings.Builder{}
-	sIcon := map[bool]string{true: "✅", false: "❌"}
-	sb.WriteString(sIcon[e.Success])
-	if e.Critical {
-		sb.WriteString("💥 Critical")
-	}
-	success := map[bool]string{true: " Success", false: " Failure"}
-	sb.WriteString(success[e.Success])
-	outcome := sb.String()
-	return fmt.Sprintf("%s %d vs %d", outcome, e.Value, e.Against)
+	return formatRollResult(e.Success, e.Critical, e.Value, e.Against)
 }
 
 func printAttackRoll(e core.AttackRollEvent) string {
@@ -265,10 +275,12 @@ func printConditionChanged(e core.ConditionChangedEvent) string {
 		emoji = "➖"
 		text = "loses condition"
 	}
+
 	from := ""
 	if e.From != nil {
 		from = fmt.Sprintf("from %s", e.From.Name)
 	}
+
 	return fmt.Sprintf("%s %s %s %s %s", emoji, e.Source.Name, text, tags.ToReadable(e.Condition), from)
 }
 
@@ -299,13 +311,10 @@ func printDeathSavingThrowAutomaticResult(e core.DeathSavingThrowAutomaticEvent)
 	if e.Failure {
 		status = "failure"
 	}
+
 	return fmt.Sprintf("⚰️ %s automatic death save throw %s", e.Source.Name, status)
 }
 
 func printTarget(e core.TargetEvent) string {
-	targets := make([]string, len(e.Target))
-	for i, t := range e.Target {
-		targets[i] = t.Name
-	}
-	return fmt.Sprintf("🎯 Target [%s]", strings.Join(targets, ", "))
+	return fmt.Sprintf("🎯 Target [%s]", printActorNames(e.Target))
 }

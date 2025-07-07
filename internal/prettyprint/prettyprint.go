@@ -10,8 +10,6 @@ import (
 	"anvil/internal/eventbus"
 )
 
-const fork = "├─ "
-
 type EventFormatter func(eventbus.Message) string
 
 var eventStack []eventbus.Message
@@ -41,8 +39,8 @@ func shouldPrintEnd() bool {
 func Print(out io.Writer, event eventbus.Message) {
 	if event.End {
 		if shouldPrintEnd() {
-			depth := strings.Repeat("│  ", max(0, event.Depth))
-			fmt.Fprintf(out, "%s└─○\n", depth)
+			depth := strings.Repeat(TreeVertical, max(0, event.Depth))
+			fmt.Fprintf(out, "%s%s\n", depth, TreeEndCircle)
 		}
 
 		if len(eventStack) > 0 {
@@ -62,6 +60,7 @@ func Print(out io.Writer, event eventbus.Message) {
 		fmt.Fprintf(out, "%s\n", eventString)
 		return
 	}
+
 	fmt.Fprintf(out, "%s\n", indent(eventString, event.Depth-1))
 }
 
