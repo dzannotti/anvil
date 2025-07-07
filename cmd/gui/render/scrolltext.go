@@ -31,6 +31,8 @@ func (log *ScrollText) AddLine(line string) {
 }
 
 // Draw renders the text log and handles scrolling.
+//
+//nolint:funlen // reason: refactor needed
 func (log *ScrollText) Draw() {
 	FillRectangle(log.Rect, log.BgColor)
 	DrawRectangle(log.Rect, Surface0, 2)

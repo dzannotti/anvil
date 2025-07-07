@@ -80,6 +80,7 @@ func deserializeEncounter(
 	return encounter
 }
 
+//nolint:funlen // reason: refactor needed
 func deserializeActor(
 	hub *eventbus.Hub,
 	a *SerializedActor,
