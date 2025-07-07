@@ -56,7 +56,7 @@ func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
 		if pos == from {
 			continue
 		}
-		cell, _ := a.owner.World.Grid.At(pos)
+		cell := a.owner.World.Grid.At(pos)
 		if cell.IsOccupied() {
 			continue
 		}

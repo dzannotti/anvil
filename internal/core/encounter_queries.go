@@ -32,12 +32,3 @@ func (e Encounter) Winner() (TeamID, bool) {
 	}
 	return "", false
 }
-
-func (e Encounter) FindActor(id string) *Actor {
-	for _, a := range e.Actors {
-		if a.ID() == id {
-			return a
-		}
-	}
-	return nil
-}

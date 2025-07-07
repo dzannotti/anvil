@@ -15,7 +15,10 @@ func DrawWorld(w *core.World, e *core.Encounter) {
 		for y := range w.Height() {
 			pos := grid.Position{X: x, Y: y}
 			FillRectangle(RectFromPos(pos).Expand(-1, -1), Surface2)
-			cell, _ := w.At(pos)
+			cell := w.At(pos)
+			if cell == nil {
+				continue
+			}
 			drawCell(cell, e)
 		}
 	}
@@ -35,7 +38,7 @@ func drawCell(cell *core.WorldCell, e *core.Encounter) {
 		drawWall(cell.Position)
 	}
 	if cell.IsOccupied() {
-		occupant, _ := cell.Occupant()
+		occupant := cell.Occupant()
 		drawActor(occupant, occupant == e.ActiveActor())
 	}
 	pos := fmt.Sprintf("%d,%d", cell.Position.X, cell.Position.Y)

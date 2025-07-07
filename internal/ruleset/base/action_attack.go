@@ -37,7 +37,7 @@ func NewAttackAction(
 }
 
 func (a AttackAction) Perform(pos []grid.Position, commitCost bool) {
-	target, _ := a.owner.World.ActorAt(pos[0])
+	target := a.owner.World.ActorAt(pos[0])
 	a.owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: a.owner, Target: pos})
 	a.owner.Log.Add(core.TargetType, core.TargetEvent{Target: []*core.Actor{target}})
 	defer a.owner.Log.End()
@@ -65,8 +65,8 @@ func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {
 		if pos == from {
 			continue
 		}
-		other, ok := a.owner.World.ActorAt(pos)
-		if !ok {
+		other := a.owner.World.ActorAt(pos)
+		if other == nil {
 			continue
 		}
 		if !slices.Contains(enemies, other) {

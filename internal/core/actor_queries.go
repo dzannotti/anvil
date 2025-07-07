@@ -4,7 +4,6 @@ import (
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
 	"anvil/internal/tag"
-	"anvil/internal/uuid"
 )
 
 func (a Actor) Enemies() []*Actor {
@@ -45,13 +44,6 @@ func (a Actor) IsHostileTo(o *Actor) bool {
 	return a.Team != o.Team
 }
 
-func (a *Actor) ID() string {
-	if a.id == "" {
-		a.id = uuid.New()
-	}
-	return a.id
-}
-
 func (a Actor) HasAction(aa Action) bool {
 	for _, ca := range a.Actions {
 		if ca.Name() == aa.Name() {
@@ -65,7 +57,7 @@ func (a Actor) BestWeaponAttack() Action {
 	var best Action
 	bestDamage := 0
 	for _, act := range a.Actions {
-		if !act.Tags().MatchAny(tag.NewContainer(tags.Attack, tags.Melee, tags.Weapon)) {
+		if !act.Tags().MatchAll(tag.NewContainer(tags.Attack, tags.Melee, tags.Weapon)) {
 			continue
 		}
 

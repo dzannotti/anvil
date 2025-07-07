@@ -30,16 +30,14 @@ func (w *World) Height() int {
 }
 
 func (w *World) AddOccupant(pos grid.Position, o *Actor) {
-	cell, _ := w.At(pos)
-	cell.AddOccupant(o)
+	w.At(pos).AddOccupant(o)
 }
 
 func (w *World) RemoveOccupant(pos grid.Position, o *Actor) {
-	cell, _ := w.At(pos)
-	cell.RemoveOccupant(o)
+	w.At(pos).RemoveOccupant(o)
 }
 
-func (w *World) At(pos grid.Position) (*WorldCell, bool) {
+func (w *World) At(pos grid.Position) *WorldCell {
 	return w.Grid.At(pos)
 }
 
@@ -51,8 +49,8 @@ func (w World) ActorsInRange(pos grid.Position, radius int, filter func(*Actor) 
 	actors := make([]*Actor, 0, 10)
 	cells := w.Grid.CellsInRange(pos, radius)
 	for _, cell := range cells {
-		other, ok := cell.Occupant()
-		if !ok || !filter(other) {
+		other := cell.Occupant()
+		if other == nil || !filter(other) {
 			continue
 		}
 		actors = append(actors, other)
@@ -60,17 +58,16 @@ func (w World) ActorsInRange(pos grid.Position, radius int, filter func(*Actor) 
 	return actors
 }
 
-func (w World) ActorAt(pos grid.Position) (*Actor, bool) {
-	cell, ok := w.At(pos)
-	if !ok {
-		return nil, false
+func (w World) ActorAt(pos grid.Position) *Actor {
+	if !w.IsValidPosition(pos) {
+		return nil
 	}
-	return cell.Occupant()
+	return w.At(pos).Occupant()
 }
 
 func (w World) FindPath(start grid.Position, end grid.Position) (*pathfinding.Result, bool) {
 	navCost := func(pos grid.Position) int {
-		cell, _ := w.Grid.At(pos)
+		cell := w.Grid.At(pos)
 		if cell.Tile == Wall {
 			return math.MaxInt
 		}
@@ -85,8 +82,8 @@ func (w World) HasLineOfSight(from grid.Position, to grid.Position) bool {
 	}
 
 	isBlocked := func(pos grid.Position) bool {
-		cell, ok := w.Grid.At(pos)
-		if !ok {
+		cell := w.Grid.At(pos)
+		if cell == nil {
 			return true
 		}
 		return cell.Tile == Wall
@@ -114,8 +111,8 @@ func (w World) HasLineOfSight(from grid.Position, to grid.Position) bool {
 
 func (w World) FloodFill(start grid.Position, radius int) []grid.Position {
 	isBlocked := func(pos grid.Position) bool {
-		cell, ok := w.Grid.At(pos)
-		if !ok {
+		cell := w.Grid.At(pos)
+		if cell == nil {
 			return true
 		}
 		if cell.Tile == Wall {

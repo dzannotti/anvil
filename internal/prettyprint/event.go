@@ -57,20 +57,28 @@ func printWorld(w *core.World, path []grid.Position) string {
 	for y := range w.Height() {
 		for x := range w.Width() {
 			pos := grid.Position{X: x, Y: y}
-			cell, _ := w.At(pos)
+			cell := w.At(pos)
+			if cell == nil {
+				sb.WriteString(".")
+				continue
+			}
+
 			if cell.Tile == core.Wall {
 				sb.WriteString("#")
 				continue
 			}
+
 			if cell.IsOccupied() {
-				occupant, _ := cell.Occupant()
+				occupant := cell.Occupant()
 				sb.WriteString(occupant.Name[0:1])
 				continue
 			}
+
 			if slices.Contains(path, pos) {
 				sb.WriteString("*")
 				continue
 			}
+
 			sb.WriteString(".")
 		}
 		sb.WriteString("\n")

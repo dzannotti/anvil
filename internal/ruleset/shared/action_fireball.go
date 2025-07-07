@@ -75,12 +75,12 @@ func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {
 	valid := a.AffectedPositions([]grid.Position{pos})
 	targets := make([]*core.Actor, 0)
 	for _, p := range valid {
-		cell, ok := a.Owner().World.At(p)
-		if !ok {
+		cell := a.Owner().World.At(p)
+		if cell == nil {
 			continue
 		}
-		occupant, ok := cell.Occupant()
-		if !ok {
+		occupant := cell.Occupant()
+		if occupant == nil {
 			continue
 		}
 
