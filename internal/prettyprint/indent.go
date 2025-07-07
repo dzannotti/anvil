@@ -15,5 +15,6 @@ func indent(text string, depth int) string {
 	for i, line := range lines[1:] {
 		lines[i+1] = spacing + "│  " + line
 	}
+
 	return strings.Join(lines, "\n")
 }

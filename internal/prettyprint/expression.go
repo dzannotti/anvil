@@ -14,9 +14,11 @@ func printValue(value int, first bool) string {
 	if first {
 		return fmt.Sprintf("= %d", value)
 	}
+
 	if value > 0 {
 		return fmt.Sprintf("+ %d", value)
 	}
+
 	return fmt.Sprintf("- %d", mathi.Abs(value))
 }
 
@@ -24,6 +26,7 @@ func formatDiceRolls(term expression.Term) string {
 	if len(term.Values) <= 1 {
 		return ""
 	}
+
 	rolls := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(term.Values)), ", "), "[]")
 	formula := fmt.Sprintf("%dd%d", term.Times, term.Sides)
 	return fmt.Sprintf(" (%s: %s)", formula, rolls)
@@ -33,9 +36,11 @@ func formatDice(term expression.Term) string {
 	if !strings.Contains(string(term.Type), "dice") {
 		return ""
 	}
+
 	if len(term.Values) <= 1 {
 		return fmt.Sprintf(" (%dd%d)", term.Times, term.Sides)
 	}
+
 	return formatDiceRolls(term)
 }
 
@@ -61,6 +66,7 @@ func formatAdvantage(term expression.Term, indent string, last bool) []string {
 		if isLast {
 			branch = "└─ "
 		}
+
 		formatted = append(formatted, fmt.Sprintf("\n%s%sAdvantage: %s", indent, branch, source))
 	}
 
@@ -81,6 +87,7 @@ func formatDisadvantage(term expression.Term, indent string, last bool) []string
 		if isLast {
 			branch = "└─ "
 		}
+
 		formatted = append(formatted, fmt.Sprintf("\n%s%sDisadvantage: %s", indent, branch, source))
 	}
 
@@ -115,6 +122,7 @@ func printTerm(term expression.Term, indent string, last, first bool) []string {
 		if len(advantages) > 0 {
 			source.WriteString(strings.Join(advantages, ""))
 		}
+
 		if len(disadvantages) > 0 {
 			source.WriteString(strings.Join(disadvantages, ""))
 		}
@@ -133,8 +141,10 @@ func printTerm(term expression.Term, indent string, last, first bool) []string {
 		} else {
 			newIndent += " │   "
 		}
+
 		result = append(result, printTerms(term.Terms, newIndent)...)
 	}
+
 	return result
 }
 
@@ -145,6 +155,7 @@ func printTerms(terms []expression.Term, indent string) []string {
 		first := i == 0
 		lines = append(lines, printTerm(term, indent, last, first)...)
 	}
+
 	return lines
 }
 
@@ -154,6 +165,7 @@ func printExpression(exp *expression.Expression, start ...bool) string {
 	if len(start) > 0 && start[0] {
 		space = " "
 	}
+
 	lines = append(lines, fmt.Sprintf("%s%d", space, exp.Value))
 	lines = append(lines, printTerms(exp.Terms, "")...)
 	return strings.Join(lines, "\n")
