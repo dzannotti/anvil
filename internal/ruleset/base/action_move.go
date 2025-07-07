@@ -18,7 +18,7 @@ func NewMoveAction(owner *core.Actor) *MoveAction {
 			owner: owner,
 			name:  "Move",
 			cost:  map[tag.Tag]int{tags.Speed: 1},
-			tags:  tag.ContainerFromTag(tags.Move),
+			tags:  tag.NewContainer(tags.Move),
 		},
 	}
 	return a

@@ -30,7 +30,7 @@ func NewProficiencyModifierEffect() *core.Effect {
 		if !ok {
 			return
 		}
-		proficiency := s.Source.Proficiency(tag.ContainerFromTag(t))
+		proficiency := s.Source.Proficiency(tag.NewContainer(t))
 		if proficiency != 0 {
 			s.Expression.AddScalar(proficiency, "Proficiency Modifier")
 		}

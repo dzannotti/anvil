@@ -9,25 +9,28 @@ type Container struct {
 	tags []Tag
 }
 
-func ContainerFromString(values ...string) Container {
+func NewContainerFromString(values ...string) Container {
 	c := Container{}
 	for _, v := range values {
-		c.AddTag(FromString(v))
+		c.AddTag(New(v))
 	}
 	return c
 }
 
-func ContainerFromTag(tag ...Tag) Container {
+func NewContainer(tag ...Tag) Container {
 	c := Container{}
 	c.AddTag(tag...)
 	return c
 }
 
-func ContainerFromContainer(other Container) Container {
-	return ContainerFromTag(other.tags...)
+func NewContainerFromContainer(other Container) Container {
+	return NewContainer(other.tags...)
 }
 
 func (c *Container) AsStrings() []string {
+	if len(c.tags) == 0 {
+		return []string{}
+	}
 	out := make([]string, len(c.tags))
 	for i, t := range c.tags {
 		out[i] = t.AsString()
@@ -74,7 +77,7 @@ func (c *Container) HasTag(other Tag) bool {
 	return false
 }
 
-func (c *Container) HasAnyTag(other Container) bool {
+func (c *Container) HasAny(other Container) bool {
 	for _, t := range other.tags {
 		if c.HasTag(t) {
 			return true
@@ -83,7 +86,7 @@ func (c *Container) HasAnyTag(other Container) bool {
 	return false
 }
 
-func (c *Container) HasAllTag(other Container) bool {
+func (c *Container) HasAll(other Container) bool {
 	for _, t := range other.tags {
 		if !c.HasTag(t) {
 			return false
@@ -101,7 +104,7 @@ func (c *Container) MatchTag(tag Tag) bool {
 	return false
 }
 
-func (c *Container) MatchAnyTag(other Container) bool {
+func (c *Container) MatchAny(other Container) bool {
 	for _, t := range other.tags {
 		if c.MatchTag(t) {
 			return true
@@ -110,7 +113,7 @@ func (c *Container) MatchAnyTag(other Container) bool {
 	return false
 }
 
-func (c *Container) MatchAllTag(other Container) bool {
+func (c *Container) MatchAll(other Container) bool {
 	for _, t := range other.tags {
 		if !c.MatchTag(t) {
 			return false
@@ -127,4 +130,12 @@ func (c *Container) ID() string {
 	strs := c.AsStrings()
 	slices.Sort(strs)
 	return strings.Join(strs, "-")
+}
+
+func (c *Container) Len() int {
+	return len(c.tags)
+}
+
+func (c *Container) Clone() Container {
+	return NewContainer(c.tags...)
 }

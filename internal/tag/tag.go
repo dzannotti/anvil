@@ -10,15 +10,19 @@ type Tag struct {
 }
 
 var (
-	whitespace  = regexp.MustCompile(`\s`)
+	whitespace  = regexp.MustCompile(`[\s\v]+`)
 	specialChar = regexp.MustCompile(`[@#$%\-^&*]`)
-	nonASCII    = regexp.MustCompile(`[^\x00-\x7F]`)
-	multipleDot = regexp.MustCompile(`\.+`)
-	boundaryDot = regexp.MustCompile(`^\.|\.$`)
+	nonASCII    = regexp.MustCompile(`[^\x00-\x7F]+`)
+	multipleDot = regexp.MustCompile(`\.{2,}`)
+	boundaryDot = regexp.MustCompile(`^\.+|\.+$`)
 )
 
-func FromString(val string) Tag {
+func New(val string) Tag {
 	return Tag{value: normalize(val)}
+}
+
+func FromString(val string) Tag {
+	return New(val)
 }
 
 func (t Tag) AsString() string {
@@ -26,6 +30,9 @@ func (t Tag) AsString() string {
 }
 
 func (t Tag) AsStrings() []string {
+	if t.IsEmpty() {
+		return []string{}
+	}
 	return strings.Split(t.value, ".")
 }
 
@@ -34,10 +41,21 @@ func (t Tag) MatchExact(other Tag) bool {
 }
 
 func (t Tag) Match(other Tag) bool {
+	if other.IsEmpty() {
+		return false
+	}
 	if t.value == other.value {
 		return true
 	}
 	return strings.HasPrefix(t.value, other.value+".")
+}
+
+func (t Tag) IsEmpty() bool {
+	return t.value == ""
+}
+
+func (t Tag) IsValid() bool {
+	return !t.IsEmpty()
 }
 
 func normalize(value string) string {

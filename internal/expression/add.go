@@ -14,7 +14,7 @@ func (e *Expression) AddDice(times int, sides int, source string, terms ...Term)
 	term := makeTerm(TypeDice, source, terms...)
 	term.Times = times
 	term.Sides = sides
-	term.Tags = e.primaryTags(tag.ContainerFromString("primary"))
+	term.Tags = e.primaryTags(tag.NewContainerFromString("primary"))
 	e.Terms = append(e.Terms, term)
 }
 
@@ -22,7 +22,7 @@ func (e *Expression) AddD20(source string, terms ...Term) {
 	term := makeTerm(TypeDice20, source, terms...)
 	term.Times = 1
 	term.Sides = 20
-	term.Tags = e.primaryTags(tag.ContainerFromString("primary"))
+	term.Tags = e.primaryTags(tag.NewContainerFromString("primary"))
 	e.Terms = append(e.Terms, term)
 }
 

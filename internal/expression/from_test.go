@@ -52,24 +52,24 @@ func TestExpression_New(t *testing.T) {
 		{
 			name: "can create from damage scalar",
 			setup: func() Expression {
-				return FromDamageScalar(2, "Damage", tag.ContainerFromString("slashing"))
+				return FromDamageScalar(2, "Damage", tag.NewContainerFromString("slashing"))
 			},
 			expected: Term{
 				Type:   TypeDamageScalar,
 				Source: "Damage",
-				Tags:   tag.ContainerFromString("slashing"),
+				Tags:   tag.NewContainerFromString("slashing"),
 				Value:  2,
 			},
 		},
 		{
 			name: "can create from damage dice",
 			setup: func() Expression {
-				return FromDamageDice(2, 6, "Damage", tag.ContainerFromString("slashing"))
+				return FromDamageDice(2, 6, "Damage", tag.NewContainerFromString("slashing"))
 			},
 			expected: Term{
 				Type:   TypeDamageDice,
 				Source: "Damage",
-				Tags:   tag.ContainerFromString("slashing"),
+				Tags:   tag.NewContainerFromString("slashing"),
 				Times:  2,
 				Sides:  6,
 			},

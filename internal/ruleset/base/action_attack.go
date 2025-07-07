@@ -32,7 +32,7 @@ func NewAttackAction(
 		},
 		reach: reach,
 	}
-	a.tags.Add(tag.ContainerFromTag(tags.Attack))
+	a.tags.Add(tag.NewContainer(tags.Attack))
 	return a
 }
 

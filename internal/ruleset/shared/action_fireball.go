@@ -14,7 +14,7 @@ type FireballAction struct {
 }
 
 func NewFireballAction(owner *core.Actor) FireballAction {
-	tc := tag.ContainerFromTag(tags.Spell, tags.Evocation)
+	tc := tag.NewContainer(tags.Spell, tags.Evocation)
 	cost := map[tag.Tag]int{tags.SpellSlot3: 1, tags.Action: 1}
 	a := FireballAction{
 		Action: base.MakeAction(
@@ -24,10 +24,10 @@ func NewFireballAction(owner *core.Actor) FireballAction {
 			cost,
 			30,
 			4,
-			[]core.DamageSource{{Times: 8, Sides: 6, Source: "Fireball", Tags: tag.ContainerFromTag(tags.Fire)}},
+			[]core.DamageSource{{Times: 8, Sides: 6, Source: "Fireball", Tags: tag.NewContainer(tags.Fire)}},
 		),
 	}
-	a.Tags().Add(tag.ContainerFromTag(tags.Attack))
+	a.Tags().Add(tag.NewContainer(tags.Attack))
 	return a
 }
 

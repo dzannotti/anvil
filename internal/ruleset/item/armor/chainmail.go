@@ -23,7 +23,7 @@ func newChainMailEffect() *core.Effect {
 }
 
 func NewChainMail() *ChainMail {
-	return &ChainMail{tags: tag.ContainerFromTag(tags.MediumArmor)}
+	return &ChainMail{tags: tag.NewContainer(tags.MediumArmor)}
 }
 
 func (c *ChainMail) Name() string {
