@@ -68,6 +68,7 @@ func (a Actor) BestWeaponAttack() Action {
 		if !act.Tags().MatchAny(tag.NewContainer(tags.Attack, tags.Melee, tags.Weapon)) {
 			continue
 		}
+
 		if act.AverageDamage() > bestDamage {
 			best = act
 		}
