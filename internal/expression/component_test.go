@@ -3,8 +3,9 @@ package expression
 import (
 	"testing"
 
-	"anvil/internal/tag"
 	"github.com/stretchr/testify/assert"
+
+	"anvil/internal/tag"
 )
 
 func TestComponent_ShouldModifyRoll(t *testing.T) {

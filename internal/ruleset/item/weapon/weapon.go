@@ -40,7 +40,6 @@ func (w Weapon) OnEquip(a *core.Actor) {
 	a.AddAction(base.NewAttackAction(a, fmt.Sprintf("Attack with %s", w.name), &w, w.reach, w.tags))
 }
 
-// Implement DamageSource interface
 func (w Weapon) Damage() *expression.Expression {
 	expr := expression.FromDamageDice(w.damageTimes, w.damageSides, w.name, w.damageTags)
 	return &expr

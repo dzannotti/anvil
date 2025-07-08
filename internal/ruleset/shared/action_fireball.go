@@ -101,7 +101,6 @@ func (a FireballAction) AffectedPositions(tar []grid.Position) []grid.Position {
 	return valid
 }
 
-// Implement DamageSource interface
 func (a FireballAction) Damage() *expression.Expression {
 	expr := expression.FromDamageDice(8, 6, "Fireball", tag.NewContainer(tags.Fire))
 	return &expr
