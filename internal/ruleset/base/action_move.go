@@ -24,7 +24,7 @@ func NewMoveAction(owner *core.Actor) *MoveAction {
 	return a
 }
 
-func (a MoveAction) Perform(pos []grid.Position, commitCost bool) {
+func (a MoveAction) Perform(pos []grid.Position) {
 	src := a.owner
 	world := src.World
 	path, ok := world.FindPath(src.Position, pos[0])
@@ -35,9 +35,7 @@ func (a MoveAction) Perform(pos []grid.Position, commitCost bool) {
 	defer src.Dispatcher.End()
 	positions := path.Positions()
 	for _, node := range positions[1:] {
-		if commitCost {
-			src.ConsumeResource(tags.WalkSpeed, 1)
-		}
+		src.ConsumeResource(tags.WalkSpeed, 1)
 		src.Move(node, a)
 	}
 }

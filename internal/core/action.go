@@ -10,7 +10,7 @@ type Action interface {
 	Archetype() string
 	ID() string
 	Tags() *tag.Container
-	Perform(pos []grid.Position, commitCost bool)
+	Perform(pos []grid.Position)
 
 	ValidPositions(from grid.Position) []grid.Position
 	AffectedPositions(target []grid.Position) []grid.Position
