@@ -13,13 +13,14 @@ func DrawActions(
 ) {
 	buttonWidth := 160
 	isOver := actor.Encounter.IsOver()
-	isEnabled := !isOver && state.World.Request == nil
+	isEnabled := !isOver && !state.World.RequestManager().HasPendingRequest()
 	if actor.CanAct() {
 		for i, a := range actor.Actions {
 			selected := false
 			if current != nil && current.Name() == a.Name() {
 				selected = true
 			}
+
 			drawAction(
 				isEnabled,
 				Rectangle{X: i*buttonWidth + 20, Y: 670, Width: buttonWidth - 10, Height: 40},

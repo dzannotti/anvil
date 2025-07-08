@@ -23,8 +23,8 @@ func main() {
 	encounter.Start()
 	go func() {
 		for {
-			if gameState.World.Request != nil {
-				gameState.World.Request.AnswerWithDefault()
+			if gameState.World.RequestManager().HasPendingRequest() {
+				_ = gameState.World.RequestManager().AnswerDefault()
 			}
 			time.Sleep(2 * time.Millisecond)
 		}
@@ -39,6 +39,7 @@ func main() {
 		fmt.Println("All dead")
 		return
 	}
+
 	fmt.Println("Winner:", string(winner))
 	msPerRound := float32(total.Seconds()*1000) / float32(encounter.Round+1)
 	fmt.Printf(
