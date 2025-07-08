@@ -5,43 +5,21 @@ import (
 	"anvil/internal/mathi"
 )
 
-func Line(from grid.Position, to grid.Position) []grid.Position {
-	maxSteps := mathi.Max(mathi.Abs(to.X-from.X), mathi.Abs(to.Y-from.Y)) + 1
-	result := make([]grid.Position, 0, maxSteps)
+func Line(from, to grid.Position) []grid.Position {
+	deltaX := to.X - from.X
+	deltaY := to.Y - from.Y
 
-	x0, y0 := from.X, from.Y
-	x1, y1 := to.X, to.Y
-
-	dx := mathi.Abs(x1 - x0)
-	dy := mathi.Abs(y1 - y0)
-
-	sx := -1
-	if x0 < x1 {
-		sx = 1
-	}
-	sy := -1
-	if y0 < y1 {
-		sy = 1
+	steps := mathi.Max(mathi.Abs(deltaX), mathi.Abs(deltaY))
+	if steps == 0 {
+		return []grid.Position{from}
 	}
 
-	err := dx - dy
+	result := make([]grid.Position, 0, steps+1)
 
-	for {
-		result = append(result, grid.Position{X: x0, Y: y0})
-
-		if x0 == x1 && y0 == y1 {
-			break
-		}
-
-		e2 := 2 * err
-		if e2 > -dy {
-			err -= dy
-			x0 += sx
-		}
-		if e2 < dx {
-			err += dx
-			y0 += sy
-		}
+	for i := 0; i <= steps; i++ {
+		currentX := from.X + (deltaX*i)/steps
+		currentY := from.Y + (deltaY*i)/steps
+		result = append(result, grid.Position{X: currentX, Y: currentY})
 	}
 
 	return result

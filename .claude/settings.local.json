@@ -10,7 +10,10 @@
       "Bash(true)",
       "Bash(make lint)",
       "Bash(ls:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(rm:*)",
+      "Bash(gofmt:*)"
     ],
     "deny": []
   }

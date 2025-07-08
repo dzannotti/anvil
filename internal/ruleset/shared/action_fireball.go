@@ -55,7 +55,7 @@ func (a FireballAction) ValidPositions(from grid.Position) []grid.Position {
 		return []grid.Position{}
 	}
 	valid := []grid.Position{}
-	shape := shapes.Sphere(from, a.CastRange())
+	shape := shapes.Circle(from, a.CastRange())
 	for _, pos := range shape {
 		if !a.Owner().World.IsValidPosition(pos) {
 			continue
