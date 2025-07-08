@@ -10,4 +10,3 @@ type DamageSource interface {
 	Damage() *expression.Expression
 	Tags() *tag.Container
 }
-

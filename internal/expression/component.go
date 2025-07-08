@@ -39,12 +39,9 @@ func (c *Component) hasRollModifier() bool {
 }
 
 func (c Component) ExpectedValue() int {
-	// Handle dice values: times * (sides + 1) / 2, rounded down
 	if c.Type.MatchExact(Dice) || c.Type.MatchExact(D20) || c.Type.MatchExact(DamageDice) {
 		return c.Times * (c.Sides + 1) / 2
 	}
-
-	// Handle constant values and everything else
 	return c.Value
 }
 

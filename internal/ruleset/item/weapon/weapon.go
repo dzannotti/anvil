@@ -45,7 +45,3 @@ func (w Weapon) Damage() *expression.Expression {
 	expr := expression.FromDamageDice(w.damageTimes, w.damageSides, w.name, w.damageTags)
 	return &expr
 }
-
-func (w Weapon) DamageTags() *tag.Container {
-	return &w.damageTags
-}

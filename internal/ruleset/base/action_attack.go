@@ -92,14 +92,11 @@ func (a AttackAction) AffectedPositions(tar []grid.Position) []grid.Position {
 	return []grid.Position{tar[0]}
 }
 
-// Implement DamageSource interface
 func (a AttackAction) Damage() *expression.Expression {
-	// Return weapon damage directly - effects will handle modifiers
 	return a.damageSource.Damage()
 }
 
 func (a AttackAction) Tags() *tag.Container {
-	// Combine action tags with damage source tags
 	combined := tag.NewContainerFromContainer(a.tags)
 	combined.Add(*a.damageSource.Tags())
 	return &combined
