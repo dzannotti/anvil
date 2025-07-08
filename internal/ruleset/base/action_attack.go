@@ -54,7 +54,7 @@ func (a AttackAction) Perform(pos []grid.Position, commitCost bool) {
 	}
 	result := a.owner.AttackRoll(target, a.tags)
 	if result.Success {
-		dmg := a.owner.DamageRoll(a.damageSource, result.Critical)
+		dmg := a.owner.DamageRoll(a, result.Critical)
 		target.TakeDamage(*dmg)
 	}
 }
@@ -94,13 +94,17 @@ func (a AttackAction) AffectedPositions(tar []grid.Position) []grid.Position {
 
 // Implement DamageSource interface
 func (a AttackAction) Damage() *expression.Expression {
+	// Return weapon damage directly - effects will handle modifiers
 	return a.damageSource.Damage()
 }
 
 func (a AttackAction) Tags() *tag.Container {
-	return a.damageSource.Tags()
+	// Combine action tags with damage source tags
+	combined := tag.NewContainerFromContainer(a.tags)
+	combined.Add(*a.damageSource.Tags())
+	return &combined
 }
 
 func (a AttackAction) AverageDamage() int {
-	return a.damageSource.Damage().ExpectedValue()
+	return a.Damage().ExpectedValue()
 }

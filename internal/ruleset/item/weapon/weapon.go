@@ -10,12 +10,14 @@ import (
 )
 
 type Weapon struct {
-	archetype    string
-	id           string
-	name         string
-	damageSource core.DamageSource
-	tags         tag.Container
-	reach        int
+	archetype   string
+	id          string
+	name        string
+	damageTimes int
+	damageSides int
+	damageTags  tag.Container
+	tags        tag.Container
+	reach       int
 }
 
 func (w Weapon) Archetype() string {
@@ -35,10 +37,15 @@ func (w Weapon) Tags() *tag.Container {
 }
 
 func (w Weapon) OnEquip(a *core.Actor) {
-	a.AddAction(base.NewAttackAction(a, fmt.Sprintf("Attack with %s", w.name), w.damageSource, w.reach, w.tags))
+	a.AddAction(base.NewAttackAction(a, fmt.Sprintf("Attack with %s", w.name), &w, w.reach, w.tags))
 }
 
 // Implement DamageSource interface
 func (w Weapon) Damage() *expression.Expression {
-	return w.damageSource.Damage()
+	expr := expression.FromDamageDice(w.damageTimes, w.damageSides, w.name, w.damageTags)
+	return &expr
+}
+
+func (w Weapon) DamageTags() *tag.Container {
+	return &w.damageTags
 }

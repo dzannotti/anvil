@@ -26,6 +26,7 @@
 - [x] fire ball
 - [x] attacks of opportunity
 - [x] reduce number of deps
+- [x] DamageSource interface refactor (Phase 1-5 complete)
 - [ ] finesse
 - [ ] unarmed strike
 - [ ] fire bolt

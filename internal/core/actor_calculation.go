@@ -123,11 +123,11 @@ func (a *Actor) DamageRoll(ds DamageSource, crit bool) *expression.Expression {
 	}
 	a.Dispatcher.Begin(DamageRollEvent{Source: a, DamageSource: ds})
 	defer a.Dispatcher.End()
-	before := PreDamageRoll{Source: a, Expression: &expr}
+	before := PreDamageRoll{Source: a, Expression: &expr, Tags: *ds.Tags()}
 	a.Effects.Evaluate(&before)
 	res := expr.EvaluateGroup()
 	a.Dispatcher.Emit(ExpressionResultEvent{Expression: res})
-	after := PostDamageRoll{Source: a, Result: res}
+	after := PostDamageRoll{Source: a, Result: res, Tags: *ds.Tags()}
 	a.Effects.Evaluate(&after)
 	return res
 }

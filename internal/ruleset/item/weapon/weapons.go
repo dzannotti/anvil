@@ -1,7 +1,6 @@
 package weapon
 
 import (
-	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/tag"
 
@@ -10,22 +9,26 @@ import (
 
 func NewDagger() *Weapon {
 	return &Weapon{
-		archetype:    "dagger",
-		id:           uuid.New().String(),
-		name:         "Dagger",
-		tags:         tag.NewContainer(tags.Melee, tags.SimpleWeapon),
-		damageSource: core.NewLegacyDamageSource(1, 4, "Dagger", tag.NewContainer(tags.Piercing)),
-		reach:        1,
+		archetype:   "dagger",
+		id:          uuid.New().String(),
+		name:        "Dagger",
+		tags:        tag.NewContainer(tags.Melee, tags.SimpleWeapon),
+		damageTimes: 1,
+		damageSides: 4,
+		damageTags:  tag.NewContainer(tags.Piercing),
+		reach:       1,
 	}
 }
 
 func NewGreatAxe() *Weapon {
 	return &Weapon{
-		archetype:    "great-axe",
-		id:           uuid.New().String(),
-		name:         "Great Axe",
-		tags:         tag.NewContainer(tags.Melee, tags.MartialAxe),
-		damageSource: core.NewLegacyDamageSource(2, 6, "Great Axe", tag.NewContainer(tags.Slashing)),
-		reach:        1,
+		archetype:   "great-axe",
+		id:          uuid.New().String(),
+		name:        "Great Axe",
+		tags:        tag.NewContainer(tags.Melee, tags.MartialAxe),
+		damageTimes: 2,
+		damageSides: 6,
+		damageTags:  tag.NewContainer(tags.Slashing),
+		reach:       1,
 	}
 }

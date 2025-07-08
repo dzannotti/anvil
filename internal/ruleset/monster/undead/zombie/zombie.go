@@ -5,6 +5,7 @@ import (
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
+	"anvil/internal/expression"
 	"anvil/internal/grid"
 	"anvil/internal/ruleset/actor"
 	"anvil/internal/ruleset/base"
@@ -12,10 +13,30 @@ import (
 	"anvil/internal/tag"
 )
 
+type SlamAttack struct {
+	name string
+	tags tag.Container
+}
+
+func (s SlamAttack) Name() string {
+	return s.name
+}
+
+func (s SlamAttack) Damage() *expression.Expression {
+	expr := expression.FromDamageDice(1, 6, "Slam", s.tags)
+	return &expr
+}
+
+func (s SlamAttack) Tags() *tag.Container {
+	return &s.tags
+}
+
 func NewSlamAction(owner *core.Actor) core.Action {
-	return base.NewAttackAction(owner, "Slam",
-		core.NewLegacyDamageSource(1, 6, "Slam", tag.NewContainer(tags.Bludgeoning)),
-		1, tag.NewContainer(tags.Melee, tags.NaturalWeapon))
+	slam := SlamAttack{
+		name: "Slam",
+		tags: tag.NewContainer(tags.Bludgeoning),
+	}
+	return base.NewAttackAction(owner, "Slam", slam, 1, tag.NewContainer(tags.Melee, tags.NaturalWeapon))
 }
 
 func New(dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, name string) *core.Actor {
