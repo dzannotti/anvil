@@ -45,7 +45,8 @@ func NewAttackOfOpportunityEffect() *core.Effect {
 			}
 			s.Source.Dispatcher.Begin(core.EffectEvent{Source: s.Source, Effect: fx})
 			other.ConsumeResource(tags.Reaction, 1)
-			baseAttack.Perform([]grid.Position{s.Source.Position}, false)
+			// TODO: Create proper AOO action with Reaction cost instead of Action cost
+			baseAttack.Perform([]grid.Position{s.Source.Position})
 			s.Source.Dispatcher.End()
 		}
 	})

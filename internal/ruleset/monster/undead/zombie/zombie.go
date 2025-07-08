@@ -13,30 +13,11 @@ import (
 	"anvil/internal/tag"
 )
 
-type SlamAttack struct {
-	name string
-	tags tag.Container
-}
-
-func (s SlamAttack) Name() string {
-	return s.name
-}
-
-func (s SlamAttack) Damage() *expression.Expression {
-	expr := expression.FromDamageDice(1, 6, "Slam", s.tags)
-	return &expr
-}
-
-func (s SlamAttack) Tags() *tag.Container {
-	return &s.tags
-}
-
 func NewSlamAction(owner *core.Actor) core.Action {
-	slam := SlamAttack{
-		name: "Slam",
-		tags: tag.NewContainer(tags.Bludgeoning),
-	}
-	return base.NewAttackAction(owner, "Slam", slam, 1, tag.NewContainer(tags.Melee, tags.NaturalWeapon))
+	damage := expression.FromDamageDice(1, 6, "Slam", tag.NewContainer(tags.Bludgeoning))
+	slam := base.NewNaturalWeapon("Slam", "slam", damage, tag.NewContainer(tags.Bludgeoning))
+	cost := map[tag.Tag]int{tags.Action: 1}
+	return base.NewMeleeAction(owner, "Slam", slam, 1, tag.NewContainer(tags.Melee, tags.NaturalWeapon), cost)
 }
 
 func New(dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, name string) *core.Actor {
