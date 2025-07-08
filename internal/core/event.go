@@ -80,7 +80,7 @@ type UseActionEvent struct {
 type DamageRollEvent struct {
 	Source       *Actor
 	Target       *Actor
-	DamageSource []DamageSource
+	DamageSource DamageSource
 }
 
 type EffectEvent struct {

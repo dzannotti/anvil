@@ -112,9 +112,9 @@ func TestExpression_ExpectedValue(t *testing.T) {
 			name: "multiple dice types",
 			setup: func() Expression {
 				expr := Expression{}
-				expr.AddD20("Attack")         // 10 (1 * (20+1) / 2 = 10)
+				expr.AddD20("Attack")                                // 10 (1 * (20+1) / 2 = 10)
 				expr.AddDamageDice(2, 6, "Main", tag.NewContainer()) // 7 (2 * (6+1) / 2 = 7)
-				expr.AddConstant(4, "Bonus")  // 4
+				expr.AddConstant(4, "Bonus")                         // 4
 				return expr
 			},
 			expected: 21, // 10 + 7 + 4 = 21

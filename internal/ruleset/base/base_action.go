@@ -1,8 +1,6 @@
 package base
 
 import (
-	"math"
-
 	"anvil/internal/core"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
@@ -17,7 +15,6 @@ type Action struct {
 	cost      map[tag.Tag]int
 	castRange int
 	reach     int
-	damage    []core.DamageSource
 }
 
 func MakeAction(
@@ -29,7 +26,6 @@ func MakeAction(
 	cost map[tag.Tag]int,
 	castRange int,
 	reach int,
-	damage []core.DamageSource,
 ) Action {
 	return Action{
 		owner:     owner,
@@ -40,7 +36,6 @@ func MakeAction(
 		cost:      cost,
 		castRange: castRange,
 		reach:     reach,
-		damage:    damage,
 	}
 }
 
@@ -76,10 +71,6 @@ func (a Action) CastRange() int {
 	return a.castRange
 }
 
-func (a Action) Damage() []core.DamageSource {
-	return a.damage
-}
-
 func (a Action) CanAfford() bool {
 	return a.owner.Resources.CanAfford(a.cost)
 }
@@ -104,13 +95,5 @@ func (a Action) Commit() {
 }
 
 func (a Action) AverageDamage() int {
-	avg := 0
-	for _, d := range a.damage {
-		// Temporary: cast to legacy source during transition
-		if legacy, ok := d.(*core.LegacyDamageSource); ok {
-			roll := float64(legacy.Sides+1) / 2.0
-			avg += int(math.Floor(float64(legacy.Times) * roll))
-		}
-	}
-	return avg
+	return 0
 }

@@ -44,9 +44,9 @@ type DamageSource struct {
 
 #### Step 1.1: Create New DamageSource Interface
 
-- [ ] Create new interface in `damage_source.go`
-- [ ] Keep old struct temporarily as `LegacyDamageSource`
-- [ ] Add interface methods:
+- [x] Create new interface in `damage_source.go`
+- [x] Keep old struct temporarily as `LegacyDamageSource`
+- [x] Add interface methods:
 
   ```go
   type DamageSource interface {
@@ -58,16 +58,16 @@ type DamageSource struct {
 
 #### Step 1.2: Add ExpectedValue() to Expression
 
-- [ ] Add `ExpectedValue() float64` method to `expression.Expression`
-- [ ] Calculate expected value from constants and dice averages
-- [ ] Implementation: constants as-is, dice as `times * (sides + 1) / 2.0`
-- [ ] Handle nested components recursively
+- [x] Add `ExpectedValue() float64` method to `expression.Expression`
+- [x] Calculate expected value from constants and dice averages
+- [x] Implementation: constants as-is, dice as `times * (sides + 1) / 2.0`
+- [x] Handle nested components recursively
 
 #### Step 1.3: Create Legacy Adapter
 
-- [ ] Make `LegacyDamageSource` implement `DamageSource` interface
-- [ ] Convert Times/Sides to expression in `Damage()` method
-- [ ] Ensure backward compatibility during transition
+- [x] Make `LegacyDamageSource` implement `DamageSource` interface
+- [x] Convert Times/Sides to expression in `Damage()` method
+- [x] Ensure backward compatibility during transition
 
 ### Phase 2: Core System Updates
 

@@ -4,17 +4,18 @@ import (
 	"fmt"
 
 	"anvil/internal/core"
+	"anvil/internal/expression"
 	"anvil/internal/ruleset/base"
 	"anvil/internal/tag"
 )
 
 type Weapon struct {
-	archetype string
-	id        string
-	name      string
-	damage    []core.DamageSource
-	tags      tag.Container
-	reach     int
+	archetype    string
+	id           string
+	name         string
+	damageSource core.DamageSource
+	tags         tag.Container
+	reach        int
 }
 
 func (w Weapon) Archetype() string {
@@ -34,5 +35,10 @@ func (w Weapon) Tags() *tag.Container {
 }
 
 func (w Weapon) OnEquip(a *core.Actor) {
-	a.AddAction(base.NewAttackAction(a, fmt.Sprintf("Attack with %s", w.name), w.damage, w.reach, w.tags))
+	a.AddAction(base.NewAttackAction(a, fmt.Sprintf("Attack with %s", w.name), w.damageSource, w.reach, w.tags))
+}
+
+// Implement DamageSource interface
+func (w Weapon) Damage() *expression.Expression {
+	return w.damageSource.Damage()
 }
