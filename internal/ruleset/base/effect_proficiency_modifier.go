@@ -21,7 +21,7 @@ func NewProficiencyModifierEffect() *core.Effect {
 	fx.WithBeforeAttackRoll(func(_ *core.Effect, s *core.BeforeAttackRollState) {
 		proficiency := s.Source.Proficiency(s.Tags)
 		if proficiency != 0 {
-			s.Expression.AddScalar(proficiency, "Proficiency Modifier")
+			s.Expression.AddConstant(proficiency, "Proficiency Modifier")
 		}
 	})
 
@@ -32,7 +32,7 @@ func NewProficiencyModifierEffect() *core.Effect {
 		}
 		proficiency := s.Source.Proficiency(tag.NewContainer(t))
 		if proficiency != 0 {
-			s.Expression.AddScalar(proficiency, "Proficiency Modifier")
+			s.Expression.AddConstant(proficiency, "Proficiency Modifier")
 		}
 	})
 

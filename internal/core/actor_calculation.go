@@ -12,9 +12,9 @@ import (
 )
 
 func (a *Actor) ArmorClass() *expression.Expression {
-	expr := expression.FromScalar(10, "Base")
+	expr := expression.FromConstant(10, "Base")
 	dex := a.Attribute(tags.Dexterity)
-	expr.AddScalar(stats.AttributeModifier(dex.Value), "Attribute Modifier", dex.Terms...)
+	expr.AddConstant(stats.AttributeModifier(dex.Value), "Attribute Modifier", dex.Components...)
 	s := AttributeCalculationState{
 		Source:     a,
 		Expression: &expr,
@@ -26,7 +26,7 @@ func (a *Actor) ArmorClass() *expression.Expression {
 }
 
 func (a *Actor) Attribute(t tag.Tag) *expression.Expression {
-	expr := expression.FromScalar(a.Attributes.Value(t), tags.ToReadable(t))
+	expr := expression.FromConstant(a.Attributes.Value(t), tags.ToReadable(t))
 	s := AttributeCalculationState{
 		Expression: &expr,
 		Attribute:  t,

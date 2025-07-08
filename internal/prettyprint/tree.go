@@ -74,40 +74,39 @@ func (tb *TreeBuilder) WithIndent(fn func()) {
 	tb.Outdent()
 }
 
-// AddIndentedBlock adds a text block with the same formatting as indent()
-func (tb *TreeBuilder) AddIndentedBlock(text string) {
-	lines := strings.Split(text, "\n")
+// processIndentedLines applies tree indentation to text lines, skipping empty lines
+func processIndentedLines(lines []string, depth int) []string {
 	if len(lines) == 0 {
-		return
+		return lines
 	}
 
-	spacing := strings.Repeat(TreeVertical, tb.depth)
+	spacing := strings.Repeat(TreeVertical, depth)
+	result := make([]string, 0, len(lines))
 
-	// First line gets the fork
-	tb.lines = append(tb.lines, spacing+TreeFork+lines[0])
+	// First non-empty line gets the fork
+	result = append(result, spacing+TreeFork+lines[0])
 
-	// Subsequent lines get vertical continuation
+	// Subsequent lines get vertical continuation, skip empty lines
 	for i := 1; i < len(lines); i++ {
 		if lines[i] == "" {
 			continue
 		}
-
-		tb.lines = append(tb.lines, spacing+TreeVertical+lines[i])
+		result = append(result, spacing+TreeVertical+lines[i])
 	}
+
+	return result
+}
+
+// AddIndentedBlock adds a text block with tree indentation
+func (tb *TreeBuilder) AddIndentedBlock(text string) {
+	lines := strings.Split(text, "\n")
+	indentedLines := processIndentedLines(lines, tb.depth)
+	tb.lines = append(tb.lines, indentedLines...)
 }
 
 // Helper function to indent existing text block
 func indentBlock(text string, depth int) string {
 	lines := strings.Split(text, "\n")
-	if len(lines) == 0 {
-		return text
-	}
-
-	spacing := strings.Repeat(TreeVertical, depth)
-	lines[0] = spacing + TreeFork + lines[0]
-	for i := 1; i < len(lines); i++ {
-		lines[i] = spacing + TreeVertical + lines[i]
-	}
-
-	return strings.Join(lines, "\n")
+	indentedLines := processIndentedLines(lines, depth)
+	return strings.Join(indentedLines, "\n")
 }

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Expression System is a sophisticated calculation engine that maintains complete audit trails through recursive component structures. It provides formula-driven calculations with deferred evaluation, supporting complex D&D mechanics like dice rolling, damage calculation, advantage/disadvantage, and critical hits.
+The Expression System is a specialized calculation engine for D&D 2024 mechanics, handling dice rolls, damage calculations, advantage/disadvantage, and critical hits. It maintains complete audit trails through hierarchical component structures while providing a clean, type-safe API for game mechanics.
 
 ## Core Architecture
 
@@ -11,9 +11,8 @@ The Expression System is a sophisticated calculation engine that maintains compl
 ```go
 type Expression struct {
     Components []Component  // List of calculation components
-    Value      int         // Evaluated result
-    IsCritical int         // Critical hit state (1=success, -1=failure, 0=normal)
-    rng        Roller      // Random number generator
+    Value      int         // Total evaluated result
+    Rng        DiceRoller  // Random number generator interface
 }
 ```
 
@@ -21,330 +20,384 @@ type Expression struct {
 
 ```go
 type Component struct {
-    Kind          ComponentKind    // Evaluation behavior (strategy pattern)
-    Source        string          // Human-readable source description
-    Type          Kind            // Component type identifier
-    Tags          tag.Container   // Associated tags for rule matching
-    Value         int             // Evaluated result
-    SubComponents []Component     // Nested components for complex calculations
-    Values        []int           // Individual roll values (for dice)
+    Type            tag.Tag       // Component type identifier
+    Value           int          // Final calculated value
+    Source          string       // Human-readable audit
+    Values          []int        // Individual roll results (for dice)
+    Times           int          // Number of dice/multiplier
+    Sides           int          // Die sides
+    HasAdvantage    []string     // Sources granting advantage
+    HasDisadvantage []string      // Sources imposing disadvantage
+    Tags            tag.Container // Damage types and metadata
+    Components      []Component   // Nested components for complex calculations
+    IsCritical      int           // Critical state (CriticalSuccess=1, CriticalFailure=-1, CriticalNone=0)
 }
 ```
 
-### ComponentKind Interface
+### Component Types
 
-The system uses the Strategy pattern for different calculation behaviors:
+The system uses hierarchical tag-based component types:
 
 ```go
-type ComponentKind interface {
-    Evaluate(ctx EvaluationContext) int
-    Expected() int
-    Clone() ComponentKind
-    Values() []int
-}
+// Basic types
+Constant       = tag.FromString("Component.Type.Constant")
+Dice           = tag.FromString("Component.Type.Dice")
+D20            = tag.FromString("Component.Type.Dice.D20")
+
+// Damage-specific types (extend base types)
+DamageConstant = tag.FromString("Component.Type.Constant.Damage") 
+DamageDice     = tag.FromString("Component.Type.Dice.Damage")
 ```
 
-## Component Types
+### Critical Hit Constants
 
-### Basic Components
-
-#### Constant Components
 ```go
-// Fixed value components
-expr := expression.New()
-expr.AddConstant(5, "Proficiency bonus")
-// Result: 5 (always)
+const (
+    CriticalSuccess = 1   // Natural 20 or forced critical
+    CriticalFailure = -1  // Natural 1 or forced failure
+    CriticalNone    = 0   // Normal result
+)
 ```
 
-#### Dice Components
+## Evaluation Architecture
+
+### Root-Level Evaluation Only
+
+**Critical Design Principle**: The expression system evaluates **only** the root-level components in `Expression.Components[]`. Nested components in `Component.Components[]` are **never evaluated or re-evaluated** - they exist purely for audit trail purposes.
+
 ```go
-// Standard dice rolling
-expr := expression.New()
-expr.AddDice(2, 6, "Short sword damage") // 2d6
-// Result: 2-12 (random)
+expression := FromDice(2, 6, "Sword Damage")
+expression.HalveDamage(tags.Slashing, "Resistance")
+
+// After HalveDamage:
+// Root level: [Component{Type: Constant, Value: 6, Source: "Halved (Resistance) Sword Damage"}]
+// Nested:     Component.Components = [Component{Type: Dice, Values: [4,8], Source: "Sword Damage"}]
+//
+// Only the root Constant component contributes to Expression.Value
+// The nested Dice component preserves the original roll history
 ```
 
-#### D20 Components
+### Audit Trail Preservation
+
+Methods that transform expressions preserve calculation history by moving original components into nested structures:
+
 ```go
-// Special D20 handling with advantage/disadvantage
-expr := expression.New()
-expr.AddD20("Attack roll")
-// Result: 1-20 (random)
+// ReplaceWith example
+spell := FromDice(1, 20, "Spell Attack")
+spell.ReplaceWith(15, "Reliable Talent")
+
+// Result:
+// Root: [Component{Type: Constant, Value: 15, Source: "Reliable Talent"}]
+// Nested: Component.Components = [Component{Type: D20, Value: 12, Source: "Spell Attack"}]
 ```
 
-### Damage Components
+**Methods Leveraging This Architecture:**
+- **`HalveDamage()`**: Creates constant with halved value, preserves original in nested
+- **`ReplaceWith()`**: Replaces all components with constant, preserves originals 
+- **`DoubleDice()`**: Duplicates dice components, maintains separate audit trails
+- **`MaxDice()`**: Adds maximized constants, preserves original dice
 
-#### Damage Constants
+### Primary Damage Collation
+
+In damage expressions, the first component establishes the "primary" damage type. Components added with empty tags automatically inherit this primary type, enabling clean ability modifier categorization:
+
 ```go
-// Damage with type tags
-tags := tag.ContainerFromString("damage.fire")
-expr := expression.New()
-expr.AddDamageConstant(3, "Fire damage bonus", tags)
+// Flaming longsword: 1d8 slashing + 2d4 fire + STR modifier
+damage := FromDamageDice(1, 8, "Longsword", tag.NewContainer(tags.Slashing))     // Primary damage
+damage.AddDamageDice(2, 4, "Flame Tongue", tag.NewContainer(tags.Fire))         // Explicit fire
+damage.AddDamageConstant(3, "STR Modifier", tag.NewContainer())                 // Gets slashing (primary)
+
+// Before grouping:
+// Components[0]: 1d8 slashing (primary)
+// Components[1]: 2d4 fire (explicit)  
+// Components[2]: +3 slashing (inherited from primary)
+
+grouped := damage.EvaluateGroup()
+// Results in two separate root components:
+// grouped.Components[0]: DamageConstant{Value: 11, Tags: slashing} // 1d8(8) + 3 STR = 11 slashing
+// grouped.Components[1]: DamageConstant{Value: 6, Tags: fire}      // 2d4(6) = 6 fire
+//
+// Each root component contains the total for that damage type
+// Original components are preserved in Component.Components[] for audit trail
 ```
 
-#### Damage Dice
+**Key Behavior**: Ability modifiers, enhancement bonuses, and other non-typed damage automatically attach to the weapon's primary damage type, which is exactly what D&D rules expect.
+
+The `primaryTags()` method handles this inheritance:
+- If input tags are empty or contain "primary", returns `Components[0].Tags`
+- Otherwise returns the provided tags unchanged
+- This ensures modifiers group with the main weapon damage while preserving explicit damage types
+
+## Public API
+
+### Factory Functions
+
+Create expressions with specific component types:
+
 ```go
-// Dice damage with type tags
-tags := tag.ContainerFromString("damage.fire,damage.elemental")
-expr := expression.New()
-expr.AddDamageDice(2, 6, "Fireball damage", tags)
+// Basic expressions
+FromConstant(value int, source string, components ...Component) Expression
+FromDice(times int, sides int, source string, components ...Component) Expression
+FromD20(source string, components ...Component) Expression
+
+// Damage expressions with tag support
+FromDamageConstant(value int, source string, tags tag.Container, components ...Component) Expression
+FromDamageDice(times int, sides int, source string, tags tag.Container, components ...Component) Expression
+FromDamageResult(res Expression) Expression // Create copy for damage
 ```
 
-### Modifier Components
+### Component Addition Methods
 
-#### Halved Components
+Add components to existing expressions:
+
 ```go
-// Halve specific damage types
-expr := expression.New()
-expr.AddDamageDice(4, 6, "Fire damage", tag.ContainerFromString("damage.fire"))
-expr.HalveDamage(tag.New("damage.fire"))
-// Fire damage is halved
+// Basic components
+AddConstant(value int, source string, components ...Component)
+AddDice(times int, sides int, source string, components ...Component)
+AddD20(source string, components ...Component)
+
+// Damage components with tags
+AddDamageConstant(value int, source string, tags tag.Container, components ...Component)
+AddDamageDice(times int, sides int, source string, tags tag.Container, components ...Component)
+
+// D20 modifiers (only works with D20 components)
+WithAdvantage(source string)
+WithDisadvantage(source string)
 ```
 
-#### Max Dice Components
-```go
-// Maximize dice (typically for critical hits)
-expr := expression.New()
-expr.AddDice(2, 6, "Sword damage")
-expr.MaxDice(tag.New("damage.weapon"))
-// Adds maximum possible dice value
-```
-
-#### Replaced Components
-```go
-// Replace entire expression with constant
-expr := expression.New()
-expr.AddDice(1, 20, "Attack roll")
-expr.ReplaceWith(15, "Reliable talent")
-// Result: 15 (always)
-```
-
-## Advanced Features
-
-### Advantage and Disadvantage
+### Evaluation Methods
 
 ```go
-// D20 advantage/disadvantage system
-expr := expression.New()
-expr.AddD20("Attack roll")
-
-// Apply advantage (roll twice, take higher)
-exprAdv := expr.WithAdvantage()
-
-// Apply disadvantage (roll twice, take lower)
-exprDisadv := expr.WithDisadvantage()
-
-// Advantage and disadvantage cancel out
-exprNormal := expr.WithAdvantage().WithDisadvantage()
+Evaluate() *Expression           // Calculate final result
+EvaluateGroup() *Expression      // Group by tags, then evaluate
+Clone() Expression               // Create deep copy
 ```
 
 ### Critical Hit Detection
 
 ```go
-// Automatic critical detection
-expr := expression.New()
-expr.AddD20("Attack roll")
-result := expr.Evaluate()
+IsCriticalSuccess() bool                    // Check for critical success
+IsCriticalFailure() bool                    // Check for critical failure
+SetCriticalSuccess(source string)          // Force critical success
+SetCriticalFailure(source string)          // Force critical failure
+```
 
-// Check critical state
-if expr.IsCritical == 1 {
-    // Critical success (natural 20)
-} else if expr.IsCritical == -1 {
-    // Critical failure (natural 1)
+### Damage Manipulation
+
+```go
+HalveDamage(tag tag.Tag, source string)    // Apply resistance/half damage
+DoubleDice(source string)                  // Double dice (critical hits)
+MaxDice(source string)                     // Maximize dice (critical hits)
+ReplaceWith(value int, source string)      // Replace with constant value (items or effects that reset calculation)
+HasDamageType(t tag.Tag) bool              // Check for damage type
+```
+
+## Usage Examples
+
+### Basic Attack Roll
+
+```go
+// Standard attack roll with ability modifier
+attack := FromD20("Longsword Attack")
+attack.AddConstant(5, "Strength Modifier")
+attack.AddConstant(3, "Proficiency Bonus")
+
+result := attack.Evaluate()
+fmt.Printf("Attack roll: %d\n", result.Value)
+
+// Check for critical
+if result.IsCriticalSuccess() {
+    fmt.Println("Critical hit!")
 }
 ```
 
-### Expression Grouping
+### Advantage and Disadvantage
 
 ```go
-// Group components by damage type
-expr := expression.New()
-expr.AddDamageDice(2, 6, "Weapon damage", tag.ContainerFromString("damage.slashing"))
-expr.AddDamageConstant(3, "Strength bonus", tag.ContainerFromString("damage.slashing"))
-expr.AddDamageDice(1, 4, "Frost damage", tag.ContainerFromString("damage.cold"))
+// Advantage from spell
+attack := FromD20("Attack with Bless")
+attack.WithAdvantage("Bless Spell")
 
-grouped := expr.EvaluateGrouped()
-// Returns map[string]Expression with damage types as keys
+// Disadvantage from condition
+attack.WithDisadvantage("Poisoned")
+// Advantage and disadvantage cancel out
+
+result := attack.Evaluate()
 ```
 
-### Double Dice (Critical Hits)
+### Damage Calculation
 
 ```go
-// Double dice components for critical hits
-expr := expression.New()
-expr.AddDice(1, 8, "Longsword damage")
-expr.DoubleDice(tag.New("damage.weapon"))
-// Adds duplicate dice components
+// Multi-type damage expression
+damage := FromDamageDice(1, 8, "Longsword", tag.NewContainer(tags.Slashing))
+damage.AddDamageConstant(3, "Strength Modifier", tag.NewContainer(tags.Slashing))
+damage.AddDamageDice(1, 6, "Flame Tongue", tag.NewContainer(tags.Fire))
+
+result := damage.Evaluate()
+fmt.Printf("Total damage: %d\n", result.Value)
 ```
 
-## Evaluation Context
-
-### Custom Rollers
+### Critical Hit Damage
 
 ```go
-// Custom random number generation
+// Standard damage
+damage := FromDamageDice(1, 8, "Longsword", tag.NewContainer(tags.Slashing))
+damage.AddDamageConstant(3, "Strength Modifier", tag.NewContainer(tags.Slashing))
+
+// Apply critical hit (double dice only)
+damage.DoubleDice("Critical Hit")
+
+result := damage.Evaluate()
+```
+
+### Damage Resistance
+
+```go
+// Spell damage
+spell := FromDamageDice(8, 6, "Fireball", tag.NewContainer(tags.Fire))
+
+// Apply fire resistance (half damage)
+spell.HalveDamage(tags.Fire, "Fire Resistance")
+
+result := spell.Evaluate()
+```
+
+### Damage Grouping
+
+```go
+// Complex multi-type damage
+damage := FromDamageDice(1, 8, "Weapon", tag.NewContainer(tags.Slashing))
+damage.AddDamageConstant(3, "STR Mod", tag.NewContainer(tags.Slashing))
+damage.AddDamageDice(1, 6, "Poison", tag.NewContainer(tags.Poison))
+damage.AddDamageDice(1, 4, "Cold", tag.NewContainer(tags.Cold))
+
+// Group by damage type
+grouped := damage.EvaluateGroup()
+// Results in separate damage constants for each type
+```
+
+## Advanced Features
+
+### Custom Dice Rollers
+
+```go
 type TestRoller struct {
     values []int
     index  int
 }
 
 func (r *TestRoller) Roll(sides int) int {
-    value := r.values[r.index]
+    value := r.values[r.index%len(r.values)]
     r.index++
     return value
 }
 
-expr := expression.FromD20("Attack roll")
-expr.SetRoller(&TestRoller{values: []int{20}}) // Always roll 20
-```
-
-### Evaluation Process
-
-```go
-// Evaluation creates complete audit trail
-expr := expression.New()
-expr.AddDice(2, 6, "Damage roll")
-expr.AddConstant(3, "Strength bonus")
-
+// Use custom roller for testing
+expr := FromDice(2, 6, "Test Roll")
+expr.Rng = &TestRoller{values: []int{6, 6}} // Always max
 result := expr.Evaluate()
-// result.Value contains total
-// result.Components contains detailed breakdown
 ```
 
-## Factory Functions
-
-### Expression Creation
+### Audit Trail Access
 
 ```go
-// Factory functions for common patterns
-attackRoll := expression.FromD20("Attack roll")
-damage := expression.FromDice(1, 8, "Sword damage")
-constant := expression.FromConstant(5, "Proficiency bonus")
+damage := FromDamageDice(2, 6, "Fireball", tag.NewContainer(tags.Fire))
+result := damage.Evaluate()
 
-// Damage with tags
-fireDamage := expression.FromDamageDice(3, 6, "Fireball", tag.ContainerFromString("damage.fire"))
-```
-
-### Component Factories
-
-```go
-// Direct component creation
-constantComp := expression.NewConstantComponent(5, "Bonus")
-diceComp := expression.NewDiceComponent(2, 6, "Damage")
-d20Comp := expression.NewD20Component("Attack")
-```
-
-## Usage Patterns
-
-### Attack Roll Calculation
-
-```go
-// Complete attack roll with proficiency and modifiers
-attack := expression.New()
-attack.AddD20("Attack roll")
-attack.AddConstant(5, "Proficiency bonus")
-attack.AddConstant(3, "Strength modifier")
-
-// With advantage
-attackAdv := attack.WithAdvantage()
-
-result := attackAdv.Evaluate()
-if result.IsCritical == 1 {
-    // Critical hit!
+// Access individual components
+for i, comp := range result.Components {
+    fmt.Printf("Component %d: %s = %d\n", i, comp.Source, comp.Value)
+    if len(comp.Values) > 0 {
+        fmt.Printf("  Individual rolls: %v\n", comp.Values)
+    }
 }
 ```
 
-### Damage Calculation
+### Complex Damage Scenarios
 
 ```go
-// Weapon damage with multiple types
-damage := expression.New()
-damage.AddDamageDice(1, 8, "Longsword", tag.ContainerFromString("damage.slashing"))
-damage.AddConstant(3, "Strength modifier", tag.ContainerFromString("damage.slashing"))
-damage.AddDamageDice(1, 6, "Frost enchantment", tag.ContainerFromString("damage.cold"))
+// Sneak attack with multiple damage types
+attack := FromDamageDice(1, 6, "Shortbow", tag.NewContainer(tags.Piercing))
+attack.AddDamageConstant(4, "DEX Modifier", tag.NewContainer(tags.Piercing))
+attack.AddDamageDice(3, 6, "Sneak Attack", tag.NewContainer(tags.Piercing))
+attack.AddDamageDice(1, 6, "Poison Arrow", tag.NewContainer(tags.Poison))
 
-// For critical hits
-critDamage := damage.Clone()
-critDamage.DoubleDice(tag.New("damage.weapon"))
-```
-
-### Saving Throw with Modifiers
-
-```go
-// Saving throw with various modifiers
-save := expression.New()
-save.AddD20("Constitution save")
-save.AddConstant(2, "Constitution modifier")
-save.AddConstant(5, "Proficiency bonus")
-
-// Apply disadvantage if poisoned
-if isPoisoned {
-    save = save.WithDisadvantage()
-}
-```
-
-### Spell Damage with Resistance
-
-```go
-// Spell damage with potential resistance
-spell := expression.New()
-spell.AddDamageDice(8, 6, "Fireball", tag.ContainerFromString("damage.fire"))
-
-// Apply resistance (half damage)
-if hasFireResistance {
-    spell.HalveDamage(tag.New("damage.fire"))
-}
-```
-
-## Audit Trail System
-
-### Component Hierarchy
-
-```go
-// Nested component structure maintains full audit trail
-expr := expression.New()
-expr.AddDice(2, 6, "Base damage")
-expr.AddConstant(3, "Strength bonus")
-expr.MaxDice(tag.New("damage.weapon")) // Critical hit
-
-result := expr.Evaluate()
-// result.Components contains:
-// - Original 2d6 component with individual roll values
-// - Strength bonus component
-// - Max dice component showing maximum added
-```
-
-### Evaluation Result
-
-```go
-type EvaluationResult struct {
-    Value      int         // Total result
-    Components []Component // Detailed breakdown
+// Apply resistances selectively
+if hasResistance {
+    attack.HalveDamage(tags.Poison, "Poison Resistance")
 }
 
-// Each component tracks:
-// - Source description
-// - Individual values (for dice)
-// - Sub-components for complex calculations
-// - Tags for rule matching
+result := attack.Evaluate()
 ```
 
-## Performance Characteristics
+## Component Type Matching
 
-- **Evaluation**: O(n) where n is number of components
-- **Cloning**: O(n) deep copy of all components
-- **Grouping**: O(n) with tag-based sorting
-- **Memory**: Minimal overhead with component reuse
+The system uses hierarchical type matching:
+
+```go
+// Type hierarchy
+component.Type.Match(Dice)           // Matches: Dice, D20, DamageDice
+component.Type.Match(D20)            // Matches: D20 only
+component.Type.Match(Constant)       // Matches: Constant, DamageConstant
+```
+
+This enables targeted operations:
+
+```go
+// DoubleDice only affects dice components
+damage.DoubleDice("Critical")  // Doubles Dice, D20, DamageDice
+
+// HalveDamage works on any component with matching tags
+damage.HalveDamage(tags.Fire, "Resistance")  // Affects any fire damage
+```
 
 ## Design Rationale
 
-The Expression System implements several key design decisions:
+### Type Safety with Flexibility
+- **Tag-based typing**: Compile-time safety with runtime flexibility
+- **Hierarchical types**: Specialized behavior while maintaining compatibility
+- **No interface overhead**: Direct type checking for performance
 
-1. **Deferred Evaluation**: Expressions are formulas until explicitly evaluated
-2. **Complete Audit Trail**: Every calculation step is preserved
-3. **Strategy Pattern**: ComponentKind interface enables extensible behaviors
-4. **Immutable Results**: Evaluation creates new data, doesn't modify expressions
-5. **Tag Integration**: Deep integration with tag system for rule matching
-6. **Composable Operations**: Methods return new expressions for chaining
+### Mutable State for Game Mechanics
+- **In-place modification**: Natural for building complex expressions
+- **Builder pattern**: Chainable operations for readability
+- **Deep cloning**: Safe copying when needed
 
-This design enables complex D&D calculations while maintaining full traceability and extensibility.
+### Complete Audit Trails
+- **Nested components**: Tracks all calculation steps
+- **Source tracking**: Human-readable descriptions
+- **Value preservation**: Individual dice rolls maintained
+
+### D&D-Specific Optimizations
+- **Advantage/disadvantage**: Built-in dual-roll mechanics
+- **Critical hit support**: Automatic detection and manual setting
+- **Damage type grouping**: Handles resistance/vulnerability correctly
+- **Flexible tagging**: Supports complex rule interactions
+
+## Performance Characteristics
+
+- **Evaluation**: O(n) where n is total components (including nested)
+- **Cloning**: O(n) deep copy with proper slice handling
+- **Grouping**: O(n²) worst case for tag comparison
+- **Memory**: Minimal overhead, components reused efficiently
+
+## When to Use What
+
+### Expression Types
+- **`FromD20()`**: Attack rolls, saves, ability checks
+- **`FromDice()`**: Simple damage, random tables
+- **`FromConstant()`**: Fixed bonuses, modifiers
+- **`FromDamageDice/Constant()`**: Any damage that needs type tracking
+
+### Modification Methods
+- **`WithAdvantage/Disadvantage()`**: Only for D20 components
+- **`DoubleDice()`**: Critical hits (affects dice only)
+- **`MaxDice()`**: Alternative critical hit mechanic
+- **`HalveDamage()`**: Resistance, vulnerabilities
+- **`ReplaceWith()`**: Special abilities that override rolls
+
+### Evaluation Methods
+- **`Evaluate()`**: Standard calculation
+- **`EvaluateGroup()`**: When damage types need separation
+
+This system provides the perfect balance of type safety, performance, and flexibility needed for D&D 2024 mechanics while maintaining complete calculation transparency.

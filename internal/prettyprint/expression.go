@@ -22,26 +22,26 @@ func printValue(value int, first bool) string {
 	return fmt.Sprintf("- %d", mathi.Abs(value))
 }
 
-func formatDiceRolls(term expression.Term) string {
-	if len(term.Values) <= 1 {
+func formatDiceRolls(component expression.Component) string {
+	if len(component.Values) <= 1 {
 		return ""
 	}
 
-	rolls := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(term.Values)), ", "), "[]")
-	formula := fmt.Sprintf("%dd%d", term.Times, term.Sides)
+	rolls := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(component.Values)), ", "), "[]")
+	formula := fmt.Sprintf("%dd%d", component.Times, component.Sides)
 	return fmt.Sprintf(" (%s: %s)", formula, rolls)
 }
 
-func formatDice(term expression.Term) string {
-	if !strings.Contains(string(term.Type), "dice") {
+func formatDice(component expression.Component) string {
+	if !component.Type.Match(expression.Dice) {
 		return ""
 	}
 
-	if len(term.Values) <= 1 {
-		return fmt.Sprintf(" (%dd%d)", term.Times, term.Sides)
+	if len(component.Values) <= 1 {
+		return fmt.Sprintf(" (%dd%d)", component.Times, component.Sides)
 	}
 
-	return formatDiceRolls(term)
+	return formatDiceRolls(component)
 }
 
 func formatBranch(indent string, last bool) string {
@@ -51,9 +51,9 @@ func formatBranch(indent string, last bool) string {
 	return indent + TreeContinue
 }
 
-func formatAdvantageDisadvantage(term expression.Term, indent string, last bool) []string {
-	advantages := term.HasAdvantage
-	disadvantages := term.HasDisadvantage
+func formatAdvantageDisadvantage(component expression.Component, indent string, last bool) []string {
+	advantages := component.HasAdvantage
+	disadvantages := component.HasDisadvantage
 
 	if len(advantages) == 0 && len(disadvantages) == 0 {
 		return nil
@@ -86,30 +86,30 @@ func formatAdvantageDisadvantage(term expression.Term, indent string, last bool)
 	return formatted
 }
 
-func formatTags(term expression.Term) string {
-	if term.Tags.IsEmpty() {
+func formatTags(component expression.Component) string {
+	if component.Tags.IsEmpty() {
 		return ""
 	}
-	termTags := make([]string, len(term.Tags.AsStrings()))
-	for i, t := range term.Tags.AsStrings() {
-		termTags[i] = tags.ToReadable(tag.FromString(t))
+	componentTags := make([]string, len(component.Tags.AsStrings()))
+	for i, t := range component.Tags.AsStrings() {
+		componentTags[i] = tags.ToReadable(tag.FromString(t))
 	}
-	return fmt.Sprintf(" (%s)", strings.Join(termTags, ", "))
+	return fmt.Sprintf(" (%s)", strings.Join(componentTags, ", "))
 }
 
-func buildTermSource(term expression.Term, indent string, last bool) string {
+func buildComponentSource(component expression.Component, indent string, last bool) string {
 	source := strings.Builder{}
-	source.WriteString(term.Source)
+	source.WriteString(component.Source)
 
-	if strings.Contains(string(term.Type), "dice") {
-		advDisadv := formatAdvantageDisadvantage(term, indent, last)
+	if component.Type.Match(expression.Dice) {
+		advDisadv := formatAdvantageDisadvantage(component, indent, last)
 		if len(advDisadv) > 0 {
 			source.WriteString(strings.Join(advDisadv, ""))
 		}
 	}
 
-	if !term.Tags.IsEmpty() && len(indent) == 0 {
-		source.WriteString(formatTags(term))
+	if !component.Tags.IsEmpty() && len(indent) == 0 {
+		source.WriteString(formatTags(component))
 	}
 
 	return source.String()
@@ -122,34 +122,34 @@ func getChildIndent(indent string, last bool) string {
 	return indent + TreeContinue
 }
 
-func printTerm(term expression.Term, indent string, last, first bool) []string {
+func printComponent(component expression.Component, indent string, last, first bool) []string {
 	branch := TreeBranch
 	if last {
 		branch = TreeBranchEnd
 	}
 
 	result := make([]string, 0)
-	value := printValue(term.Value, first)
-	source := buildTermSource(term, indent, last)
+	value := printValue(component.Value, first)
+	source := buildComponentSource(component, indent, last)
 
 	// Build the main line
-	result = append(result, fmt.Sprintf("%s%s%s%s %s", indent, branch, value, formatDice(term), source))
+	result = append(result, fmt.Sprintf("%s%s%s%s %s", indent, branch, value, formatDice(component), source))
 
-	// Add child terms if any
-	if len(term.Terms) > 0 {
+	// Add child components if any
+	if len(component.Components) > 0 {
 		childIndent := getChildIndent(indent, last)
-		result = append(result, printTerms(term.Terms, childIndent)...)
+		result = append(result, printComponents(component.Components, childIndent)...)
 	}
 
 	return result
 }
 
-func printTerms(terms []expression.Term, indent string) []string {
+func printComponents(components []expression.Component, indent string) []string {
 	lines := make([]string, 0)
-	for i, term := range terms {
-		last := i == len(terms)-1
+	for i, component := range components {
+		last := i == len(components)-1
 		first := i == 0
-		lines = append(lines, printTerm(term, indent, last, first)...)
+		lines = append(lines, printComponent(component, indent, last, first)...)
 	}
 
 	return lines
@@ -164,9 +164,9 @@ func printExpression(exp *expression.Expression, start ...bool) string {
 
 	tb.AddRawLine(fmt.Sprintf("%s%d", space, exp.Value))
 
-	// Add terms using the existing logic
-	termLines := printTerms(exp.Terms, "")
-	for _, line := range termLines {
+	// Add components using the existing logic
+	componentLines := printComponents(exp.Components, "")
+	for _, line := range componentLines {
 		tb.AddRawLine(line)
 	}
 
