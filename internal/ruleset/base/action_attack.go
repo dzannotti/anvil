@@ -6,6 +6,7 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/core/shapes"
 	"anvil/internal/core/tags"
+	"anvil/internal/expression"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
 
@@ -14,27 +15,30 @@ import (
 
 type AttackAction struct {
 	Action
-	reach int
+	reach        int
+	damageSource core.DamageSource
 }
 
 func NewAttackAction(
 	owner *core.Actor,
 	name string,
-	ds []core.DamageSource,
+	ds core.DamageSource,
 	reach int,
 	tc tag.Container,
 ) *AttackAction {
 	a := &AttackAction{
-		Action: Action{
-			owner:     owner,
-			archetype: "attack",
-			id:        uuid.New().String(),
-			name:      name,
-			cost:      map[tag.Tag]int{tags.Action: 1},
-			tags:      tc,
-			damage:    ds,
-		},
-		reach: reach,
+		Action: MakeAction(
+			owner,
+			"attack",
+			uuid.New().String(),
+			name,
+			tc,
+			map[tag.Tag]int{tags.Action: 1},
+			0,
+			reach,
+		),
+		reach:        reach,
+		damageSource: ds,
 	}
 	a.tags.Add(tag.NewContainer(tags.Attack))
 	return a
@@ -50,7 +54,7 @@ func (a AttackAction) Perform(pos []grid.Position, commitCost bool) {
 	}
 	result := a.owner.AttackRoll(target, a.tags)
 	if result.Success {
-		dmg := a.owner.DamageRoll(a.damage, result.Critical)
+		dmg := a.owner.DamageRoll(a, result.Critical)
 		target.TakeDamage(*dmg)
 	}
 }
@@ -86,4 +90,18 @@ func (a AttackAction) ValidPositions(from grid.Position) []grid.Position {
 
 func (a AttackAction) AffectedPositions(tar []grid.Position) []grid.Position {
 	return []grid.Position{tar[0]}
+}
+
+func (a AttackAction) Damage() *expression.Expression {
+	return a.damageSource.Damage()
+}
+
+func (a AttackAction) Tags() *tag.Container {
+	combined := tag.NewContainerFromContainer(a.tags)
+	combined.Add(*a.damageSource.Tags())
+	return &combined
+}
+
+func (a AttackAction) AverageDamage() int {
+	return a.Damage().ExpectedValue()
 }

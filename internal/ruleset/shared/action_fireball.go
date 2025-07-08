@@ -4,6 +4,7 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/core/shapes"
 	"anvil/internal/core/tags"
+	"anvil/internal/expression"
 	"anvil/internal/grid"
 	"anvil/internal/ruleset/base"
 	"anvil/internal/tag"
@@ -28,7 +29,6 @@ func NewFireballAction(owner *core.Actor) FireballAction {
 			cost,
 			30,
 			4,
-			[]core.DamageSource{{Times: 8, Sides: 6, Source: "Fireball", Tags: tag.NewContainer(tags.Fire)}},
 		),
 	}
 	a.Tags().Add(tag.NewContainer(tags.Attack))
@@ -43,7 +43,7 @@ func (a FireballAction) Perform(pos []grid.Position, commitCost bool) {
 	if commitCost {
 		a.Commit()
 	}
-	dmg := a.Owner().DamageRoll(a.Damage(), false)
+	dmg := a.Owner().DamageRoll(a, false)
 	for _, t := range targets {
 		currDmg := dmg.Clone()
 		save := t.SaveThrow(tags.Dexterity, a.Owner().SpellSaveDC())
@@ -99,4 +99,18 @@ func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {
 func (a FireballAction) AffectedPositions(tar []grid.Position) []grid.Position {
 	valid := a.Owner().World.FloodFill(tar[0], a.Reach())
 	return valid
+}
+
+func (a FireballAction) Damage() *expression.Expression {
+	expr := expression.FromDamageDice(8, 6, "Fireball", tag.NewContainer(tags.Fire))
+	return &expr
+}
+
+func (a FireballAction) Tags() *tag.Container {
+	fireTags := tag.NewContainer(tags.Fire)
+	return &fireTags
+}
+
+func (a FireballAction) AverageDamage() int {
+	return a.Damage().ExpectedValue()
 }

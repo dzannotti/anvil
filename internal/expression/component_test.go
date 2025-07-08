@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"anvil/internal/tag"
 )
 
 func TestComponent_ShouldModifyRoll(t *testing.T) {
@@ -114,6 +116,75 @@ func TestComponent_Clone(t *testing.T) {
 			assert.NotEqual(t, tt.originalComponent.Values[0], clone.Values[0])
 			assert.NotEqual(t, tt.originalComponent.HasAdvantage[0], clone.HasAdvantage[0])
 			assert.NotEqual(t, tt.originalComponent.HasDisadvantage[0], clone.HasDisadvantage[0])
+		})
+	}
+}
+
+func TestComponent_ExpectedValue(t *testing.T) {
+	tests := []struct {
+		name      string
+		component Component
+		expected  int
+	}{
+		{
+			name: "constant value",
+			component: Component{
+				Type:  Constant,
+				Value: 5,
+			},
+			expected: 5,
+		},
+		{
+			name: "damage constant value",
+			component: Component{
+				Type:  DamageConstant,
+				Value: 3,
+			},
+			expected: 3,
+		},
+		{
+			name: "single d6 dice",
+			component: Component{
+				Type:  Dice,
+				Times: 1,
+				Sides: 6,
+			},
+			expected: 3, // 1 * (6+1) / 2 = 3
+		},
+		{
+			name: "2d8 dice",
+			component: Component{
+				Type:  DamageDice,
+				Times: 2,
+				Sides: 8,
+			},
+			expected: 9, // 2 * (8+1) / 2 = 9
+		},
+		{
+			name: "d20 dice",
+			component: Component{
+				Type:  D20,
+				Times: 1,
+				Sides: 20,
+			},
+			expected: 10, // 1 * (20+1) / 2 = 10 (rounded down from 10.5)
+		},
+		{
+			name: "unknown type",
+			component: Component{
+				Type:  tag.FromString("unknown"),
+				Value: 100,
+				Times: 5,
+				Sides: 10,
+			},
+			expected: 100, // Returns c.Value for non-dice types
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.component.ExpectedValue()
+			assert.Equal(t, tt.expected, result)
 		})
 	}
 }

@@ -1,10 +1,12 @@
 package core
 
-import "anvil/internal/tag"
+import (
+	"anvil/internal/expression"
+	"anvil/internal/tag"
+)
 
-type DamageSource struct {
-	Times  int
-	Sides  int
-	Source string
-	Tags   tag.Container
+type DamageSource interface {
+	Name() string
+	Damage() *expression.Expression
+	Tags() *tag.Container
 }
