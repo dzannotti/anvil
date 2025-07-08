@@ -18,7 +18,7 @@ func (e *Encounter) Start() {
 		a.Encounter = e
 	}
 	e.InitiativeOrder = slices.Clone(e.Actors)
-	e.Dispatcher.Start(EncounterType, EncounterEvent{Actors: e.Actors, World: e.World})
+	e.Dispatcher.Begin(EncounterType, EncounterEvent{Actors: e.Actors, World: e.World})
 	e.Round = -1
 	e.startRound()
 	e.startTurn()
@@ -48,7 +48,7 @@ func (e *Encounter) EndTurn() {
 
 func (e *Encounter) startRound() {
 	e.Round++
-	e.Dispatcher.Start(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
+	e.Dispatcher.Begin(RoundType, RoundEvent{Round: e.Round, Actors: e.Actors})
 	e.Turn = 0
 }
 
@@ -57,6 +57,6 @@ func (e *Encounter) endRound() {
 }
 
 func (e *Encounter) startTurn() {
-	e.Dispatcher.Start(TurnType, TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
+	e.Dispatcher.Begin(TurnType, TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
 	e.ActiveActor().StartTurn()
 }

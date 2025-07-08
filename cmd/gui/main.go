@@ -84,7 +84,7 @@ func client(_ net.Conn) {
 	overhead := ui.OverheadManager{}
 
 	dispatcher := eventbus.Dispatcher{}
-	dispatcher.Subscribe(func(msg eventbus.Event) {
+	dispatcher.SubscribeAll(func(msg eventbus.Event) {
 		prettyprint.Print(&log, msg)
 		if msg.End {
 			return

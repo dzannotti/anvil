@@ -43,7 +43,7 @@ func NewAttackOfOpportunityEffect() *core.Effect {
 			if baseAttack == nil {
 				continue
 			}
-			s.Source.Dispatcher.Start(core.EffectType, core.EffectEvent{Source: s.Source, Effect: fx})
+			s.Source.Dispatcher.Begin(core.EffectType, core.EffectEvent{Source: s.Source, Effect: fx})
 			other.ConsumeResource(tags.Reaction, 1)
 			baseAttack.Perform([]grid.Position{s.Source.Position}, false)
 			s.Source.Dispatcher.End()

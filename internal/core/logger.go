@@ -1,7 +1,7 @@
 package core
 
 type EventDispatcher interface {
-	Start(k string, e any)
+	Begin(k string, e any)
 	End()
-	Add(k string, e any)
+	Emit(k string, e any)
 }

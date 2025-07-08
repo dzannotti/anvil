@@ -13,7 +13,7 @@ import (
 
 func main() {
 	dispatcher := eventbus.Dispatcher{}
-	dispatcher.Subscribe(func(msg eventbus.Event) {
+	dispatcher.SubscribeAll(func(msg eventbus.Event) {
 		prettyprint.Print(os.Stdout, msg)
 	})
 	gameState := demo.New(&dispatcher)

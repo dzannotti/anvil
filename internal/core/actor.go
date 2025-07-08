@@ -63,7 +63,7 @@ func (a *Actor) AddProficiency(t tag.Tag) {
 func (a *Actor) AddCondition(t tag.Tag, src *Effect) {
 	a.Conditions.Add(t, src)
 	a.Evaluate(ConditionAdded, &ConditionChangedState{Source: a, From: src, Condition: t})
-	a.Dispatcher.Add(ConditionChangedType, ConditionChangedEvent{Source: a, From: src, Condition: t, Added: true})
+	a.Dispatcher.Emit(ConditionChangedType, ConditionChangedEvent{Source: a, From: src, Condition: t, Added: true})
 }
 
 func (a *Actor) RemoveCondition(t tag.Tag, src *Effect) {
@@ -72,7 +72,7 @@ func (a *Actor) RemoveCondition(t tag.Tag, src *Effect) {
 		return
 	}
 	a.Evaluate(ConditionRemoved, &ConditionChangedState{Source: a, From: src, Condition: t})
-	a.Dispatcher.Add(ConditionChangedType, ConditionChangedEvent{Source: a, From: src, Condition: t, Added: false})
+	a.Dispatcher.Emit(ConditionChangedType, ConditionChangedEvent{Source: a, From: src, Condition: t, Added: false})
 }
 
 func (a *Actor) Equip(item Item) {
@@ -81,13 +81,13 @@ func (a *Actor) Equip(item Item) {
 }
 
 func (a *Actor) Die() {
-	a.Dispatcher.Start(DeathType, DeathEvent{Actor: a})
+	a.Dispatcher.Begin(DeathType, DeathEvent{Actor: a})
 	defer a.Dispatcher.End()
 	a.AddCondition(tags.Dead, &Effect{Name: "Dead"})
-	a.Dispatcher.Add(ConfirmType, ConfirmEvent{Confirm: true})
+	a.Dispatcher.Emit(ConfirmType, ConfirmEvent{Confirm: true})
 }
 
 func (a *Actor) ConsumeResource(t tag.Tag, amount int) {
 	a.Resources.Consume(t, amount)
-	a.Dispatcher.Add(SpendResourceType, SpendResourceEvent{Source: a, Resource: t, Amount: amount})
+	a.Dispatcher.Emit(SpendResourceType, SpendResourceEvent{Source: a, Resource: t, Amount: amount})
 }

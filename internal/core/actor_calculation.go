@@ -43,7 +43,7 @@ func (a *Actor) Proficiency(tags tag.Container) int {
 func (a *Actor) ModifyAttribute(t tag.Tag, val int, reason string) {
 	if t.MatchExact(tags.HitPoints) {
 		old := a.HitPoints
-		a.Dispatcher.Start(
+		a.Dispatcher.Begin(
 			AttributeChangedType,
 			AttributeChangeEvent{Source: a, Attribute: t, OldValue: old, Value: old + val, Reason: reason},
 		)
@@ -58,7 +58,7 @@ func (a *Actor) ModifyAttribute(t tag.Tag, val int, reason string) {
 func (a *Actor) SaveThrow(t tag.Tag, dc int) CheckResult {
 	expr := expression.FromD20("Base")
 	before := BeforeSavingThrowState{Expression: &expr, Source: a, Attribute: t, DifficultyClass: dc}
-	a.Dispatcher.Start(SavingThrowType, SavingThrowEvent{Expression: &expr, Source: a, Attribute: t, DifficultyClass: dc})
+	a.Dispatcher.Begin(SavingThrowType, SavingThrowEvent{Expression: &expr, Source: a, Attribute: t, DifficultyClass: dc})
 	defer a.Dispatcher.End()
 	a.Evaluate(BeforeSavingThrow, &before)
 	expr.Evaluate()
@@ -73,8 +73,8 @@ func (a *Actor) SaveThrow(t tag.Tag, dc int) CheckResult {
 	if after.Result.IsCriticalFailure() {
 		crit = true
 	}
-	a.Dispatcher.Add(ExpressionResultType, ExpressionResultEvent{Expression: &expr})
-	a.Dispatcher.Add(
+	a.Dispatcher.Emit(ExpressionResultType, ExpressionResultEvent{Expression: &expr})
+	a.Dispatcher.Emit(
 		SavingThrowResultType,
 		SavingThrowResultEvent{Actor: a, Value: expr.Value, Against: dc, Critical: crit, Success: ok},
 	)
@@ -88,7 +88,7 @@ func (a *Actor) TakeDamage(damage expression.Expression) {
 	res := expr.Evaluate()
 	actual := a.HitPoints - mathi.Clamp(a.HitPoints-res.Value, 0, math.MaxInt)
 	a.HitPoints = mathi.Clamp(a.HitPoints-actual, 0, math.MaxInt)
-	a.Dispatcher.Start(TakeDamageType, TakeDamageEvent{Target: a, Damage: &expr})
+	a.Dispatcher.Begin(TakeDamageType, TakeDamageEvent{Target: a, Damage: &expr})
 	after := AfterTakeDamageState{Result: res, Source: a, ActualDamage: actual}
 	a.Effects.Evaluate(AfterTakeDamage, &after)
 	a.Dispatcher.End()
@@ -96,17 +96,17 @@ func (a *Actor) TakeDamage(damage expression.Expression) {
 
 func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 	expr := expression.FromD20("Base")
-	a.Dispatcher.Start(AttackRollType, AttackRollEvent{Source: a, Target: target})
+	a.Dispatcher.Begin(AttackRollType, AttackRollEvent{Source: a, Target: target})
 	defer a.Dispatcher.End()
 	before := BeforeAttackRollState{Source: a, Target: target, Expression: &expr, Tags: tc}
 	a.Effects.Evaluate(BeforeAttackRoll, &before)
 	expr.Evaluate()
 	after := AfterAttackRollState{Source: a, Target: target, Result: &expr, Tags: tc}
 	a.Effects.Evaluate(AfterAttackRoll, &after)
-	a.Dispatcher.Add(ExpressionResultType, ExpressionResultEvent{Expression: &expr})
+	a.Dispatcher.Emit(ExpressionResultType, ExpressionResultEvent{Expression: &expr})
 	value := after.Result.Value
 	targetAC := target.ArmorClass()
-	a.Dispatcher.Add(AttributeCalculationType, AttributeCalculationEvent{Attribute: tags.ArmorClass, Expression: targetAC})
+	a.Dispatcher.Emit(AttributeCalculationType, AttributeCalculationEvent{Attribute: tags.ArmorClass, Expression: targetAC})
 	ok := value >= targetAC.Value
 	crit := false
 	if after.Result.IsCriticalSuccess() {
@@ -117,7 +117,7 @@ func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 		crit = true
 		ok = false
 	}
-	a.Dispatcher.Add(
+	a.Dispatcher.Emit(
 		CheckResultType,
 		CheckResultEvent{Actor: a, Value: value, Against: targetAC.Value, Critical: crit, Success: ok, Tags: tc},
 	)
@@ -132,19 +132,19 @@ func (a *Actor) DamageRoll(ds []DamageSource, crit bool) *expression.Expression 
 	if crit {
 		expr.SetCriticalSuccess("Attack Roll")
 	}
-	a.Dispatcher.Start(DamageRollType, DamageRollEvent{Source: a, DamageSource: ds})
+	a.Dispatcher.Begin(DamageRollType, DamageRollEvent{Source: a, DamageSource: ds})
 	defer a.Dispatcher.End()
 	before := BeforeDamageRollState{Source: a, Expression: &expr}
 	a.Effects.Evaluate(BeforeDamageRoll, &before)
 	res := expr.EvaluateGroup()
-	a.Dispatcher.Add(ExpressionResultType, ExpressionResultEvent{Expression: res})
+	a.Dispatcher.Emit(ExpressionResultType, ExpressionResultEvent{Expression: res})
 	after := AfterDamageRollState{Source: a, Result: res}
 	a.Effects.Evaluate(AfterDamageRoll, &after)
 	return res
 }
 
 func (a *Actor) Move(to grid.Position, action Action) {
-	a.Dispatcher.Start(MoveStepType, MoveStepEvent{World: a.World, Source: a, From: a.Position, To: to})
+	a.Dispatcher.Begin(MoveStepType, MoveStepEvent{World: a.World, Source: a, From: a.Position, To: to})
 	defer a.Dispatcher.End()
 	before := MoveState{
 		Source:  a,
@@ -154,7 +154,7 @@ func (a *Actor) Move(to grid.Position, action Action) {
 		Action:  action,
 	}
 	a.Effects.Evaluate(BeforeMoveStep, &before)
-	a.Dispatcher.Add(ConfirmType, ConfirmEvent{Actor: a, Confirm: before.CanMove})
+	a.Dispatcher.Emit(ConfirmType, ConfirmEvent{Actor: a, Confirm: before.CanMove})
 	if before.CanMove {
 		a.World.RemoveOccupant(a.Position, a)
 		a.Position = to
