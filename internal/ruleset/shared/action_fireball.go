@@ -7,6 +7,8 @@ import (
 	"anvil/internal/grid"
 	"anvil/internal/ruleset/base"
 	"anvil/internal/tag"
+
+	"github.com/google/uuid"
 )
 
 type FireballAction struct {
@@ -19,6 +21,8 @@ func NewFireballAction(owner *core.Actor) FireballAction {
 	a := FireballAction{
 		Action: base.MakeAction(
 			owner,
+			"fireball",
+			uuid.New().String(),
 			"Fireball",
 			tc,
 			cost,

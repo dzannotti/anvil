@@ -26,9 +26,11 @@ func (h *Handlers) get() Handlers {
 }
 
 type Effect struct {
-	Name     string
-	Handlers Handlers
-	Priority Priority
+	Archetype string
+	ID        string
+	Name      string
+	Handlers  Handlers
+	Priority  Priority
 }
 
 func (e *Effect) Evaluate(state any) {

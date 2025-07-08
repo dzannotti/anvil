@@ -9,10 +9,20 @@ import (
 )
 
 type Weapon struct {
-	name   string
-	damage []core.DamageSource
-	tags   tag.Container
-	reach  int
+	archetype string
+	id        string
+	name      string
+	damage    []core.DamageSource
+	tags      tag.Container
+	reach     int
+}
+
+func (w Weapon) Archetype() string {
+	return w.archetype
+}
+
+func (w Weapon) ID() string {
+	return w.id
 }
 
 func (w Weapon) Name() string {

@@ -4,18 +4,30 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/tag"
+
+	"github.com/google/uuid"
 )
 
-type ChainMail struct{ tags tag.Container }
+type ChainMail struct {
+	archetype string
+	id        string
+	tags      tag.Container
+}
 
 func newChainMailEffect() *core.Effect {
 	// TODO: implement item requirements for proficiencies (and maluses)
-	fx := &core.Effect{Name: "ChainMail", Priority: core.PriorityBaseOverride}
+	fx := &core.Effect{
+		Archetype: "chain-mail",
+		ID:        uuid.New().String(),
+		Name:      "ChainMail",
+		Priority:  core.PriorityBaseOverride,
+	}
 
 	fx.On(func(s *core.AttributeCalculation) {
 		if !s.Attribute.MatchExact(tags.ArmorClass) {
 			return
 		}
+
 		s.Expression.ReplaceWith(16, "Chain Mail")
 	})
 
@@ -23,7 +35,19 @@ func newChainMailEffect() *core.Effect {
 }
 
 func NewChainMail() *ChainMail {
-	return &ChainMail{tags: tag.NewContainer(tags.MediumArmor)}
+	return &ChainMail{
+		archetype: "chain-mail",
+		id:        uuid.New().String(),
+		tags:      tag.NewContainer(tags.MediumArmor),
+	}
+}
+
+func (c *ChainMail) Archetype() string {
+	return c.archetype
+}
+
+func (c *ChainMail) ID() string {
+	return c.id
 }
 
 func (c *ChainMail) Name() string {
