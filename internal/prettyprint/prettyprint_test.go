@@ -25,17 +25,17 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 	}{
 		{
 			name:      "confirm event",
-			eventType: core.ConfirmType,
+			eventType: eventbus.EventType(core.ConfirmEvent{}),
 			eventData: core.ConfirmEvent{Confirm: true},
 		},
 		{
 			name:      "target event",
-			eventType: core.TargetType,
+			eventType: eventbus.EventType(core.TargetEvent{}),
 			eventData: core.TargetEvent{Target: []*core.Actor{sampleActor}},
 		},
 		{
 			name:      "check result event",
-			eventType: core.CheckResultType,
+			eventType: eventbus.EventType(core.CheckResultEvent{}),
 			eventData: core.CheckResultEvent{
 				Success:  true,
 				Critical: false,
@@ -45,7 +45,7 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 		},
 		{
 			name:      "saving throw result event",
-			eventType: core.SavingThrowResultType,
+			eventType: eventbus.EventType(core.SavingThrowResultEvent{}),
 			eventData: core.SavingThrowResultEvent{
 				Success:  false,
 				Critical: true,
@@ -55,7 +55,7 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 		},
 		{
 			name:      "attack roll event",
-			eventType: core.AttackRollType,
+			eventType: eventbus.EventType(core.AttackRollEvent{}),
 			eventData: core.AttackRollEvent{
 				Source: sampleActor,
 				Target: sampleActor,
@@ -63,17 +63,17 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 		},
 		{
 			name:      "damage roll event",
-			eventType: core.DamageRollType,
+			eventType: eventbus.EventType(core.DamageRollEvent{}),
 			eventData: core.DamageRollEvent{Source: sampleActor},
 		},
 		{
 			name:      "effect event",
-			eventType: core.EffectType,
+			eventType: eventbus.EventType(core.EffectEvent{}),
 			eventData: core.EffectEvent{Effect: &core.Effect{Name: "Test Effect"}},
 		},
 		{
 			name:      "spend resource event",
-			eventType: core.SpendResourceType,
+			eventType: eventbus.EventType(core.SpendResourceEvent{}),
 			eventData: core.SpendResourceEvent{
 				Source:   sampleActor,
 				Amount:   1,
@@ -84,7 +84,7 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			msg := eventbus.Message{
+			msg := eventbus.Event{
 				Kind: tt.eventType,
 				Data: tt.eventData,
 			}
@@ -99,7 +99,7 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 }
 
 func TestFormatEvent_UnknownType(t *testing.T) {
-	msg := eventbus.Message{
+	msg := eventbus.Event{
 		Kind: "unknown_event_type",
 		Data: "some data",
 	}
@@ -111,19 +111,19 @@ func TestFormatEvent_UnknownType(t *testing.T) {
 
 func TestShouldPrintEnd(t *testing.T) {
 	// Clear event stack
-	eventStack = []eventbus.Message{}
+	eventStack = []eventbus.Event{}
 
 	// Empty stack should print end
 	assert.True(t, shouldPrintEnd())
 
 	// Add a regular event
-	eventStack = append(eventStack, eventbus.Message{Kind: core.TurnType})
+	eventStack = append(eventStack, eventbus.Event{Kind: eventbus.EventType(core.TurnEvent{})})
 	assert.True(t, shouldPrintEnd())
 
 	// Add a stopper event
-	eventStack = append(eventStack, eventbus.Message{Kind: core.ConfirmType})
+	eventStack = append(eventStack, eventbus.Event{Kind: eventbus.EventType(core.ConfirmEvent{})})
 	assert.False(t, shouldPrintEnd())
 
 	// Clear for other tests
-	eventStack = []eventbus.Message{}
+	eventStack = []eventbus.Event{}
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type Actor struct {
-	Log                LogWriter
+	Dispatcher         EventDispatcher
 	Encounter          *Encounter
 	Position           grid.Position
 	World              *World
@@ -63,7 +63,7 @@ func (a *Actor) AddProficiency(t tag.Tag) {
 func (a *Actor) AddCondition(t tag.Tag, src *Effect) {
 	a.Conditions.Add(t, src)
 	a.Evaluate(ConditionAdded, &ConditionChangedState{Source: a, From: src, Condition: t})
-	a.Log.Add(ConditionChangedType, ConditionChangedEvent{Source: a, From: src, Condition: t, Added: true})
+	a.Dispatcher.Emit(ConditionChangedEvent{Source: a, From: src, Condition: t, Added: true})
 }
 
 func (a *Actor) RemoveCondition(t tag.Tag, src *Effect) {
@@ -72,7 +72,7 @@ func (a *Actor) RemoveCondition(t tag.Tag, src *Effect) {
 		return
 	}
 	a.Evaluate(ConditionRemoved, &ConditionChangedState{Source: a, From: src, Condition: t})
-	a.Log.Add(ConditionChangedType, ConditionChangedEvent{Source: a, From: src, Condition: t, Added: false})
+	a.Dispatcher.Emit(ConditionChangedEvent{Source: a, From: src, Condition: t, Added: false})
 }
 
 func (a *Actor) Equip(item Item) {
@@ -81,13 +81,13 @@ func (a *Actor) Equip(item Item) {
 }
 
 func (a *Actor) Die() {
-	a.Log.Start(DeathType, DeathEvent{Actor: a})
-	defer a.Log.End()
+	a.Dispatcher.Begin(DeathEvent{Actor: a})
+	defer a.Dispatcher.End()
 	a.AddCondition(tags.Dead, &Effect{Name: "Dead"})
-	a.Log.Add(ConfirmType, ConfirmEvent{Confirm: true})
+	a.Dispatcher.Emit(ConfirmEvent{Confirm: true})
 }
 
 func (a *Actor) ConsumeResource(t tag.Tag, amount int) {
 	a.Resources.Consume(t, amount)
-	a.Log.Add(SpendResourceType, SpendResourceEvent{Source: a, Resource: t, Amount: amount})
+	a.Dispatcher.Emit(SpendResourceEvent{Source: a, Resource: t, Amount: amount})
 }

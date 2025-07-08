@@ -12,33 +12,33 @@ import (
 )
 
 var eventFormatters = map[string]EventFormatter{
-	core.EncounterType:                 makeFormatter(printEncounter),
-	core.RoundType:                     makeFormatter(printRound),
-	core.TurnType:                      makeFormatter(printTurn),
-	core.DeathType:                     makeFormatter(printDeath),
-	core.UseActionType:                 makeFormatter(printUseAction),
-	core.TakeDamageType:                makeFormatter(printTakeDamage),
-	core.ExpressionResultType:          makeFormatter(printExpressionResult),
-	core.CheckResultType:               makeFormatter(printCheckResult),
-	core.AttackRollType:                makeFormatter(printAttackRoll),
-	core.AttributeCalculationType:      makeFormatter(printAttributeCalculation),
-	core.ConfirmType:                   makeFormatter(printConfirm),
-	core.DamageRollType:                makeFormatter(printDamageRoll),
-	core.EffectType:                    makeFormatter(printEffect),
-	core.AttributeChangedType:          makeFormatter(printAttributeChange),
-	core.SavingThrowType:               makeFormatter(printSavingThrow),
-	core.SpendResourceType:             makeFormatter(printSpendResource),
-	core.ConditionChangedType:          makeFormatter(printConditionChanged),
-	core.MoveType:                      makeFormatter(printMove),
-	core.MoveStepType:                  makeFormatter(printMoveStep),
-	core.DeathSavingThrowType:          makeFormatter(printDeathSavingThrow),
-	core.DeathSavingThrowResultType:    makeFormatter(printDeathSavingThrowResult),
-	core.DeathSavingThrowAutomaticType: makeFormatter(printDeathSavingThrowAutomaticResult),
-	core.SavingThrowResultType:         makeFormatter(printSavingThrowResult),
-	core.TargetType:                    makeFormatter(printTarget),
+	eventbus.EventType(core.EncounterEvent{}):                 makeFormatter(printEncounter),
+	eventbus.EventType(core.RoundEvent{}):                     makeFormatter(printRound),
+	eventbus.EventType(core.TurnEvent{}):                      makeFormatter(printTurn),
+	eventbus.EventType(core.DeathEvent{}):                     makeFormatter(printDeath),
+	eventbus.EventType(core.UseActionEvent{}):                 makeFormatter(printUseAction),
+	eventbus.EventType(core.TakeDamageEvent{}):                makeFormatter(printTakeDamage),
+	eventbus.EventType(core.ExpressionResultEvent{}):          makeFormatter(printExpressionResult),
+	eventbus.EventType(core.CheckResultEvent{}):               makeFormatter(printCheckResult),
+	eventbus.EventType(core.AttackRollEvent{}):                makeFormatter(printAttackRoll),
+	eventbus.EventType(core.AttributeCalculationEvent{}):      makeFormatter(printAttributeCalculation),
+	eventbus.EventType(core.ConfirmEvent{}):                   makeFormatter(printConfirm),
+	eventbus.EventType(core.DamageRollEvent{}):                makeFormatter(printDamageRoll),
+	eventbus.EventType(core.EffectEvent{}):                    makeFormatter(printEffect),
+	eventbus.EventType(core.AttributeChangeEvent{}):           makeFormatter(printAttributeChange),
+	eventbus.EventType(core.SavingThrowEvent{}):               makeFormatter(printSavingThrow),
+	eventbus.EventType(core.SpendResourceEvent{}):             makeFormatter(printSpendResource),
+	eventbus.EventType(core.ConditionChangedEvent{}):          makeFormatter(printConditionChanged),
+	eventbus.EventType(core.MoveEvent{}):                      makeFormatter(printMove),
+	eventbus.EventType(core.MoveStepEvent{}):                  makeFormatter(printMoveStep),
+	eventbus.EventType(core.DeathSavingThrowEvent{}):          makeFormatter(printDeathSavingThrow),
+	eventbus.EventType(core.DeathSavingThrowResultEvent{}):    makeFormatter(printDeathSavingThrowResult),
+	eventbus.EventType(core.DeathSavingThrowAutomaticEvent{}): makeFormatter(printDeathSavingThrowAutomaticResult),
+	eventbus.EventType(core.SavingThrowResultEvent{}):         makeFormatter(printSavingThrowResult),
+	eventbus.EventType(core.TargetEvent{}):                    makeFormatter(printTarget),
 }
 
-func formatEvent(event eventbus.Message) string {
+func formatEvent(event eventbus.Event) string {
 	eventType := event.Kind
 	if formatter, exists := eventFormatters[eventType]; exists {
 		return formatter(event)

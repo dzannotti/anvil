@@ -42,7 +42,7 @@ func setupWorld(world *core.World) {
 	}
 }
 
-func New(hub *eventbus.Hub) *core.GameState {
+func New(dispatcher *eventbus.Dispatcher) *core.GameState {
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
 
@@ -59,7 +59,7 @@ func New(hub *eventbus.Hub) *core.GameState {
 		tags.SpellSlot3: 1,
 	}}
 	cedric := actor.NewPCActor(
-		hub,
+		dispatcher,
 		world,
 		grid.Position{X: 6, Y: 6},
 		"Cedric",
@@ -74,13 +74,13 @@ func New(hub *eventbus.Hub) *core.GameState {
 	cedric.AddEffect(fighter.NewFightingStyleDefense())
 	cedric.AddProficiency(tags.MartialWeapon)
 	cedric.AddAction(shared.NewFireballAction(cedric))
-	mob1 := zombie.New(hub, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
-	mob2 := zombie.New(hub, world, grid.Position{X: 7, Y: 7}, "Zombie 2")
+	mob1 := zombie.New(dispatcher, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
+	mob2 := zombie.New(dispatcher, world, grid.Position{X: 7, Y: 7}, "Zombie 2")
 	// mob3 := zombie.New(hub, world, grid.Position{X: 6, Y: 6}, "Zombie 3")
 	encounter := &core.Encounter{
-		Log:    hub,
-		World:  world,
-		Actors: []*core.Actor{ /*wizard, */ cedric, mob1, mob2 /* mob3*/},
+		Dispatcher: dispatcher,
+		World:      world,
+		Actors:     []*core.Actor{ /*wizard, */ cedric, mob1, mob2 /* mob3*/},
 	}
 	return &core.GameState{World: world, Encounter: encounter}
 }

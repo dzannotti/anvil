@@ -17,7 +17,7 @@ import (
 )
 
 //nolint:cyclop,funlen // reason: cyclop here is allowed
-func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
+func printOverhead(ev eventbus.Event, overhead *ui.OverheadManager) {
 	var pos grid.Position
 	var text string
 	color := ui.Text
@@ -26,16 +26,16 @@ func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
 	data := ev.Data.(core.UseActionEvent)
 	pos = data.Source.Position
 	text = fmt.Sprintf("*%s*", data.Action.Name())*/
-	case core.MoveType:
+	case eventbus.EventType(core.MoveEvent{}):
 		data := ev.Data.(core.MoveEvent)
 		pos = data.Source.Position
 		text = "*move*"
-	case core.TakeDamageType:
+	case eventbus.EventType(core.TakeDamageEvent{}):
 		data := ev.Data.(core.TakeDamageEvent)
 		pos = data.Target.Position
 		text = fmt.Sprintf("-%d", data.Damage.Value)
 		color = ui.Red
-	case core.ConditionChangedType:
+	case eventbus.EventType(core.ConditionChangedEvent{}):
 		data := ev.Data.(core.ConditionChangedEvent)
 		pos = data.Source.Position
 		prefix := ""
@@ -44,12 +44,12 @@ func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
 			prefix = "-"
 		}
 		text = fmt.Sprintf("%s%s", prefix, tags.ToReadableShort(data.Condition))
-	case core.EffectType:
+	case eventbus.EventType(core.EffectEvent{}):
 		data := ev.Data.(core.EffectEvent)
 		pos = data.Source.Position
 		color = ui.Yellow
 		text = data.Effect.Name
-	case core.SavingThrowResultType:
+	case eventbus.EventType(core.SavingThrowResultEvent{}):
 		data := ev.Data.(core.SavingThrowResultEvent)
 		pos = data.Actor.Position
 		text = "saved"
@@ -58,7 +58,7 @@ func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
 			text = "failed save"
 			color = ui.Yellow
 		}
-	case core.CheckResultType:
+	case eventbus.EventType(core.CheckResultEvent{}):
 		data := ev.Data.(core.CheckResultEvent)
 		if data.Success || !data.Tags.HasTag(tags.Attack) {
 			return
@@ -83,8 +83,8 @@ func client(_ net.Conn) {
 	}
 	overhead := ui.OverheadManager{}
 
-	hub := eventbus.Hub{}
-	hub.Subscribe(func(msg eventbus.Message) {
+	dispatcher := eventbus.Dispatcher{}
+	dispatcher.SubscribeAll(func(msg eventbus.Event) {
 		prettyprint.Print(&log, msg)
 		if msg.End {
 			return
@@ -97,7 +97,7 @@ func client(_ net.Conn) {
 	defer window.Close()
 	ui.Init()
 	defer ui.Close()
-	gameState := demo.New(&hub)
+	gameState := demo.New(&dispatcher)
 	world := gameState.World
 	encounter := gameState.Encounter
 

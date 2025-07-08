@@ -1,7 +1,7 @@
 package core
 
-type LogWriter interface {
-	Start(k string, e any)
+type EventDispatcher interface {
+	Begin(event any)
 	End()
-	Add(k string, e any)
+	Emit(event any)
 }

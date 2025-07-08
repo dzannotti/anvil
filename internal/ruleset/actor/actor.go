@@ -10,7 +10,7 @@ import (
 )
 
 func newActor(
-	h *eventbus.Hub,
+	dispatcher *eventbus.Dispatcher,
 	w *core.World,
 	t core.TeamID,
 	pos grid.Position,
@@ -21,7 +21,7 @@ func newActor(
 	r core.Resources,
 ) *core.Actor {
 	a := &core.Actor{
-		Log:           h,
+		Dispatcher:    dispatcher,
 		Position:      pos,
 		World:         w,
 		Name:          name,
@@ -43,7 +43,7 @@ func newActor(
 }
 
 func NewPCActor(
-	h *eventbus.Hub,
+	dispatcher *eventbus.Dispatcher,
 	w *core.World,
 	pos grid.Position,
 	name string,
@@ -52,13 +52,13 @@ func NewPCActor(
 	p stats.Proficiencies,
 	r core.Resources,
 ) *core.Actor {
-	a := newActor(h, w, core.TeamPlayers, pos, name, hitPoints, at, p, r)
+	a := newActor(dispatcher, w, core.TeamPlayers, pos, name, hitPoints, at, p, r)
 	a.AddEffect(base.NewDeathSavingThrowEffect())
 	return a
 }
 
 func NewNPCActor(
-	h *eventbus.Hub,
+	dispatcher *eventbus.Dispatcher,
 	w *core.World,
 	pos grid.Position,
 	name string,
@@ -67,7 +67,7 @@ func NewNPCActor(
 	p stats.Proficiencies,
 	r core.Resources,
 ) *core.Actor {
-	a := newActor(h, w, core.TeamEnemies, pos, name, hitPoints, at, p, r)
+	a := newActor(dispatcher, w, core.TeamEnemies, pos, name, hitPoints, at, p, r)
 	a.AddEffect(base.NewDeathEffect())
 	a.AddProficiency(tags.NaturalWeapon)
 	return a
