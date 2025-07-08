@@ -37,19 +37,20 @@ func (e *Effect) Evaluate(state any) {
 		panic("state must be a pointer")
 	}
 
-	// Get the event name from the struct type (remove pointer)
 	eventName := stateType.Elem().Name()
 
 	handler, exists := e.Handlers.get()[eventName]
-	if exists {
-		wg := &sync.WaitGroup{}
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			handler(e, state)
-		}()
-		wg.Wait()
+	if !exists {
+		return
 	}
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		handler(e, state)
+	}()
+	wg.Wait()
 }
 
 func (e *Effect) withHandler(event string, handler func(*Effect, any)) {
@@ -72,10 +73,7 @@ func (e *Effect) On(handler any) {
 		panic("handler parameter must be a pointer")
 	}
 
-	// Get the event name from the struct type (remove pointer and "State" suffix)
 	eventName := paramType.Elem().Name()
-
-	// Convert handler to the internal signature
 	handlerValue := reflect.ValueOf(handler)
 	e.Handlers.get()[eventName] = func(_ *Effect, state any) {
 		handlerValue.Call([]reflect.Value{reflect.ValueOf(state)})

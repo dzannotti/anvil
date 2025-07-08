@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type TestContainerState struct{}
-type UnhandledState struct{}
+type TestContainer struct{}
+type UnhandledEvent struct{}
 
 func TestContainer_Add(t *testing.T) {
 	t.Run("adds effects in priority order", func(t *testing.T) {
@@ -55,16 +55,16 @@ func TestContainer_Evaluate(t *testing.T) {
 		c := &EffectContainer{}
 		order := []string{}
 		e1 := &Effect{Name: "e1", Priority: PriorityNormal}
-		e1.withHandler("TestContainerState", func(_ *Effect, _ any) { order = append(order, "e1") })
+		e1.withHandler("TestContainer", func(_ *Effect, _ any) { order = append(order, "e1") })
 		e2 := &Effect{Name: "e2", Priority: PriorityEarly}
-		e2.withHandler("TestContainerState", func(_ *Effect, _ any) { order = append(order, "e2") })
+		e2.withHandler("TestContainer", func(_ *Effect, _ any) { order = append(order, "e2") })
 		e3 := &Effect{Name: "e3", Priority: PriorityLate}
-		e3.withHandler("TestContainerState", func(_ *Effect, _ any) { order = append(order, "e3") })
+		e3.withHandler("TestContainer", func(_ *Effect, _ any) { order = append(order, "e3") })
 
 		c.Add(e1)
 		c.Add(e2)
 		c.Add(e3)
-		c.Evaluate(&TestContainerState{})
+		c.Evaluate(&TestContainer{})
 
 		assert.Equal(t, []string{"e2", "e1", "e3"}, order)
 	})
@@ -72,9 +72,9 @@ func TestContainer_Evaluate(t *testing.T) {
 	t.Run("does nothing for unhandled events", func(t *testing.T) {
 		c := &EffectContainer{}
 		e1 := &Effect{Name: "e1"}
-		e1.withHandler("TestContainerState", func(_ *Effect, _ any) { t.Error("should not be called") })
+		e1.withHandler("TestContainer", func(_ *Effect, _ any) { t.Error("should not be called") })
 
 		c.Add(e1)
-		c.Evaluate(&UnhandledState{})
+		c.Evaluate(&UnhandledEvent{})
 	})
 }

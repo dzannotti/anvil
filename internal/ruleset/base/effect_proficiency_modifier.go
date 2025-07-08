@@ -18,14 +18,14 @@ var saveMap = map[tag.Tag]tag.Tag{
 func NewProficiencyModifierEffect() *core.Effect {
 	fx := &core.Effect{Name: "Proficiency Modifier", Priority: core.PriorityBase}
 
-	fx.On(func(s *core.BeforeAttackRollState) {
+	fx.On(func(s *core.PreAttackRoll) {
 		proficiency := s.Source.Proficiency(s.Tags)
 		if proficiency != 0 {
 			s.Expression.AddConstant(proficiency, "Proficiency Modifier")
 		}
 	})
 
-	fx.On(func(s *core.BeforeSavingThrowState) {
+	fx.On(func(s *core.PreSavingThrow) {
 		t, ok := saveMap[s.Attribute]
 		if !ok {
 			return

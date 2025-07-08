@@ -12,7 +12,7 @@ func newChainMailEffect() *core.Effect {
 	// TODO: implement item requirements for proficiencies (and maluses)
 	fx := &core.Effect{Name: "ChainMail", Priority: core.PriorityBaseOverride}
 
-	fx.On(func(s *core.AttributeCalculationState) {
+	fx.On(func(s *core.AttributeCalculation) {
 		if !s.Attribute.MatchExact(tags.ArmorClass) {
 			return
 		}

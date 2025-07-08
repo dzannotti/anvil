@@ -8,7 +8,7 @@ import (
 func NewUndeadFortitudeEffect() *core.Effect {
 	fx := &core.Effect{Name: "Undead Fortitude", Priority: core.PriorityLate}
 
-	fx.On(func(s *core.AfterTakeDamageState) {
+	fx.On(func(s *core.PostTakeDamage) {
 		wouldDie := s.Source.HitPoints == 0
 		radiant := s.Result.HasDamageType(tags.Radiant)
 		if !wouldDie || radiant || s.Result.IsCriticalSuccess() {

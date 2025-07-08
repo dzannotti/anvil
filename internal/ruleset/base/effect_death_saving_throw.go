@@ -34,7 +34,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		return false
 	}
 
-	fx.On(func(s *core.AttributeChangedState) {
+	fx.On(func(s *core.AttributeChanged) {
 		if !s.Attribute.MatchExact(tags.HitPoints) {
 			return
 		}
@@ -46,14 +46,14 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		s.Source.RemoveCondition(tags.Unconscious, nil)
 	})
 
-	fx.On(func(s *core.ConditionChangedState) {
+	fx.On(func(s *core.ConditionChanged) {
 		if !s.Condition.Match(tags.Unconscious) {
 			return
 		}
 		reset()
 	})
 
-	fx.On(func(s *core.AfterTakeDamageState) {
+	fx.On(func(s *core.PostTakeDamage) {
 		if s.Source.HitPoints > 0 {
 			return
 		}
@@ -76,7 +76,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		}
 	})
 
-	fx.On(func(s *core.TurnState) {
+	fx.On(func(s *core.TurnStarted) {
 		if !s.Source.MatchCondition(tags.Unconscious) {
 			return
 		}

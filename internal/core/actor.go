@@ -28,11 +28,11 @@ type Actor struct {
 
 func (a *Actor) StartTurn() {
 	a.Resources.Reset()
-	a.Evaluate(&TurnState{Source: a})
+	a.Evaluate(&TurnStarted{Source: a})
 }
 
 func (a *Actor) EndTurn() {
-	a.Evaluate(&TurnState{Source: a})
+	a.Evaluate(&TurnEnded{Source: a})
 }
 
 func (a *Actor) Evaluate(state any) {
@@ -44,6 +44,7 @@ func (a *Actor) AddAction(action ...Action) {
 		if a.HasAction(ca) {
 			continue
 		}
+
 		a.Actions = append(a.Actions, ca)
 	}
 }
@@ -62,7 +63,7 @@ func (a *Actor) AddProficiency(t tag.Tag) {
 
 func (a *Actor) AddCondition(t tag.Tag, src *Effect) {
 	a.Conditions.Add(t, src)
-	a.Evaluate(&ConditionChangedState{Source: a, From: src, Condition: t})
+	a.Evaluate(&ConditionChanged{Source: a, From: src, Condition: t})
 	a.Dispatcher.Emit(ConditionChangedEvent{Source: a, From: src, Condition: t, Added: true})
 }
 
@@ -71,7 +72,8 @@ func (a *Actor) RemoveCondition(t tag.Tag, src *Effect) {
 	if !ok {
 		return
 	}
-	a.Evaluate(&ConditionChangedState{Source: a, From: src, Condition: t})
+
+	a.Evaluate(&ConditionChanged{Source: a, From: src, Condition: t})
 	a.Dispatcher.Emit(ConditionChangedEvent{Source: a, From: src, Condition: t, Added: false})
 }
 

@@ -11,7 +11,7 @@ import (
 func NewAttackOfOpportunityEffect() *core.Effect {
 	fx := &core.Effect{Name: "Attack Of Opportunity"}
 
-	fx.On(func(s *core.MoveState) {
+	fx.On(func(s *core.PreMoveStep) {
 		if s.Action != nil && s.Action.Tags().MatchTag(tags.Teleport) {
 			return
 		}

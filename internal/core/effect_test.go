@@ -12,7 +12,7 @@ type testState struct {
 	Expression *expression.Expression
 }
 
-type TestState struct {
+type TestEffect struct {
 	Expression *expression.Expression
 }
 
@@ -20,17 +20,17 @@ func TestEffect_Evaluate(t *testing.T) {
 	t.Run("handler executes when event matches", func(t *testing.T) {
 		e := &Effect{}
 		called := false
-		e.withHandler("TestState", func(_ *Effect, _ any) {
+		e.withHandler("TestEffect", func(_ *Effect, _ any) {
 			called = true
 		})
-		e.Evaluate(&TestState{})
+		e.Evaluate(&TestEffect{})
 		assert.True(t, called)
 	})
 
 	t.Run("handler does not execute when event does not match", func(t *testing.T) {
 		e := &Effect{}
 		called := false
-		e.withHandler("TestState", func(_ *Effect, _ any) {
+		e.withHandler("TestEffect", func(_ *Effect, _ any) {
 			called = true
 		})
 
@@ -41,9 +41,9 @@ func TestEffect_Evaluate(t *testing.T) {
 	t.Run("state is modified by handler", func(t *testing.T) {
 		e := &Effect{}
 		expr := expression.FromConstant(10, "test")
-		state := &TestState{Expression: &expr}
-		e.withHandler("TestState", func(_ *Effect, s any) {
-			estate := s.(*TestState) // panics if not the correct type
+		state := &TestEffect{Expression: &expr}
+		e.withHandler("TestEffect", func(_ *Effect, s any) {
+			estate := s.(*TestEffect) // panics if not the correct type
 			estate.Expression.AddConstant(5, "test")
 		})
 		e.Evaluate(state)
