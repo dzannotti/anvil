@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"reflect"
 	"syscall"
 
 	ui "anvil/cmd/gui/render"
@@ -26,16 +27,16 @@ func printOverhead(ev eventbus.Event, overhead *ui.OverheadManager) {
 	data := ev.Data.(core.UseActionEvent)
 	pos = data.Source.Position
 	text = fmt.Sprintf("*%s*", data.Action.Name())*/
-	case core.MoveType:
+	case reflect.TypeOf(core.MoveEvent{}).String():
 		data := ev.Data.(core.MoveEvent)
 		pos = data.Source.Position
 		text = "*move*"
-	case core.TakeDamageType:
+	case reflect.TypeOf(core.TakeDamageEvent{}).String():
 		data := ev.Data.(core.TakeDamageEvent)
 		pos = data.Target.Position
 		text = fmt.Sprintf("-%d", data.Damage.Value)
 		color = ui.Red
-	case core.ConditionChangedType:
+	case reflect.TypeOf(core.ConditionChangedEvent{}).String():
 		data := ev.Data.(core.ConditionChangedEvent)
 		pos = data.Source.Position
 		prefix := ""
@@ -44,12 +45,12 @@ func printOverhead(ev eventbus.Event, overhead *ui.OverheadManager) {
 			prefix = "-"
 		}
 		text = fmt.Sprintf("%s%s", prefix, tags.ToReadableShort(data.Condition))
-	case core.EffectType:
+	case reflect.TypeOf(core.EffectEvent{}).String():
 		data := ev.Data.(core.EffectEvent)
 		pos = data.Source.Position
 		color = ui.Yellow
 		text = data.Effect.Name
-	case core.SavingThrowResultType:
+	case reflect.TypeOf(core.SavingThrowResultEvent{}).String():
 		data := ev.Data.(core.SavingThrowResultEvent)
 		pos = data.Actor.Position
 		text = "saved"
@@ -58,7 +59,7 @@ func printOverhead(ev eventbus.Event, overhead *ui.OverheadManager) {
 			text = "failed save"
 			color = ui.Yellow
 		}
-	case core.CheckResultType:
+	case reflect.TypeOf(core.CheckResultEvent{}).String():
 		data := ev.Data.(core.CheckResultEvent)
 		if data.Success || !data.Tags.HasTag(tags.Attack) {
 			return

@@ -7,33 +7,6 @@ import (
 	"anvil/internal/tag"
 )
 
-const (
-	EncounterType                 = "encounter"
-	RoundType                     = "round"
-	TurnType                      = "turn"
-	AttributeCalculationType      = "attributeCalculation"
-	CheckResultType               = "checkResult"
-	ExpressionResultType          = "expressionResult"
-	ConfirmType                   = "confirm"
-	DeathType                     = "death"
-	AttackRollType                = "attackRoll"
-	TakeDamageType                = "takeDamage"
-	UseActionType                 = "useAction"
-	DamageRollType                = "damageRoll"
-	EffectType                    = "effect"
-	AttributeChangedType          = "attributeChanged"
-	SavingThrowType               = "savingThrow"
-	SavingThrowResultType         = "savingThrowResult"
-	SpendResourceType             = "spendResource"
-	ConditionChangedType          = "conditionChanged"
-	MoveType                      = "moveEvent"
-	MoveStepType                  = "moveStep"
-	DeathSavingThrowType          = "deathSavingThrow"
-	DeathSavingThrowResultType    = "deathSavingThrowResult"
-	DeathSavingThrowAutomaticType = "deathSavingThrowAutomatic"
-	TargetType                    = "target"
-)
-
 type EncounterEvent struct {
 	Actors []*Actor
 	World  *World

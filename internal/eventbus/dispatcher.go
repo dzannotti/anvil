@@ -1,34 +1,39 @@
 package eventbus
 
-import "github.com/zyedidia/generic/stack"
+import (
+	"reflect"
 
-type EventHandler func(data Event)
+	"github.com/zyedidia/generic/stack"
+)
+
+type GenericEventHandler func(data Event)
 
 type Dispatcher struct {
 	events           []Event
 	stack            stack.Stack[Event]
-	allSubscribers   []EventHandler
-	eventSubscribers map[string][]EventHandler
+	allSubscribers   []GenericEventHandler
+	eventSubscribers map[string][]GenericEventHandler
 }
 
-func (s *Dispatcher) SubscribeAll(handler EventHandler) {
+func (s *Dispatcher) SubscribeAll(handler GenericEventHandler) {
 	s.allSubscribers = append(s.allSubscribers, handler)
 }
 
-func (s *Dispatcher) Subscribe(eventType string, handler EventHandler) {
+func (s *Dispatcher) Subscribe(eventType string, handler GenericEventHandler) {
 	if s.eventSubscribers == nil {
-		s.eventSubscribers = make(map[string][]EventHandler)
+		s.eventSubscribers = make(map[string][]GenericEventHandler)
 	}
 	s.eventSubscribers[eventType] = append(s.eventSubscribers[eventType], handler)
 }
 
-func (s *Dispatcher) Emit(kind string, data any) {
-	s.Begin(kind, data)
+func (s *Dispatcher) Emit(event any) {
+	s.Begin(event)
 	s.End()
 }
 
-func (s *Dispatcher) Begin(kind string, data any) {
-	event := Event{Kind: kind, Data: data}
+func (s *Dispatcher) Begin(data any) {
+	eventType := reflect.TypeOf(data).String()
+	event := Event{Kind: eventType, Data: data}
 	event.Depth = s.stack.Size()
 	s.events = append(s.events, event)
 	s.stack.Push(event)

@@ -7,35 +7,36 @@ import (
 	"anvil/internal/grid"
 	"anvil/internal/tag"
 	"fmt"
+	"reflect"
 	"slices"
 	"strings"
 )
 
 var eventFormatters = map[string]EventFormatter{
-	core.EncounterType:                 makeFormatter(printEncounter),
-	core.RoundType:                     makeFormatter(printRound),
-	core.TurnType:                      makeFormatter(printTurn),
-	core.DeathType:                     makeFormatter(printDeath),
-	core.UseActionType:                 makeFormatter(printUseAction),
-	core.TakeDamageType:                makeFormatter(printTakeDamage),
-	core.ExpressionResultType:          makeFormatter(printExpressionResult),
-	core.CheckResultType:               makeFormatter(printCheckResult),
-	core.AttackRollType:                makeFormatter(printAttackRoll),
-	core.AttributeCalculationType:      makeFormatter(printAttributeCalculation),
-	core.ConfirmType:                   makeFormatter(printConfirm),
-	core.DamageRollType:                makeFormatter(printDamageRoll),
-	core.EffectType:                    makeFormatter(printEffect),
-	core.AttributeChangedType:          makeFormatter(printAttributeChange),
-	core.SavingThrowType:               makeFormatter(printSavingThrow),
-	core.SpendResourceType:             makeFormatter(printSpendResource),
-	core.ConditionChangedType:          makeFormatter(printConditionChanged),
-	core.MoveType:                      makeFormatter(printMove),
-	core.MoveStepType:                  makeFormatter(printMoveStep),
-	core.DeathSavingThrowType:          makeFormatter(printDeathSavingThrow),
-	core.DeathSavingThrowResultType:    makeFormatter(printDeathSavingThrowResult),
-	core.DeathSavingThrowAutomaticType: makeFormatter(printDeathSavingThrowAutomaticResult),
-	core.SavingThrowResultType:         makeFormatter(printSavingThrowResult),
-	core.TargetType:                    makeFormatter(printTarget),
+	reflect.TypeOf(core.EncounterEvent{}).String():                 makeFormatter(printEncounter),
+	reflect.TypeOf(core.RoundEvent{}).String():                     makeFormatter(printRound),
+	reflect.TypeOf(core.TurnEvent{}).String():                      makeFormatter(printTurn),
+	reflect.TypeOf(core.DeathEvent{}).String():                     makeFormatter(printDeath),
+	reflect.TypeOf(core.UseActionEvent{}).String():                 makeFormatter(printUseAction),
+	reflect.TypeOf(core.TakeDamageEvent{}).String():                makeFormatter(printTakeDamage),
+	reflect.TypeOf(core.ExpressionResultEvent{}).String():          makeFormatter(printExpressionResult),
+	reflect.TypeOf(core.CheckResultEvent{}).String():               makeFormatter(printCheckResult),
+	reflect.TypeOf(core.AttackRollEvent{}).String():                makeFormatter(printAttackRoll),
+	reflect.TypeOf(core.AttributeCalculationEvent{}).String():      makeFormatter(printAttributeCalculation),
+	reflect.TypeOf(core.ConfirmEvent{}).String():                   makeFormatter(printConfirm),
+	reflect.TypeOf(core.DamageRollEvent{}).String():                makeFormatter(printDamageRoll),
+	reflect.TypeOf(core.EffectEvent{}).String():                    makeFormatter(printEffect),
+	reflect.TypeOf(core.AttributeChangeEvent{}).String():           makeFormatter(printAttributeChange),
+	reflect.TypeOf(core.SavingThrowEvent{}).String():               makeFormatter(printSavingThrow),
+	reflect.TypeOf(core.SpendResourceEvent{}).String():             makeFormatter(printSpendResource),
+	reflect.TypeOf(core.ConditionChangedEvent{}).String():          makeFormatter(printConditionChanged),
+	reflect.TypeOf(core.MoveEvent{}).String():                      makeFormatter(printMove),
+	reflect.TypeOf(core.MoveStepEvent{}).String():                  makeFormatter(printMoveStep),
+	reflect.TypeOf(core.DeathSavingThrowEvent{}).String():          makeFormatter(printDeathSavingThrow),
+	reflect.TypeOf(core.DeathSavingThrowResultEvent{}).String():    makeFormatter(printDeathSavingThrowResult),
+	reflect.TypeOf(core.DeathSavingThrowAutomaticEvent{}).String(): makeFormatter(printDeathSavingThrowAutomaticResult),
+	reflect.TypeOf(core.SavingThrowResultEvent{}).String():         makeFormatter(printSavingThrowResult),
+	reflect.TypeOf(core.TargetEvent{}).String():                    makeFormatter(printTarget),
 }
 
 func formatEvent(event eventbus.Event) string {

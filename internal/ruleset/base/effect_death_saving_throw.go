@@ -86,15 +86,9 @@ func NewDeathSavingThrowEffect() *core.Effect {
 			amount = 2
 		}
 		failures += amount
-		s.Source.Dispatcher.Begin(
-			core.DeathSavingThrowAutomaticType,
-			core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: true},
-		)
+		s.Source.Dispatcher.Begin(core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: true})
 		defer s.Source.Dispatcher.End()
-		s.Source.Dispatcher.Emit(
-			core.DeathSavingThrowResultType,
-			core.DeathSavingThrowResultEvent{Source: s.Source, Success: success, Failure: failures},
-		)
+		s.Source.Dispatcher.Emit(core.DeathSavingThrowResultEvent{Source: s.Source, Success: success, Failure: failures})
 		if checkStatus(s.Source) && s.Result.Value > s.Source.MaxHitPoints {
 			s.Source.Die()
 		}
@@ -104,17 +98,14 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		if !s.Source.MatchCondition(tags.Unconscious) {
 			return
 		}
-		s.Source.Dispatcher.Begin(core.DeathSavingThrowType, core.DeathSavingThrowEvent{Source: s.Source})
+		s.Source.Dispatcher.Begin(core.DeathSavingThrowEvent{Source: s.Source})
 		defer s.Source.Dispatcher.End()
 		result := s.Source.SaveThrow(tags.HitPoints, 10)
 		if result.Success {
 			success++
 			if result.Critical {
 				reset()
-				s.Source.Dispatcher.Begin(
-					core.DeathSavingThrowAutomaticType,
-					core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: false},
-				)
+				s.Source.Dispatcher.Begin(core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: false})
 				defer s.Source.Dispatcher.End()
 				s.Source.RemoveCondition(tags.Unconscious, nil)
 				s.Source.ModifyAttribute(tags.HitPoints, 1, "Death Saving Throw critical success")
@@ -126,10 +117,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 				failures++
 			}
 		}
-		s.Source.Dispatcher.Emit(
-			core.DeathSavingThrowResultType,
-			core.DeathSavingThrowResultEvent{Source: s.Source, Success: success, Failure: failures},
-		)
+		s.Source.Dispatcher.Emit(core.DeathSavingThrowResultEvent{Source: s.Source, Success: success, Failure: failures})
 		checkStatus(s.Source)
 	})
 

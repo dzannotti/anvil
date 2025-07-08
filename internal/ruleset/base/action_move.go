@@ -31,7 +31,7 @@ func (a MoveAction) Perform(pos []grid.Position, commitCost bool) {
 	if !ok {
 		panic("attempted to move to unreachable location - this should never happen")
 	}
-	src.Dispatcher.Begin(core.MoveType, core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
+	src.Dispatcher.Begin(core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
 	defer src.Dispatcher.End()
 	for _, node := range path.Path[1:] {
 		if commitCost {

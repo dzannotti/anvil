@@ -33,8 +33,8 @@ func NewFireballAction(owner *core.Actor) FireballAction {
 
 func (a FireballAction) Perform(pos []grid.Position, commitCost bool) {
 	targets := a.targetsAt(pos[0])
-	a.Owner().Dispatcher.Begin(core.UseActionType, core.UseActionEvent{Action: a, Source: a.Owner(), Target: pos})
-	a.Owner().Dispatcher.Emit(core.TargetType, core.TargetEvent{Target: targets})
+	a.Owner().Dispatcher.Begin(core.UseActionEvent{Action: a, Source: a.Owner(), Target: pos})
+	a.Owner().Dispatcher.Emit(core.TargetEvent{Target: targets})
 	defer a.Owner().Dispatcher.End()
 	if commitCost {
 		a.Commit()
