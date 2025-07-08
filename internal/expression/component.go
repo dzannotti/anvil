@@ -32,8 +32,10 @@ type Component struct {
 	IsCritical      int
 }
 
-func (c *Component) shouldModifyRoll() bool {
-	return (len(c.HasAdvantage) > 0) != (len(c.HasDisadvantage) > 0)
+func (c *Component) hasRollModifier() bool {
+	hasAdvantage := len(c.HasAdvantage) > 0
+	hasDisadvantage := len(c.HasDisadvantage) > 0
+	return hasAdvantage != hasDisadvantage
 }
 
 func (c Component) Clone() Component {

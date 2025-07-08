@@ -5,7 +5,7 @@ import (
 )
 
 func (e *Expression) EvaluateGroup() *Expression {
-	out := Expression{Rng: DefaultRoller{}}
+	result := Expression{Rng: DefaultRoller{}}
 	e.Evaluate()
 	groups := e.groupComponentsBy()
 	for _, group := range groups {
@@ -13,10 +13,14 @@ func (e *Expression) EvaluateGroup() *Expression {
 		for _, component := range group {
 			value += component.Value
 		}
-		out.AddDamageConstant(value, group[0].Source, group[0].Tags, group...)
+		result.AddDamageConstant(value, group[0].Source, group[0].Tags, group...)
 	}
-	out.Components[0].IsCritical = e.Components[0].IsCritical
-	return out.Evaluate()
+
+	if len(e.Components) > 0 && len(result.Components) > 0 {
+		result.Components[0].IsCritical = e.Components[0].IsCritical
+	}
+
+	return result.Evaluate()
 }
 
 func (e *Expression) uniqueTags() []string {

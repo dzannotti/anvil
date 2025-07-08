@@ -23,10 +23,13 @@ func (e *Expression) Clone() Expression {
 }
 
 func (e *Expression) primaryTags(inputTags tag.Container) tag.Container {
-	if len(e.Components) > 0 {
-		if inputTags.IsEmpty() || inputTags.HasTag(tag.FromString("primary")) {
-			return e.Components[0].Tags
-		}
+	if len(e.Components) == 0 {
+		return inputTags
 	}
+
+	if inputTags.IsEmpty() || inputTags.HasTag(tag.FromString("primary")) {
+		return e.Components[0].Tags
+	}
+
 	return inputTags
 }

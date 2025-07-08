@@ -26,7 +26,7 @@ func (e *Expression) evaluateComponent(component *Component) {
 }
 
 func (e *Expression) evaluateDice(component *Component) {
-	if !component.shouldModifyRoll() {
+	if !component.hasRollModifier() {
 		e.evaluateDiceRoll(component)
 		return
 	}
@@ -61,7 +61,8 @@ func (e *Expression) IsCriticalSuccess() bool {
 		return false
 	}
 
-	return e.Components[0].IsCritical == CriticalSuccess || e.Components[0].Value == e.Components[0].Sides
+	first := e.Components[0]
+	return first.IsCritical == CriticalSuccess || first.Value == first.Sides
 }
 
 func (e *Expression) IsCriticalFailure() bool {
@@ -69,15 +70,26 @@ func (e *Expression) IsCriticalFailure() bool {
 		return false
 	}
 
-	return e.Components[0].IsCritical == CriticalFailure || e.Components[0].Values[0] == 1
+	first := e.Components[0]
+	if first.IsCritical == CriticalFailure {
+		return true
+	}
+
+	if len(first.Values) == 0 {
+		return false
+	}
+
+	return first.Values[0] == 1
 }
 
 func (e *Expression) SetCriticalSuccess(source string) {
 	e.Components[0].IsCritical = CriticalSuccess
-	e.Components[0].Source += fmt.Sprintf(" as Critical success (%s)", source)
+	e.Components[0].Source = fmt.Sprintf("%s as Critical success (%s)",
+		e.Components[0].Source, source)
 }
 
 func (e *Expression) SetCriticalFailure(source string) {
 	e.Components[0].IsCritical = CriticalFailure
-	e.Components[0].Source += fmt.Sprintf(" as Critical failure (%s)", source)
+	e.Components[0].Source = fmt.Sprintf("%s as Critical failure (%s)",
+		e.Components[0].Source, source)
 }
