@@ -20,7 +20,7 @@ func (a *Actor) ArmorClass() *expression.Expression {
 		Expression: &expr,
 		Attribute:  tags.ArmorClass,
 	}
-	a.Evaluate(AttributeCalculation, &s)
+	a.Evaluate("AttributeCalculationState", &s)
 	s.Expression.Evaluate()
 	return s.Expression
 }
@@ -31,7 +31,7 @@ func (a *Actor) Attribute(t tag.Tag) *expression.Expression {
 		Expression: &expr,
 		Attribute:  t,
 	}
-	a.Evaluate(AttributeCalculation, &s)
+	a.Evaluate("AttributeCalculationState", &s)
 	s.Expression.Evaluate()
 	return s.Expression
 }
@@ -46,7 +46,7 @@ func (a *Actor) ModifyAttribute(t tag.Tag, val int, reason string) {
 		a.Dispatcher.Begin(AttributeChangeEvent{Source: a, Attribute: t, OldValue: old, Value: old + val, Reason: reason})
 		defer a.Dispatcher.End()
 		a.HitPoints = val
-		a.Evaluate(AttributeChanged, &AttributeChangedState{Source: a, Attribute: t, OldValue: old, Value: old + val})
+		a.Evaluate("AttributeChangedState", &AttributeChangedState{Source: a, Attribute: t, OldValue: old, Value: old + val})
 		return
 	}
 	panic("ModifyAttribute not implemented")
@@ -57,10 +57,10 @@ func (a *Actor) SaveThrow(t tag.Tag, dc int) CheckResult {
 	before := BeforeSavingThrowState{Expression: &expr, Source: a, Attribute: t, DifficultyClass: dc}
 	a.Dispatcher.Begin(SavingThrowEvent{Expression: &expr, Source: a, Attribute: t, DifficultyClass: dc})
 	defer a.Dispatcher.End()
-	a.Evaluate(BeforeSavingThrow, &before)
+	a.Evaluate("BeforeSavingThrowState", &before)
 	expr.Evaluate()
 	after := AfterSavingThrowState{Result: &expr, Source: a, Attribute: t, DifficultyClass: dc}
-	a.Evaluate(AfterSavingThrow, &after)
+	a.Evaluate("AfterSavingThrowState", &after)
 	ok := expr.Value >= dc
 	crit := false
 	if after.Result.IsCriticalSuccess() {
@@ -78,13 +78,13 @@ func (a *Actor) SaveThrow(t tag.Tag, dc int) CheckResult {
 func (a *Actor) TakeDamage(damage expression.Expression) {
 	expr := expression.FromDamageResult(damage)
 	before := BeforeTakeDamageState{Expression: &expr, Source: a}
-	a.Evaluate(BeforeTakeDamage, &before)
+	a.Evaluate("BeforeTakeDamageState", &before)
 	res := expr.Evaluate()
 	actual := a.HitPoints - mathi.Clamp(a.HitPoints-res.Value, 0, math.MaxInt)
 	a.HitPoints = mathi.Clamp(a.HitPoints-actual, 0, math.MaxInt)
 	a.Dispatcher.Begin(TakeDamageEvent{Target: a, Damage: &expr})
 	after := AfterTakeDamageState{Result: res, Source: a, ActualDamage: actual}
-	a.Effects.Evaluate(AfterTakeDamage, &after)
+	a.Effects.Evaluate("AfterTakeDamageState", &after)
 	a.Dispatcher.End()
 }
 
@@ -93,10 +93,10 @@ func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 	a.Dispatcher.Begin(AttackRollEvent{Source: a, Target: target})
 	defer a.Dispatcher.End()
 	before := BeforeAttackRollState{Source: a, Target: target, Expression: &expr, Tags: tc}
-	a.Effects.Evaluate(BeforeAttackRoll, &before)
+	a.Effects.Evaluate("BeforeAttackRollState", &before)
 	expr.Evaluate()
 	after := AfterAttackRollState{Source: a, Target: target, Result: &expr, Tags: tc}
-	a.Effects.Evaluate(AfterAttackRoll, &after)
+	a.Effects.Evaluate("AfterAttackRollState", &after)
 	a.Dispatcher.Emit(ExpressionResultEvent{Expression: &expr})
 	value := after.Result.Value
 	targetAC := target.ArmorClass()
@@ -126,11 +126,11 @@ func (a *Actor) DamageRoll(ds []DamageSource, crit bool) *expression.Expression 
 	a.Dispatcher.Begin(DamageRollEvent{Source: a, DamageSource: ds})
 	defer a.Dispatcher.End()
 	before := BeforeDamageRollState{Source: a, Expression: &expr}
-	a.Effects.Evaluate(BeforeDamageRoll, &before)
+	a.Effects.Evaluate("BeforeDamageRollState", &before)
 	res := expr.EvaluateGroup()
 	a.Dispatcher.Emit(ExpressionResultEvent{Expression: res})
 	after := AfterDamageRollState{Source: a, Result: res}
-	a.Effects.Evaluate(AfterDamageRoll, &after)
+	a.Effects.Evaluate("AfterDamageRollState", &after)
 	return res
 }
 
@@ -144,7 +144,7 @@ func (a *Actor) Move(to grid.Position, action Action) {
 		CanMove: true,
 		Action:  action,
 	}
-	a.Effects.Evaluate(BeforeMoveStep, &before)
+	a.Effects.Evaluate("MoveState", &before)
 	a.Dispatcher.Emit(ConfirmEvent{Actor: a, Confirm: before.CanMove})
 	if before.CanMove {
 		a.World.RemoveOccupant(a.Position, a)

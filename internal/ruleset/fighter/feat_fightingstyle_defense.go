@@ -8,7 +8,7 @@ import (
 
 func NewFightingStyleDefense() *core.Effect {
 	fx := &core.Effect{Name: "Fighting Style: Defense"}
-	fx.WithAttributeCalculation(func(_ *core.Effect, s *core.AttributeCalculationState) {
+	fx.On(func(s *core.AttributeCalculationState) {
 		if !s.Attribute.MatchExact(tags.ArmorClass) {
 			return
 		}

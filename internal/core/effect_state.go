@@ -6,25 +6,6 @@ import (
 	"anvil/internal/tag"
 )
 
-const (
-	BeforeAttackRoll     = "BeforeAttackRoll"
-	AfterAttackRoll      = "AfterAttackRoll"
-	AttributeCalculation = "AttributeCalculation"
-	BeforeTakeDamage     = "BeforeTakeDamage"
-	AfterTakeDamage      = "AfterTakeDamage"
-	BeforeDamageRoll     = "BeforeDamageRoll"
-	AfterDamageRoll      = "AfterDamageRoll"
-	BeforeSavingThrow    = "BeforeSavingThrow"
-	AfterSavingThrow     = "AfterSavingThrow"
-	AttributeChanged     = "AttributeChanged"
-	ConditionAdded       = "ConditionAdded"
-	ConditionRemoved     = "ConditionRemoved"
-	TurnStarted          = "TurnStarted"
-	TurnEnded            = "TurnEnded"
-	BeforeMoveStep       = "BeforeMoveStep"
-	Serialize            = "serialize"
-	Deserialize          = "deserialize"
-)
 
 type BeforeAttackRollState struct {
 	Source     *Actor

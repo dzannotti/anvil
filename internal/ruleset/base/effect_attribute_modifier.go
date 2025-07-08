@@ -32,7 +32,7 @@ func NewAttributeModifierEffect() *core.Effect {
 
 	fx := &core.Effect{Name: "Attribute Modifier", Priority: core.PriorityBase}
 
-	fx.WithBeforeAttackRoll(func(_ *core.Effect, s *core.BeforeAttackRollState) {
+	fx.On(func(s *core.BeforeAttackRollState) {
 		if s.Tags.HasTag(tags.Ranged) || s.Tags.HasTag(tags.Melee) {
 			applyAttackModifier(s.Source, s.Expression, s.Tags)
 		}
@@ -41,7 +41,7 @@ func NewAttributeModifierEffect() *core.Effect {
 		}
 	})
 
-	fx.WithBeforeDamageRoll(func(_ *core.Effect, s *core.BeforeDamageRollState) {
+	fx.On(func(s *core.BeforeDamageRollState) {
 		if s.Tags.HasTag(tags.Ranged) || s.Tags.HasTag(tags.Melee) {
 			applyAttackModifier(s.Source, s.Expression, s.Tags)
 		}
@@ -50,7 +50,7 @@ func NewAttributeModifierEffect() *core.Effect {
 		}
 	})
 
-	fx.WithBeforeSavingThrow(func(_ *core.Effect, s *core.BeforeSavingThrowState) {
+	fx.On(func(s *core.BeforeSavingThrowState) {
 		if s.Attribute.MatchExact(tags.HitPoints) {
 			return
 		}

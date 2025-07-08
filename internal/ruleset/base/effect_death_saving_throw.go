@@ -34,14 +34,14 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		return false
 	}
 
-	fx.WithSerialize(func(_ *core.Effect, s *core.SerializeState) {
+	fx.On(func(s *core.SerializeState) {
 		s.State.Data = map[string]int{
 			"Success":  success,
 			"Failures": failures,
 		}
 	})
 
-	fx.WithDeserialize(func(_ *core.Effect, s *core.SerializeState) {
+	fx.On(func(s *core.SerializeState) {
 		data, ok := s.State.Data.(map[string]interface{})
 		if !ok {
 			panic("could not deserialize dst")
@@ -52,7 +52,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		failures = int(data["Failures"].(float64))
 	})
 
-	fx.WithAttributeChanged(func(_ *core.Effect, s *core.AttributeChangedState) {
+	fx.On(func(s *core.AttributeChangedState) {
 		if !s.Attribute.MatchExact(tags.HitPoints) {
 			return
 		}
@@ -64,14 +64,14 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		s.Source.RemoveCondition(tags.Unconscious, nil)
 	})
 
-	fx.WithConditionRemoved(func(_ *core.Effect, s *core.ConditionChangedState) {
+	fx.On(func(s *core.ConditionChangedState) {
 		if !s.Condition.Match(tags.Unconscious) {
 			return
 		}
 		reset()
 	})
 
-	fx.WithAfterTakeDamage(func(_ *core.Effect, s *core.AfterTakeDamageState) {
+	fx.On(func(s *core.AfterTakeDamageState) {
 		if s.Source.HitPoints > 0 {
 			return
 		}
@@ -94,7 +94,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		}
 	})
 
-	fx.WithTurnStarted(func(_ *core.Effect, s *core.TurnState) {
+	fx.On(func(s *core.TurnState) {
 		if !s.Source.MatchCondition(tags.Unconscious) {
 			return
 		}
