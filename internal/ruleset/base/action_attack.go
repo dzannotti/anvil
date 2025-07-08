@@ -8,6 +8,8 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/grid"
 	"anvil/internal/tag"
+
+	"github.com/google/uuid"
 )
 
 type AttackAction struct {
@@ -24,11 +26,13 @@ func NewAttackAction(
 ) *AttackAction {
 	a := &AttackAction{
 		Action: Action{
-			owner:  owner,
-			name:   name,
-			cost:   map[tag.Tag]int{tags.Action: 1},
-			tags:   tc,
-			damage: ds,
+			owner:     owner,
+			archetype: "attack",
+			id:        uuid.New().String(),
+			name:      name,
+			cost:      map[tag.Tag]int{tags.Action: 1},
+			tags:      tc,
+			damage:    ds,
 		},
 		reach: reach,
 	}

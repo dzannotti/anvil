@@ -7,6 +7,8 @@ import (
 
 type Action interface {
 	Name() string
+	Archetype() string
+	ID() string
 	Tags() *tag.Container
 	Perform(pos []grid.Position, commitCost bool)
 

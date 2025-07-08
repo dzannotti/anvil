@@ -10,6 +10,8 @@ import (
 
 type Action struct {
 	owner     *core.Actor
+	archetype string
+	id        string
 	name      string
 	tags      tag.Container
 	cost      map[tag.Tag]int
@@ -20,6 +22,8 @@ type Action struct {
 
 func MakeAction(
 	owner *core.Actor,
+	archetype string,
+	id string,
 	name string,
 	t tag.Container,
 	cost map[tag.Tag]int,
@@ -29,6 +33,8 @@ func MakeAction(
 ) Action {
 	return Action{
 		owner:     owner,
+		archetype: archetype,
+		id:        id,
 		name:      name,
 		tags:      t,
 		cost:      cost,
@@ -40,6 +46,14 @@ func MakeAction(
 
 func (a Action) Owner() *core.Actor {
 	return a.owner
+}
+
+func (a Action) Archetype() string {
+	return a.archetype
+}
+
+func (a Action) ID() string {
+	return a.id
 }
 
 func (a Action) Name() string {
