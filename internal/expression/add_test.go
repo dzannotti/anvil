@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"anvil/internal/tag"
 )
@@ -165,7 +166,7 @@ func TestExpression_Add(t *testing.T) {
 			expression := tt.setup()
 
 			if len(tt.expected.components) > 0 {
-				assert.Len(t, expression.Components, len(tt.expected.components))
+				require.Len(t, expression.Components, len(tt.expected.components), "component count must match for test to continue")
 				for i, component := range tt.expected.components {
 					assert.Equal(t, component.Type, expression.Components[i].Type)
 					assert.Equal(t, component.Source, expression.Components[i].Source)
