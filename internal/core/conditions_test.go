@@ -3,6 +3,8 @@ package core
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"anvil/internal/tag"
 )
 
@@ -11,26 +13,17 @@ func TestConditions_Add(t *testing.T) {
 	testTag := tag.FromString("test")
 	effect := &Effect{Name: "test"}
 
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("Expected conditions to panic when source is nil")
-		}
-	}()
-	c.Add(testTag, nil)
+	assert.Panics(t, func() {
+		c.Add(testTag, nil)
+	}, "Expected conditions to panic when source is nil")
 
 	c.Add(testTag, effect)
-	if len(c.Sources[testTag]) != 1 {
-		t.Error("Expected one effect to be added")
-	}
-	if c.Sources[testTag][0] != effect {
-		t.Error("Expected added effect to match source")
-	}
+	assert.Len(t, c.Sources[testTag], 1, "Expected one effect to be added")
+	assert.Equal(t, effect, c.Sources[testTag][0], "Expected added effect to match source")
 
 	effect2 := &Effect{Name: "test2"}
 	c.Add(testTag, effect2)
-	if len(c.Sources[testTag]) != 2 {
-		t.Error("Expected two effects")
-	}
+	assert.Len(t, c.Sources[testTag], 2, "Expected two effects")
 }
 
 func TestConditions_Remove(t *testing.T) {
@@ -39,31 +32,21 @@ func TestConditions_Remove(t *testing.T) {
 	effect := &Effect{Name: "test"}
 
 	removed := c.Remove(testTag, effect)
-	if removed {
-		t.Error("Expected false when removing from empty conditions")
-	}
+	assert.False(t, removed, "Expected false when removing from empty conditions")
 
 	// Add and remove specific effect
 	c.Add(testTag, effect)
 	removed = c.Remove(testTag, effect)
-	if !removed {
-		t.Error("Expected true when removing existing effect")
-	}
-	if len(c.Sources[testTag]) != 0 {
-		t.Error("Expected effect to be removed")
-	}
+	assert.True(t, removed, "Expected true when removing existing effect")
+	assert.Len(t, c.Sources[testTag], 0, "Expected effect to be removed")
 
 	// Test removing with nil source (should remove all)
 	effect2 := &Effect{Name: "test2"}
 	c.Add(testTag, effect)
 	c.Add(testTag, effect2)
 	removed = c.Remove(testTag, nil)
-	if !removed {
-		t.Error("Expected true when removing all effects")
-	}
-	if len(c.Sources[testTag]) != 0 {
-		t.Error("Expected all effects to be removed")
-	}
+	assert.True(t, removed, "Expected true when removing all effects")
+	assert.Len(t, c.Sources[testTag], 0, "Expected all effects to be removed")
 }
 
 func TestConditions_Has(t *testing.T) {
@@ -72,22 +55,14 @@ func TestConditions_Has(t *testing.T) {
 	effect := &Effect{Name: "test"}
 
 	// Test has on empty conditions
-	if c.Has(testTag, effect) {
-		t.Error("Expected Has to return false for empty conditions")
-	}
+	assert.False(t, c.Has(testTag, effect), "Expected Has to return false for empty conditions")
 
 	// Add effect and test Has
 	c.Add(testTag, effect)
-	if !c.Has(testTag, effect) {
-		t.Error("Expected Has to return true for existing effect")
-	}
+	assert.True(t, c.Has(testTag, effect), "Expected Has to return true for existing effect")
 
-	if !c.Has(testTag, nil) {
-		t.Error("Expected Has to return true for nil source but present condition")
-	}
+	assert.True(t, c.Has(testTag, nil), "Expected Has to return true for nil source but present condition")
 	// Test Has with different effect
 	effect2 := &Effect{Name: "test2"}
-	if c.Has(testTag, effect2) {
-		t.Error("Expected Has to return false for non-existing effect")
-	}
+	assert.False(t, c.Has(testTag, effect2), "Expected Has to return false for non-existing effect")
 }

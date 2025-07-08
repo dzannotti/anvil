@@ -72,7 +72,7 @@ func TestContainer_Evaluate(t *testing.T) {
 	t.Run("does nothing for unhandled events", func(t *testing.T) {
 		c := &EffectContainer{}
 		e1 := &Effect{Name: "e1"}
-		e1.withHandler("TestContainer", func(_ *Effect, _ any) { t.Error("should not be called") })
+		e1.withHandler("TestContainer", func(_ *Effect, _ any) { assert.Fail(t, "should not be called") })
 
 		c.Add(e1)
 		c.Evaluate(&UnhandledEvent{})
