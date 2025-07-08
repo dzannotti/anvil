@@ -5,7 +5,7 @@ import "anvil/internal/core"
 func NewDeathEffect() *core.Effect {
 	fx := &core.Effect{Name: "Death", Priority: core.PriorityLast}
 
-	fx.WithAfterTakeDamage(func(_ *core.Effect, s *core.AfterTakeDamageState) {
+	fx.On(func(s *core.PostTakeDamage) {
 		if s.Source.HitPoints == 0 {
 			s.Source.Die()
 		}
