@@ -22,6 +22,14 @@ func (e *Expression) Clone() Expression {
 	}
 }
 
+func (e *Expression) ExpectedValue() int {
+	total := 0
+	for _, component := range e.Components {
+		total += component.ExpectedValue()
+	}
+	return total
+}
+
 func (e *Expression) primaryTags(inputTags tag.Container) tag.Container {
 	if len(e.Components) == 0 {
 		return inputTags

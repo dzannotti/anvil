@@ -66,3 +66,66 @@ func TestExpression_Clone(t *testing.T) {
 		})
 	}
 }
+
+func TestExpression_ExpectedValue(t *testing.T) {
+	tests := []struct {
+		name     string
+		setup    func() Expression
+		expected int
+	}{
+		{
+			name: "empty expression",
+			setup: func() Expression {
+				return Expression{}
+			},
+			expected: 0,
+		},
+		{
+			name: "single constant",
+			setup: func() Expression {
+				expr := Expression{}
+				expr.AddConstant(5, "Base")
+				return expr
+			},
+			expected: 5,
+		},
+		{
+			name: "single dice",
+			setup: func() Expression {
+				expr := Expression{}
+				expr.AddDice(2, 6, "Damage")
+				return expr
+			},
+			expected: 7, // 2 * (6+1) / 2 = 7
+		},
+		{
+			name: "constant plus dice",
+			setup: func() Expression {
+				expr := Expression{}
+				expr.AddConstant(3, "Bonus")
+				expr.AddDice(1, 8, "Weapon")
+				return expr
+			},
+			expected: 7, // 3 + 4 = 7 (1 * (8+1) / 2 = 4)
+		},
+		{
+			name: "multiple dice types",
+			setup: func() Expression {
+				expr := Expression{}
+				expr.AddD20("Attack")         // 10 (1 * (20+1) / 2 = 10)
+				expr.AddDamageDice(2, 6, "Main", tag.NewContainer()) // 7 (2 * (6+1) / 2 = 7)
+				expr.AddConstant(4, "Bonus")  // 4
+				return expr
+			},
+			expected: 21, // 10 + 7 + 4 = 21
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			expr := tt.setup()
+			result := expr.ExpectedValue()
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
