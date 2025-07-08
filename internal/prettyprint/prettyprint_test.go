@@ -1,7 +1,6 @@
 package prettyprint
 
 import (
-	"reflect"
 	"testing"
 
 	"anvil/internal/core"
@@ -26,17 +25,17 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 	}{
 		{
 			name:      "confirm event",
-			eventType: reflect.TypeOf(core.ConfirmEvent{}).String(),
+			eventType: eventbus.EventType(core.ConfirmEvent{}),
 			eventData: core.ConfirmEvent{Confirm: true},
 		},
 		{
 			name:      "target event",
-			eventType: reflect.TypeOf(core.TargetEvent{}).String(),
+			eventType: eventbus.EventType(core.TargetEvent{}),
 			eventData: core.TargetEvent{Target: []*core.Actor{sampleActor}},
 		},
 		{
 			name:      "check result event",
-			eventType: reflect.TypeOf(core.CheckResultEvent{}).String(),
+			eventType: eventbus.EventType(core.CheckResultEvent{}),
 			eventData: core.CheckResultEvent{
 				Success:  true,
 				Critical: false,
@@ -46,7 +45,7 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 		},
 		{
 			name:      "saving throw result event",
-			eventType: reflect.TypeOf(core.SavingThrowResultEvent{}).String(),
+			eventType: eventbus.EventType(core.SavingThrowResultEvent{}),
 			eventData: core.SavingThrowResultEvent{
 				Success:  false,
 				Critical: true,
@@ -56,7 +55,7 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 		},
 		{
 			name:      "attack roll event",
-			eventType: reflect.TypeOf(core.AttackRollEvent{}).String(),
+			eventType: eventbus.EventType(core.AttackRollEvent{}),
 			eventData: core.AttackRollEvent{
 				Source: sampleActor,
 				Target: sampleActor,
@@ -64,17 +63,17 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 		},
 		{
 			name:      "damage roll event",
-			eventType: reflect.TypeOf(core.DamageRollEvent{}).String(),
+			eventType: eventbus.EventType(core.DamageRollEvent{}),
 			eventData: core.DamageRollEvent{Source: sampleActor},
 		},
 		{
 			name:      "effect event",
-			eventType: reflect.TypeOf(core.EffectEvent{}).String(),
+			eventType: eventbus.EventType(core.EffectEvent{}),
 			eventData: core.EffectEvent{Effect: &core.Effect{Name: "Test Effect"}},
 		},
 		{
 			name:      "spend resource event",
-			eventType: reflect.TypeOf(core.SpendResourceEvent{}).String(),
+			eventType: eventbus.EventType(core.SpendResourceEvent{}),
 			eventData: core.SpendResourceEvent{
 				Source:   sampleActor,
 				Amount:   1,
@@ -118,11 +117,11 @@ func TestShouldPrintEnd(t *testing.T) {
 	assert.True(t, shouldPrintEnd())
 
 	// Add a regular event
-	eventStack = append(eventStack, eventbus.Event{Kind: reflect.TypeOf(core.TurnEvent{}).String()})
+	eventStack = append(eventStack, eventbus.Event{Kind: eventbus.EventType(core.TurnEvent{})})
 	assert.True(t, shouldPrintEnd())
 
 	// Add a stopper event
-	eventStack = append(eventStack, eventbus.Event{Kind: reflect.TypeOf(core.ConfirmEvent{}).String()})
+	eventStack = append(eventStack, eventbus.Event{Kind: eventbus.EventType(core.ConfirmEvent{})})
 	assert.False(t, shouldPrintEnd())
 
 	// Clear for other tests

@@ -6,6 +6,11 @@ import (
 	"github.com/zyedidia/generic/stack"
 )
 
+// EventType returns the string representation of the given event value's type
+func EventType(event any) string {
+	return reflect.TypeOf(event).String()
+}
+
 type GenericEventHandler func(data Event)
 
 type Dispatcher struct {

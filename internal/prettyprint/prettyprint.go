@@ -3,7 +3,6 @@ package prettyprint
 import (
 	"fmt"
 	"io"
-	"reflect"
 	"slices"
 	"strings"
 
@@ -21,16 +20,16 @@ func shouldPrintEnd() bool {
 	}
 
 	stoppers := []string{
-		reflect.TypeOf(core.ExpressionResultEvent{}).String(),
-		reflect.TypeOf(core.CheckResultEvent{}).String(),
-		reflect.TypeOf(core.SavingThrowResultEvent{}).String(),
-		reflect.TypeOf(core.AttributeCalculationEvent{}).String(),
-		reflect.TypeOf(core.ConfirmEvent{}).String(),
-		reflect.TypeOf(core.AttributeChangeEvent{}).String(),
-		reflect.TypeOf(core.SpendResourceEvent{}).String(),
-		reflect.TypeOf(core.ConditionChangedEvent{}).String(),
-		reflect.TypeOf(core.DeathSavingThrowResultEvent{}).String(),
-		reflect.TypeOf(core.TargetEvent{}).String(),
+		eventbus.EventType(core.ExpressionResultEvent{}),
+		eventbus.EventType(core.CheckResultEvent{}),
+		eventbus.EventType(core.SavingThrowResultEvent{}),
+		eventbus.EventType(core.AttributeCalculationEvent{}),
+		eventbus.EventType(core.ConfirmEvent{}),
+		eventbus.EventType(core.AttributeChangeEvent{}),
+		eventbus.EventType(core.SpendResourceEvent{}),
+		eventbus.EventType(core.ConditionChangedEvent{}),
+		eventbus.EventType(core.DeathSavingThrowResultEvent{}),
+		eventbus.EventType(core.TargetEvent{}),
 	}
 
 	lastEvent := eventStack[len(eventStack)-1]

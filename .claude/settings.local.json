@@ -5,7 +5,9 @@
       "Bash(go build:*)",
       "Bash(go test:*)",
       "Bash(go run:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(timeout 5 go run ./cmd/cli)",
+      "Bash(true)"
     ],
     "deny": []
   }
