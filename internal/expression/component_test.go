@@ -59,7 +59,7 @@ func TestComponent_Clone(t *testing.T) {
 		{
 			name: "should deep copy all fields and slices",
 			originalComponent: Component{
-				Type:            TypeDice,
+				Type:            Dice,
 				Source:          "test",
 				Value:           10,
 				Values:          []int{1, 2, 3},
@@ -68,7 +68,7 @@ func TestComponent_Clone(t *testing.T) {
 				HasAdvantage:    []string{"adv1", "adv2"},
 				HasDisadvantage: []string{"dis1"},
 				Components: []Component{{
-					Type:   TypeConstant,
+					Type:   Constant,
 					Source: "sub",
 				}},
 			},

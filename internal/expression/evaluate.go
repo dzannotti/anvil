@@ -3,7 +3,6 @@ package expression
 import (
 	"fmt"
 
-	"anvil/internal/core/tags"
 	"anvil/internal/mathi"
 )
 
@@ -20,7 +19,7 @@ func (e *Expression) Evaluate() *Expression {
 }
 
 func (e *Expression) evaluateComponent(component *Component) {
-	if component.Tags.MatchTag(tags.ComponentConstant) {
+	if component.Type.Match(Constant) {
 		return
 	}
 	e.evaluateDice(component)
@@ -60,22 +59,22 @@ func (e *Expression) IsCriticalSuccess() bool {
 	if len(e.Components) == 0 {
 		return false
 	}
-	return e.Components[0].IsCritical == 1 || e.Components[0].Value == e.Components[0].Sides
+	return e.Components[0].IsCritical == CriticalSuccess || e.Components[0].Value == e.Components[0].Sides
 }
 
 func (e *Expression) IsCriticalFailure() bool {
 	if len(e.Components) == 0 {
 		return false
 	}
-	return e.Components[0].IsCritical == -1 || e.Components[0].Values[0] == 1
+	return e.Components[0].IsCritical == CriticalFailure || e.Components[0].Values[0] == 1
 }
 
 func (e *Expression) SetCriticalSuccess(source string) {
-	e.Components[0].IsCritical = 1
+	e.Components[0].IsCritical = CriticalSuccess
 	e.Components[0].Source += fmt.Sprintf(" as Critical success (%s)", source)
 }
 
 func (e *Expression) SetCriticalFailure(source string) {
-	e.Components[0].IsCritical = -1
+	e.Components[0].IsCritical = CriticalFailure
 	e.Components[0].Source += fmt.Sprintf(" as Critical failure (%s)", source)
 }

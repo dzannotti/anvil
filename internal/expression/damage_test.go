@@ -13,36 +13,36 @@ func TestExpression_HalveDamage(t *testing.T) {
 		expr := Expression{Rng: &mockRoller{mockReturns: []int{6, 6}}}
 		expr.AddDamageDice(1, 6, "Fire Damage", tag.NewContainerFromString("fire"))
 		expr.Evaluate()
-		
+
 		expr.HalveDamage(tag.FromString("fire"), "Resistance")
-		
+
 		assert.Equal(t, 3, expr.Components[0].Value) // floor(6/2)
 		assert.Equal(t, "Halved (Resistance) Fire Damage", expr.Components[0].Source)
-		assert.Equal(t, TypeConstant, expr.Components[0].Type)
+		assert.Equal(t, Constant, expr.Components[0].Type)
 	})
 
 	t.Run("ignores non-matching damage components", func(t *testing.T) {
 		expr := Expression{Rng: &mockRoller{mockReturns: []int{8, 8}}}
 		expr.AddDamageDice(1, 8, "Cold Damage", tag.NewContainerFromString("cold"))
 		expr.Evaluate()
-		
+
 		expr.HalveDamage(tag.FromString("fire"), "Resistance")
-		
+
 		// Component should remain unchanged since tag doesn't match
 		assert.Equal(t, 8, expr.Components[0].Value)
 		assert.Equal(t, "Cold Damage", expr.Components[0].Source)
-		assert.Equal(t, TypeDamageDice, expr.Components[0].Type) // Should remain as dice
+		assert.Equal(t, DamageDice, expr.Components[0].Type) // Should remain as dice
 	})
 
 	t.Run("handles odd numbers by rounding down", func(t *testing.T) {
 		expr := Expression{}
 		expr.AddDamageConstant(7, "Poison Damage", tag.NewContainerFromString("poison"))
-		
+
 		expr.HalveDamage(tag.FromString("poison"), "Resistance")
-		
+
 		assert.Equal(t, 3, expr.Components[0].Value) // floor(7/2)
 		assert.Equal(t, "Halved (Resistance) Poison Damage", expr.Components[0].Source)
-		assert.Equal(t, TypeConstant, expr.Components[0].Type)
+		assert.Equal(t, Constant, expr.Components[0].Type)
 	})
 }
 

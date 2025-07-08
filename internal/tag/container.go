@@ -147,6 +147,6 @@ func (c *Container) Len() int {
 	return len(c.tags)
 }
 
-func (c *Container) Clone() Container {
+func (c Container) Clone() Container {
 	return NewContainer(c.tags...)
 }

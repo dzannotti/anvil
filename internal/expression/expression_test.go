@@ -52,7 +52,7 @@ func TestExpression_Clone(t *testing.T) {
 			// Verify components are deeply cloned
 			for i := range original.Components {
 				assert.Equal(t, original.Components[i], clone.Components[i])
-				
+
 				// Verify it's a deep copy - modifying clone shouldn't affect original
 				if len(clone.Components) > 0 {
 					clone.Components[i].Value = 999

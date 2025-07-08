@@ -34,7 +34,7 @@ func TestExpression_Evaluate(t *testing.T) {
 			}{
 				value: 2,
 				component: Component{
-					Type:   TypeConstant,
+					Type:   Constant,
 					Source: "Damage",
 				},
 			},
@@ -55,7 +55,7 @@ func TestExpression_Evaluate(t *testing.T) {
 			}{
 				value: 5,
 				component: Component{
-					Type:   TypeDice,
+					Type:   Dice,
 					Source: "Damage",
 					Sides:  6,
 					Times:  1,
@@ -79,7 +79,7 @@ func TestExpression_Evaluate(t *testing.T) {
 			}{
 				value: 5,
 				component: Component{
-					Type:   TypeDice20,
+					Type:   D20,
 					Source: "Attack",
 					Sides:  20,
 					Times:  1,
@@ -104,7 +104,7 @@ func TestExpression_Evaluate(t *testing.T) {
 			}{
 				value: 15,
 				component: Component{
-					Type:   TypeDice20,
+					Type:   D20,
 					Source: "Attack",
 				},
 				values: []int{5, 15},
@@ -128,7 +128,7 @@ func TestExpression_Evaluate(t *testing.T) {
 			}{
 				value: 5,
 				component: Component{
-					Type:   TypeDice20,
+					Type:   D20,
 					Source: "Attack",
 				},
 				values: []int{5, 15},
@@ -153,7 +153,7 @@ func TestExpression_Evaluate(t *testing.T) {
 			}{
 				value: 5,
 				component: Component{
-					Type:   TypeDice20,
+					Type:   D20,
 					Source: "Attack",
 				},
 				values: []int{5},
@@ -302,9 +302,9 @@ func TestExpression_CriticalHits(t *testing.T) {
 	t.Run("SetCriticalSuccess", func(t *testing.T) {
 		expr := Expression{}
 		expr.AddD20("Attack")
-		
+
 		expr.SetCriticalSuccess("Natural 20")
-		
+
 		assert.Equal(t, 1, expr.Components[0].IsCritical)
 		assert.Contains(t, expr.Components[0].Source, "as Critical success (Natural 20)")
 		assert.True(t, expr.IsCriticalSuccess())
@@ -313,9 +313,9 @@ func TestExpression_CriticalHits(t *testing.T) {
 	t.Run("SetCriticalFailure", func(t *testing.T) {
 		expr := Expression{}
 		expr.AddD20("Attack")
-		
+
 		expr.SetCriticalFailure("Cursed")
-		
+
 		assert.Equal(t, -1, expr.Components[0].IsCritical)
 		assert.Contains(t, expr.Components[0].Source, "as Critical failure (Cursed)")
 		assert.True(t, expr.IsCriticalFailure())

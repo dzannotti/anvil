@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 
-	"anvil/internal/core/tags"
 	"anvil/internal/mathi"
 	"anvil/internal/tag"
 )
@@ -16,14 +15,11 @@ func (e *Expression) HalveDamage(tag tag.Tag, source string) {
 		}
 		e.evaluateComponent(&component)
 		value := math.Floor(float64(component.Value) / 2.0)
-		src := fmt.Sprintf("Halved (%s) %s", source, component.Source)
-		componentTags := component.Tags.Clone()
-		componentTags.AddTag(tags.ComponentConstant)
 		e.Components[i] = Component{
-			Type:       TypeConstant,
-			Source:     src,
+			Type:       Constant,
+			Source:     fmt.Sprintf("Halved (%s) %s", source, component.Source),
 			Value:      int(value),
-			Tags:       componentTags,
+			Tags:       component.Tags.Clone(),
 			Components: []Component{component},
 		}
 	}
@@ -32,10 +28,10 @@ func (e *Expression) HalveDamage(tag tag.Tag, source string) {
 func (e *Expression) ReplaceWith(value int, source string) {
 	components := e.Components
 	e.Components = []Component{{
-		Type:       TypeConstant,
+		Type:       Constant,
 		Source:     source,
 		Value:      value,
-		Tags:       tag.NewContainer(tags.ComponentConstant),
+		Tags:       tag.NewContainer(),
 		Components: components,
 	}}
 }
@@ -44,7 +40,7 @@ func (e *Expression) DoubleDice(source string) {
 	components := []Component{}
 	for _, component := range e.Components {
 		components = append(components, component)
-		if !component.Tags.MatchTag(tags.ComponentDice) {
+		if !component.Type.Match(Dice) {
 			continue
 		}
 		newComponent := component.Clone()
@@ -58,13 +54,12 @@ func (e *Expression) MaxDice(source string) {
 	components := []Component{}
 	for _, component := range e.Components {
 		components = append(components, component)
-		if !component.Tags.MatchTag(tags.ComponentDice) {
+		if !component.Type.Match(Dice) {
 			continue
 		}
 		newComponent := component.Clone()
 		newComponent.Source = source
-		newComponent.Type = TypeConstant
-		newComponent.Tags.AddTag(tags.ComponentConstant)
+		newComponent.Type = Constant
 		newComponent.Value = mathi.Abs(component.Sides * component.Times)
 		components = append(components, newComponent)
 	}

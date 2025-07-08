@@ -20,7 +20,7 @@ func TestExpression_New(t *testing.T) {
 				return FromConstant(3, "Damage")
 			},
 			expected: Component{
-				Type:   TypeConstant,
+				Type:   Constant,
 				Source: "Damage",
 				Value:  3,
 			},
@@ -31,7 +31,7 @@ func TestExpression_New(t *testing.T) {
 				return FromDice(2, 6, "Damage")
 			},
 			expected: Component{
-				Type:   TypeDice,
+				Type:   Dice,
 				Source: "Damage",
 				Sides:  6,
 				Times:  2,
@@ -43,7 +43,7 @@ func TestExpression_New(t *testing.T) {
 				return FromD20("Damage")
 			},
 			expected: Component{
-				Type:   TypeDice20,
+				Type:   D20,
 				Source: "Damage",
 				Sides:  20,
 				Times:  1,
@@ -55,7 +55,7 @@ func TestExpression_New(t *testing.T) {
 				return FromDamageConstant(2, "Damage", tag.NewContainerFromString("slashing"))
 			},
 			expected: Component{
-				Type:   TypeDamageConstant,
+				Type:   DamageConstant,
 				Source: "Damage",
 				Tags:   tag.NewContainerFromString("slashing"),
 				Value:  2,
@@ -67,7 +67,7 @@ func TestExpression_New(t *testing.T) {
 				return FromDamageDice(2, 6, "Damage", tag.NewContainerFromString("slashing"))
 			},
 			expected: Component{
-				Type:   TypeDamageDice,
+				Type:   DamageDice,
 				Source: "Damage",
 				Tags:   tag.NewContainerFromString("slashing"),
 				Times:  2,
@@ -127,7 +127,7 @@ func TestFromDamageResult(t *testing.T) {
 			// Should be equal but not the same object
 			assert.Equal(t, original.Value, result.Value)
 			assert.Equal(t, len(original.Components), len(result.Components))
-			
+
 			// Verify it's a deep copy
 			if len(result.Components) > 0 {
 				result.Components[0].Value = 999

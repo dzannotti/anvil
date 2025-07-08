@@ -29,7 +29,7 @@ func TestExpression_Add(t *testing.T) {
 				components []Component
 			}{
 				component: Component{
-					Type:   TypeConstant,
+					Type:   Constant,
 					Source: "Damage",
 					Value:  2,
 				},
@@ -47,7 +47,7 @@ func TestExpression_Add(t *testing.T) {
 				components []Component
 			}{
 				component: Component{
-					Type:   TypeDice,
+					Type:   Dice,
 					Source: "Damage",
 					Sides:  6,
 					Times:  2,
@@ -66,7 +66,7 @@ func TestExpression_Add(t *testing.T) {
 				components []Component
 			}{
 				component: Component{
-					Type:   TypeDice20,
+					Type:   D20,
 					Source: "Damage",
 					Sides:  20,
 					Times:  1,
@@ -85,7 +85,7 @@ func TestExpression_Add(t *testing.T) {
 				components []Component
 			}{
 				component: Component{
-					Type:   TypeDamageConstant,
+					Type:   DamageConstant,
 					Source: "Damage",
 					Tags:   tag.NewContainerFromString("slashing"),
 					Value:  2,
@@ -104,7 +104,7 @@ func TestExpression_Add(t *testing.T) {
 				components []Component
 			}{
 				component: Component{
-					Type:   TypeDamageDice,
+					Type:   DamageDice,
 					Source: "Damage",
 					Tags:   tag.NewContainerFromString("slashing"),
 					Times:  2,
@@ -125,7 +125,7 @@ func TestExpression_Add(t *testing.T) {
 				components []Component
 			}{
 				component: Component{
-					Type:   TypeConstant,
+					Type:   Constant,
 					Source: "Bad Luck",
 					Value:  3,
 				},
@@ -145,12 +145,12 @@ func TestExpression_Add(t *testing.T) {
 			}{
 				components: []Component{
 					{
-						Type:   TypeConstant,
+						Type:   Constant,
 						Source: "First",
 						Value:  2,
 					},
 					{
-						Type:   TypeDice,
+						Type:   Dice,
 						Source: "Second",
 						Times:  1,
 						Sides:  6,

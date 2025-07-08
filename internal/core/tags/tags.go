@@ -110,13 +110,6 @@ var (
 	Incapacitated = tag.FromString("Condition.Incapacitated")
 	Unconscious   = tag.FromString("Condition.Incapacitated.Unconscious")
 	Dead          = tag.FromString("Condition.Incapacitated.Unconscious.Dead")
-
-	ComponentType         = tag.FromString("Component.Type")
-	ComponentConstant     = tag.FromString("Component.Type.Constant")
-	ComponentDamageConstant = tag.FromString("Component.Type.Constant.Damage")
-	ComponentDice         = tag.FromString("Component.Type.Dice")
-	ComponentDice20       = tag.FromString("Component.Type.Dice.D20")
-	ComponentDamageDice   = tag.FromString("Component.Type.Dice.Damage")
 )
 
 func ToReadable(tag tag.Tag) string {

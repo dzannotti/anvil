@@ -1,19 +1,25 @@
 package expression
 
-import "anvil/internal/tag"
+import (
+	"anvil/internal/tag"
+)
 
-type ComponentType string
+var (
+	Constant       = tag.FromString("Component.Type.Constant")
+	DamageConstant = tag.FromString("Component.Type.Constant.Damage")
+	Dice           = tag.FromString("Component.Type.Dice")
+	D20            = tag.FromString("Component.Type.Dice.D20")
+	DamageDice     = tag.FromString("Component.Type.Dice.Damage")
+)
 
 const (
-	TypeConstant       ComponentType = "constant"
-	TypeDamageConstant ComponentType = "constant-damage"
-	TypeDice           ComponentType = "dice"
-	TypeDice20         ComponentType = "dice-d20"
-	TypeDamageDice     ComponentType = "dice-damage"
+	CriticalSuccess = 1
+	CriticalFailure = -1
+	CriticalNone    = 0
 )
 
 type Component struct {
-	Type            ComponentType
+	Type            tag.Tag
 	Value           int
 	Source          string
 	Values          []int
@@ -32,26 +38,11 @@ func (c *Component) shouldModifyRoll() bool {
 
 func (c Component) Clone() Component {
 	var cloned []Component
-	if c.Components != nil {
+	if len(c.Components) > 0 {
 		cloned = make([]Component, len(c.Components))
 		for i := range c.Components {
 			cloned[i] = c.Components[i].Clone()
 		}
-	}
-
-	var values []int
-	if c.Values != nil {
-		values = append(make([]int, 0), c.Values...)
-	}
-
-	var hasAdvantage []string
-	if c.HasAdvantage != nil {
-		hasAdvantage = append(make([]string, 0), c.HasAdvantage...)
-	}
-
-	var hasDisadvantage []string
-	if c.HasDisadvantage != nil {
-		hasDisadvantage = append(make([]string, 0), c.HasDisadvantage...)
 	}
 
 	return Component{
@@ -60,9 +51,9 @@ func (c Component) Clone() Component {
 		Value:           c.Value,
 		Times:           c.Times,
 		Sides:           c.Sides,
-		Values:          values,
-		HasAdvantage:    hasAdvantage,
-		HasDisadvantage: hasDisadvantage,
+		Values:          append([]int(nil), c.Values...),
+		HasAdvantage:    append([]string(nil), c.HasAdvantage...),
+		HasDisadvantage: append([]string(nil), c.HasDisadvantage...),
 		Tags:            c.Tags,
 		Components:      cloned,
 		IsCritical:      c.IsCritical,
