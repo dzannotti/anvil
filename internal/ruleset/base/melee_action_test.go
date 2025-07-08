@@ -60,7 +60,7 @@ func createTestActor(world *core.World, encounter *core.Encounter, dispatcher *e
 	return actor
 }
 
-func createTestWeapon(name string, damage string, damageType tag.Tag, reach int) *NaturalWeapon {
+func createTestWeapon(name string, _ string, damageType tag.Tag, _ int) *NaturalWeapon {
 	expr := expression.FromDamageDice(1, 8, name, tag.NewContainer(damageType))
 	return NewNaturalWeapon(name, "weapon", expr, tag.NewContainer(damageType))
 }
