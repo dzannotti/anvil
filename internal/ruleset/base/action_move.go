@@ -33,7 +33,8 @@ func (a MoveAction) Perform(pos []grid.Position, commitCost bool) {
 	}
 	src.Dispatcher.Begin(core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
 	defer src.Dispatcher.End()
-	for _, node := range path.Path[1:] {
+	positions := path.Positions()
+	for _, node := range positions[1:] {
 		if commitCost {
 			src.ConsumeResource(tags.WalkSpeed, 1)
 		}
@@ -61,7 +62,7 @@ func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
 			continue
 		}
 		path, ok := a.owner.World.FindPath(from, pos)
-		if !ok || path.Speed > speed {
+		if !ok || int(path.TotalCost) > speed {
 			continue
 		}
 		valid = append(valid, pos)

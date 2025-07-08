@@ -74,8 +74,9 @@ func (am *ActionManager) drawPath(actor *core.Actor, cam Camera) {
 		FillCircle(ToWorldPositionCenter(worldPos), 10, Red)
 		return
 	}
-	for i := 1; i < len(path.Path); i++ {
-		DrawLine(ToWorldPositionCenter(path.Path[i-1]), ToWorldPositionCenter(path.Path[i]), Green, 2)
+	positions := path.Positions()
+	for i := 1; i < len(positions); i++ {
+		DrawLine(ToWorldPositionCenter(positions[i-1]), ToWorldPositionCenter(positions[i]), Green, 2)
 	}
 }
 

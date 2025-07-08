@@ -73,7 +73,8 @@ func (w World) FindPath(start grid.Position, end grid.Position) (*pathfinding.Re
 		}
 		return 1
 	}
-	return pathfinding.FindPath(start, end, w.Width(), w.Height(), navCost)
+	result := pathfinding.FindPath(start, end, w.Width(), w.Height(), navCost)
+	return result, result.Found
 }
 
 func (w World) HasLineOfSight(from grid.Position, to grid.Position) bool {

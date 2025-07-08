@@ -2,7 +2,6 @@ package shapes
 
 import "anvil/internal/grid"
 
-//nolint:gocognit,cyclop // reason: cyclop here is allowed
 func FloodFill(start grid.Position, radius int, isBlocked func(grid.Position) bool) []grid.Position {
 	visited := make(map[grid.Position]bool)
 	result := make([]grid.Position, 0)
