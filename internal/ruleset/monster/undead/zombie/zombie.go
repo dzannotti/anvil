@@ -18,7 +18,7 @@ func NewSlamAction(owner *core.Actor) core.Action {
 	}, 1, tag.NewContainer(tags.Melee, tags.NaturalWeapon))
 }
 
-func New(hub *eventbus.Hub, world *core.World, pos grid.Position, name string) *core.Actor {
+func New(dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, name string) *core.Actor {
 	attributes := stats.Attributes{
 		Strength:     13,
 		Dexterity:    6,
@@ -31,7 +31,7 @@ func New(hub *eventbus.Hub, world *core.World, pos grid.Position, name string) *
 	resources := core.Resources{Max: map[tag.Tag]int{
 		tags.WalkSpeed: 4,
 	}}
-	npc := actor.NewNPCActor(hub, world, pos, name, 22, attributes, proficiencies, resources)
+	npc := actor.NewNPCActor(dispatcher, world, pos, name, 22, attributes, proficiencies, resources)
 	npc.AddAction(NewSlamAction(npc))
 	npc.AddEffect(shared.NewUndeadFortitudeEffect())
 	return npc

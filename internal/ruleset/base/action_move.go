@@ -31,8 +31,8 @@ func (a MoveAction) Perform(pos []grid.Position, commitCost bool) {
 	if !ok {
 		panic("attempted to move to unreachable location - this should never happen")
 	}
-	src.Log.Start(core.MoveType, core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
-	defer src.Log.End()
+	src.Dispatcher.Start(core.MoveType, core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
+	defer src.Dispatcher.End()
 	for _, node := range path.Path[1:] {
 		if commitCost {
 			src.ConsumeResource(tags.WalkSpeed, 1)

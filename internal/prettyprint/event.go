@@ -38,7 +38,7 @@ var eventFormatters = map[string]EventFormatter{
 	core.TargetType:                    makeFormatter(printTarget),
 }
 
-func formatEvent(event eventbus.Message) string {
+func formatEvent(event eventbus.Event) string {
 	eventType := event.Kind
 	if formatter, exists := eventFormatters[eventType]; exists {
 		return formatter(event)

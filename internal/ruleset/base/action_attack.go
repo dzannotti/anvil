@@ -38,9 +38,9 @@ func NewAttackAction(
 
 func (a AttackAction) Perform(pos []grid.Position, commitCost bool) {
 	target := a.owner.World.ActorAt(pos[0])
-	a.owner.Log.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: a.owner, Target: pos})
-	a.owner.Log.Add(core.TargetType, core.TargetEvent{Target: []*core.Actor{target}})
-	defer a.owner.Log.End()
+	a.owner.Dispatcher.Start(core.UseActionType, core.UseActionEvent{Action: a, Source: a.owner, Target: pos})
+	a.owner.Dispatcher.Add(core.TargetType, core.TargetEvent{Target: []*core.Actor{target}})
+	defer a.owner.Dispatcher.End()
 	if commitCost {
 		a.Commit()
 	}

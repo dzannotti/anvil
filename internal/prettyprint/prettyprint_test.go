@@ -84,7 +84,7 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			msg := eventbus.Message{
+			msg := eventbus.Event{
 				Kind: tt.eventType,
 				Data: tt.eventData,
 			}
@@ -99,7 +99,7 @@ func TestEventFormatters_NoErrors(t *testing.T) {
 }
 
 func TestFormatEvent_UnknownType(t *testing.T) {
-	msg := eventbus.Message{
+	msg := eventbus.Event{
 		Kind: "unknown_event_type",
 		Data: "some data",
 	}
@@ -111,19 +111,19 @@ func TestFormatEvent_UnknownType(t *testing.T) {
 
 func TestShouldPrintEnd(t *testing.T) {
 	// Clear event stack
-	eventStack = []eventbus.Message{}
+	eventStack = []eventbus.Event{}
 
 	// Empty stack should print end
 	assert.True(t, shouldPrintEnd())
 
 	// Add a regular event
-	eventStack = append(eventStack, eventbus.Message{Kind: core.TurnType})
+	eventStack = append(eventStack, eventbus.Event{Kind: core.TurnType})
 	assert.True(t, shouldPrintEnd())
 
 	// Add a stopper event
-	eventStack = append(eventStack, eventbus.Message{Kind: core.ConfirmType})
+	eventStack = append(eventStack, eventbus.Event{Kind: core.ConfirmType})
 	assert.False(t, shouldPrintEnd())
 
 	// Clear for other tests
-	eventStack = []eventbus.Message{}
+	eventStack = []eventbus.Event{}
 }

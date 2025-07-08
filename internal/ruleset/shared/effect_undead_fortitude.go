@@ -14,8 +14,8 @@ func NewUndeadFortitudeEffect() *core.Effect {
 		if !wouldDie || radiant || s.Result.IsCriticalSuccess() {
 			return
 		}
-		s.Source.Log.Start(core.EffectType, core.EffectEvent{Source: s.Source, Effect: fx})
-		defer s.Source.Log.End()
+		s.Source.Dispatcher.Start(core.EffectType, core.EffectEvent{Source: s.Source, Effect: fx})
+		defer s.Source.Dispatcher.End()
 		dc := 5 + s.Result.Value
 		st := s.Source.SaveThrow(tags.Constitution, dc)
 		if st.Success {

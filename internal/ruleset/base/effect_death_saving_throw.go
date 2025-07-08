@@ -86,12 +86,12 @@ func NewDeathSavingThrowEffect() *core.Effect {
 			amount = 2
 		}
 		failures += amount
-		s.Source.Log.Start(
+		s.Source.Dispatcher.Start(
 			core.DeathSavingThrowAutomaticType,
 			core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: true},
 		)
-		defer s.Source.Log.End()
-		s.Source.Log.Add(
+		defer s.Source.Dispatcher.End()
+		s.Source.Dispatcher.Add(
 			core.DeathSavingThrowResultType,
 			core.DeathSavingThrowResultEvent{Source: s.Source, Success: success, Failure: failures},
 		)
@@ -104,18 +104,18 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		if !s.Source.MatchCondition(tags.Unconscious) {
 			return
 		}
-		s.Source.Log.Start(core.DeathSavingThrowType, core.DeathSavingThrowEvent{Source: s.Source})
-		defer s.Source.Log.End()
+		s.Source.Dispatcher.Start(core.DeathSavingThrowType, core.DeathSavingThrowEvent{Source: s.Source})
+		defer s.Source.Dispatcher.End()
 		result := s.Source.SaveThrow(tags.HitPoints, 10)
 		if result.Success {
 			success++
 			if result.Critical {
 				reset()
-				s.Source.Log.Start(
+				s.Source.Dispatcher.Start(
 					core.DeathSavingThrowAutomaticType,
 					core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: false},
 				)
-				defer s.Source.Log.End()
+				defer s.Source.Dispatcher.End()
 				s.Source.RemoveCondition(tags.Unconscious, nil)
 				s.Source.ModifyAttribute(tags.HitPoints, 1, "Death Saving Throw critical success")
 				return
@@ -126,7 +126,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 				failures++
 			}
 		}
-		s.Source.Log.Add(
+		s.Source.Dispatcher.Add(
 			core.DeathSavingThrowResultType,
 			core.DeathSavingThrowResultEvent{Source: s.Source, Success: success, Failure: failures},
 		)

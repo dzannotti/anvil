@@ -17,7 +17,7 @@ import (
 )
 
 //nolint:cyclop,funlen // reason: cyclop here is allowed
-func printOverhead(ev eventbus.Message, overhead *ui.OverheadManager) {
+func printOverhead(ev eventbus.Event, overhead *ui.OverheadManager) {
 	var pos grid.Position
 	var text string
 	color := ui.Text
@@ -83,8 +83,8 @@ func client(_ net.Conn) {
 	}
 	overhead := ui.OverheadManager{}
 
-	hub := eventbus.Hub{}
-	hub.Subscribe(func(msg eventbus.Message) {
+	dispatcher := eventbus.Dispatcher{}
+	dispatcher.Subscribe(func(msg eventbus.Event) {
 		prettyprint.Print(&log, msg)
 		if msg.End {
 			return
@@ -97,7 +97,7 @@ func client(_ net.Conn) {
 	defer window.Close()
 	ui.Init()
 	defer ui.Close()
-	gameState := demo.New(&hub)
+	gameState := demo.New(&dispatcher)
 	world := gameState.World
 	encounter := gameState.Encounter
 

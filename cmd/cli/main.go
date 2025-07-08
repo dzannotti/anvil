@@ -12,11 +12,11 @@ import (
 )
 
 func main() {
-	hub := eventbus.Hub{}
-	hub.Subscribe(func(msg eventbus.Message) {
+	dispatcher := eventbus.Dispatcher{}
+	dispatcher.Subscribe(func(msg eventbus.Event) {
 		prettyprint.Print(os.Stdout, msg)
 	})
-	gameState := demo.New(&hub)
+	gameState := demo.New(&dispatcher)
 	encounter := gameState.Encounter
 
 	start := time.Now()

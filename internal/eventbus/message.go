@@ -1,6 +1,6 @@
 package eventbus
 
-type Message struct {
+type Event struct {
 	Data  any
 	Kind  string
 	Depth int
