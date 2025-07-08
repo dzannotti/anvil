@@ -18,6 +18,6 @@ func FindPath(start, end grid.Position, width, height int, movementCost func(gri
 		cameFrom:     make([]*grid.Position, width*height),
 		open:         newMinHeap(),
 	}
-	
+
 	return pf.findPath()
 }

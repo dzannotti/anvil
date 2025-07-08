@@ -58,10 +58,10 @@ func TestBasicPathFinding(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			require := require.New(t)
 			assert := assert.New(t)
-			
+
 			navCost := func(_ grid.Position) int { return 1 }
 			result := FindPath(tt.start, tt.end, 5, 5, navCost)
-			
+
 			require.True(result.Found, "path should be found")
 			require.Len(result.Steps, len(tt.expected), "path length should match expected")
 
@@ -76,7 +76,7 @@ func TestObstacleAvoidance(t *testing.T) {
 	t.Run("should navigate around obstacles", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		navCost := func(pos grid.Position) int {
 			blocked := []grid.Position{
 				{X: 2, Y: 1}, {X: 2, Y: 2}, {X: 2, Y: 3},
@@ -104,7 +104,7 @@ func TestObstacleAvoidance(t *testing.T) {
 
 	t.Run("should return empty path when destination is unreachable", func(t *testing.T) {
 		assert := assert.New(t)
-		
+
 		navCost := func(pos grid.Position) int {
 			// Block entire column
 			if pos.X == 2 {
@@ -125,7 +125,7 @@ func TestObstacleAvoidance(t *testing.T) {
 func TestPathOptimality(t *testing.T) {
 	t.Run("should prefer diagonal movement when it's shorter", func(t *testing.T) {
 		require := require.New(t)
-		
+
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 2, Y: 2}
 		navCost := func(_ grid.Position) int { return 1 }
@@ -138,7 +138,7 @@ func TestPathOptimality(t *testing.T) {
 	t.Run("should find optimal path around obstacles", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		navCost := func(pos grid.Position) int {
 			if pos == (grid.Position{X: 1, Y: 1}) {
 				return math.MaxInt
@@ -158,7 +158,7 @@ func TestPathOptimality(t *testing.T) {
 	t.Run("cannot find diagonal path around walls", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		navCost := func(pos grid.Position) int {
 			if pos == (grid.Position{X: 1, Y: 0}) {
 				return math.MaxInt
@@ -179,7 +179,7 @@ func TestRichMetadata(t *testing.T) {
 	t.Run("should provide rich metadata for each step", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 2, Y: 0}
 		navCost := func(_ grid.Position) int { return 1 }
@@ -210,13 +210,13 @@ func TestEdgeCases(t *testing.T) {
 	t.Run("single position path", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		start := grid.Position{X: 2, Y: 2}
 		end := grid.Position{X: 2, Y: 2}
 		navCost := func(_ grid.Position) int { return 1 }
-		
+
 		result := FindPath(start, end, 5, 5, navCost)
-		
+
 		require.True(result.Found, "should find path to same position")
 		require.Len(result.Steps, 1, "single position should have 1 step")
 		assert.Equal(start, result.Steps[0].Position, "single step should be the start position")
@@ -225,29 +225,29 @@ func TestEdgeCases(t *testing.T) {
 
 	t.Run("path along grid boundary", func(t *testing.T) {
 		require := require.New(t)
-		
+
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 4, Y: 0}
 		navCost := func(_ grid.Position) int { return 1 }
-		
+
 		result := FindPath(start, end, 5, 5, navCost)
-		
+
 		require.True(result.Found, "should find path along boundary")
 		require.Len(result.Steps, 5, "boundary path should have 5 steps")
 	})
 
 	t.Run("blocked destination", func(t *testing.T) {
 		assert := assert.New(t)
-		
+
 		navCost := func(pos grid.Position) int {
 			if pos == (grid.Position{X: 2, Y: 2}) {
 				return math.MaxInt // Destination is blocked
 			}
 			return 1
 		}
-		
+
 		result := FindPath(grid.Position{X: 0, Y: 0}, grid.Position{X: 2, Y: 2}, 5, 5, navCost)
-		
+
 		assert.False(result.Found, "should not find path when destination is blocked")
 	})
 }
@@ -256,7 +256,7 @@ func TestVariableCosts(t *testing.T) {
 	t.Run("should prefer lower cost paths", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		navCost := func(pos grid.Position) int {
 			// Make middle column expensive
 			if pos.X == 1 {
@@ -264,13 +264,13 @@ func TestVariableCosts(t *testing.T) {
 			}
 			return 1
 		}
-		
+
 		start := grid.Position{X: 0, Y: 1}
 		end := grid.Position{X: 2, Y: 1}
 		result := FindPath(start, end, 5, 5, navCost)
-		
+
 		require.True(result.Found, "should find path")
-		
+
 		// Should avoid the expensive middle column
 		for _, step := range result.Steps {
 			if step.Position.X == 1 {
@@ -283,29 +283,29 @@ func TestVariableCosts(t *testing.T) {
 	t.Run("should handle mixed terrain costs", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		navCost := func(pos grid.Position) int {
 			// Create different terrain types
 			switch pos.X {
 			case 0, 4:
 				return 1 // Normal
 			case 1, 3:
-				return 2 // Difficult 
+				return 2 // Difficult
 			case 2:
 				return 3 // Very difficult
 			default:
 				return 1
 			}
 		}
-		
+
 		start := grid.Position{X: 0, Y: 2}
 		end := grid.Position{X: 4, Y: 2}
 		result := FindPath(start, end, 5, 5, navCost)
-		
+
 		require.True(result.Found, "should find path through mixed terrain")
-		
+
 		// Verify costs accumulate correctly
-		expectedMinCost := float64(1 + 2 + 3 + 2) // Base costs  
+		expectedMinCost := float64(1 + 2 + 3 + 2) // Base costs
 		assert.GreaterOrEqual(result.TotalCost, expectedMinCost, "total cost should account for terrain")
 	})
 }
@@ -314,10 +314,10 @@ func TestComplexScenarios(t *testing.T) {
 	t.Run("maze with single solution", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		// Create a simple maze:
 		// S.###
-		// #...#  
+		// #...#
 		// ###.E
 		navCost := func(pos grid.Position) int {
 			walls := map[grid.Position]bool{
@@ -330,34 +330,34 @@ func TestComplexScenarios(t *testing.T) {
 			}
 			return 1
 		}
-		
+
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 4, Y: 2}
 		result := FindPath(start, end, 5, 3, navCost)
-		
+
 		require.True(result.Found, "should find path through maze")
-		
+
 		// Verify no path goes through walls
 		for _, step := range result.Steps {
 			assert.NotEqual(math.MaxInt, navCost(step.Position), "path should not go through wall at %v", step.Position)
 		}
-		
+
 		// Should be forced to take the long way around
 		assert.GreaterOrEqual(len(result.Steps), 7, "path should be long enough for this maze")
 	})
 
 	t.Run("multiple equivalent paths", func(t *testing.T) {
 		require := require.New(t)
-		
+
 		// Simple open area where multiple paths have same cost
 		navCost := func(_ grid.Position) int { return 1 }
-		
+
 		start := grid.Position{X: 0, Y: 0}
 		end := grid.Position{X: 2, Y: 2}
 		result := FindPath(start, end, 5, 5, navCost)
-		
+
 		require.True(result.Found, "should find path")
-		
+
 		// Should find optimal diagonal path
 		require.Len(result.Steps, 3, "should find optimal 3-step diagonal path")
 	})
@@ -367,53 +367,44 @@ func TestCostAccuracy(t *testing.T) {
 	t.Run("diagonal vs straight cost comparison", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		navCost := func(_ grid.Position) int { return 1 }
-		
+
 		// Test straight path
 		straightResult := FindPath(grid.Position{X: 0, Y: 0}, grid.Position{X: 3, Y: 0}, 5, 5, navCost)
-		// Test diagonal path  
+		// Test diagonal path
 		diagonalResult := FindPath(grid.Position{X: 0, Y: 0}, grid.Position{X: 2, Y: 2}, 5, 5, navCost)
-		
+
 		require.True(straightResult.Found, "straight path should be found")
 		require.True(diagonalResult.Found, "diagonal path should be found")
-		
+
 		// Diagonal should cost more per step due to 1.4x multiplier
 		straightCostPerStep := straightResult.TotalCost / float64(len(straightResult.Steps)-1)
 		diagonalCostPerStep := diagonalResult.TotalCost / float64(len(diagonalResult.Steps)-1)
-		
+
 		assert.Greater(diagonalCostPerStep, straightCostPerStep, "diagonal cost per step should be higher than straight")
 	})
 
 	t.Run("step cost calculation accuracy", func(t *testing.T) {
 		require := require.New(t)
 		assert := assert.New(t)
-		
+
 		navCost := func(_ grid.Position) int { return 1 }
-		
+
 		result := FindPath(grid.Position{X: 0, Y: 0}, grid.Position{X: 1, Y: 1}, 5, 5, navCost)
-		
+
 		require.True(result.Found, "path should be found")
 		require.Len(result.Steps, 2, "diagonal path should have 2 steps")
-		
+
 		// First step should have no cost
 		assert.Equal(0.0, result.Steps[0].StepCost, "first step should have 0 cost")
-		
+
 		// Second step should be diagonal cost (1.4)
 		assert.Equal(1.4, result.Steps[1].StepCost, "diagonal step should cost 1.4")
 	})
 }
 
 // Helper functions
-func containsPosition(positions []grid.Position, target grid.Position) bool {
-	for _, pos := range positions {
-		if pos == target {
-			return true
-		}
-	}
-	return false
-}
-
 func containsStep(steps []PathStep, target grid.Position) bool {
 	for _, step := range steps {
 		if step.Position == target {

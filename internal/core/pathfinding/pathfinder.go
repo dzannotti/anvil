@@ -19,17 +19,17 @@ type pathfinder struct {
 
 func (pf *pathfinder) findPath() *Result {
 	pf.initialize()
-	
+
 	for !pf.open.Empty() {
 		current := pf.open.Pop()
-		
+
 		if current.pos == pf.end {
 			return pf.reconstructPath()
 		}
-		
+
 		pf.exploreNeighbors(current)
 	}
-	
+
 	return &Result{Found: false}
 }
 
@@ -37,7 +37,7 @@ func (pf *pathfinder) initialize() {
 	for i := range pf.gCost {
 		pf.gCost[i] = math.Inf(1)
 	}
-	
+
 	startIdx := pf.posToIndex(pf.start)
 	pf.gCost[startIdx] = 0
 	pf.open.Push(&node{
@@ -49,10 +49,10 @@ func (pf *pathfinder) initialize() {
 func (pf *pathfinder) exploreNeighbors(current *node) {
 	for _, neighbor := range pf.getValidNeighbors(current.pos) {
 		moveCost := pf.calculateMoveCost(current.pos, neighbor)
-		
+
 		neighborIdx := pf.posToIndex(neighbor)
 		tentativeG := pf.gCost[pf.posToIndex(current.pos)] + moveCost
-		
+
 		if tentativeG < pf.gCost[neighborIdx] {
 			pf.updateNeighbor(current.pos, neighbor, tentativeG)
 		}
@@ -61,31 +61,31 @@ func (pf *pathfinder) exploreNeighbors(current *node) {
 
 func (pf *pathfinder) getValidNeighbors(pos grid.Position) []grid.Position {
 	neighbors := make([]grid.Position, 0, 8)
-	
+
 	offsets := []grid.Position{
 		{X: 0, Y: -1}, {X: 0, Y: 1}, {X: -1, Y: 0}, {X: 1, Y: 0}, // orthogonal
 		{X: -1, Y: -1}, {X: 1, Y: -1}, {X: -1, Y: 1}, {X: 1, Y: 1}, // diagonal
 	}
-	
+
 	for i, offset := range offsets {
 		neighbor := pos.Add(offset)
-		
+
 		if !pf.inBounds(neighbor) {
 			continue
 		}
-		
+
 		if pf.movementCost(neighbor) == math.MaxInt {
 			continue
 		}
-		
+
 		// Prevent diagonal wall cutting
 		if i >= 4 && pf.isDiagonalBlocked(pos, offset) {
 			continue
 		}
-		
+
 		neighbors = append(neighbors, neighbor)
 	}
-	
+
 	return neighbors
 }
 
@@ -97,10 +97,10 @@ func (pf *pathfinder) isDiagonalBlocked(pos, offset grid.Position) bool {
 
 func (pf *pathfinder) calculateMoveCost(from, to grid.Position) float64 {
 	baseCost := float64(pf.movementCost(to))
-	
+
 	dx := mathi.Abs(to.X - from.X)
 	dy := mathi.Abs(to.Y - from.Y)
-	
+
 	if dx > 0 && dy > 0 {
 		return baseCost * DiagonalCost
 	}
@@ -111,7 +111,7 @@ func (pf *pathfinder) updateNeighbor(fromPos, toPos grid.Position, tentativeG fl
 	toIdx := pf.posToIndex(toPos)
 	pf.gCost[toIdx] = tentativeG
 	pf.cameFrom[toIdx] = &fromPos
-	
+
 	pf.open.Push(&node{
 		pos:    toPos,
 		fScore: tentativeG + float64(pf.heuristic(toPos)),
@@ -122,7 +122,7 @@ func (pf *pathfinder) reconstructPath() *Result {
 	// Build path backwards first to get length
 	positions := []grid.Position{pf.end}
 	curr := pf.end
-	
+
 	for {
 		prevPtr := pf.cameFrom[pf.posToIndex(curr)]
 		if prevPtr == nil {
@@ -131,9 +131,9 @@ func (pf *pathfinder) reconstructPath() *Result {
 		curr = *prevPtr
 		positions = append(positions, curr)
 	}
-	
+
 	slices.Reverse(positions)
-	
+
 	// Build steps with metadata
 	steps := make([]PathStep, len(positions))
 	for i, pos := range positions {
@@ -141,7 +141,7 @@ func (pf *pathfinder) reconstructPath() *Result {
 		if i > 0 {
 			stepCost = pf.calculateMoveCost(positions[i-1], pos)
 		}
-		
+
 		steps[i] = PathStep{
 			Position: pos,
 			GCost:    pf.gCost[pf.posToIndex(pos)],
@@ -149,7 +149,7 @@ func (pf *pathfinder) reconstructPath() *Result {
 			Distance: i,
 		}
 	}
-	
+
 	return &Result{
 		Steps:     steps,
 		TotalCost: pf.gCost[pf.posToIndex(pf.end)],
