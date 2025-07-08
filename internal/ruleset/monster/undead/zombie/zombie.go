@@ -14,7 +14,7 @@ import (
 
 func NewSlamAction(owner *core.Actor) core.Action {
 	return base.NewAttackAction(owner, "Slam", []core.DamageSource{
-		{Times: 1, Sides: 6, Source: "Slam", Tags: tag.NewContainer(tags.Bludgeoning)},
+		core.NewLegacyDamageSource(1, 6, "Slam", tag.NewContainer(tags.Bludgeoning)),
 	}, 1, tag.NewContainer(tags.Melee, tags.NaturalWeapon))
 }
 

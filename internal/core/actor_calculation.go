@@ -119,7 +119,10 @@ func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 func (a *Actor) DamageRoll(ds []DamageSource, crit bool) *expression.Expression {
 	expr := expression.Expression{}
 	for _, d := range ds {
-		expr.AddDamageDice(d.Times, d.Sides, d.Source, d.Tags)
+		// Temporary: cast to legacy source during transition
+		if legacy, ok := d.(*LegacyDamageSource); ok {
+			expr.AddDamageDice(legacy.Times, legacy.Sides, legacy.Source, legacy.tags)
+		}
 	}
 	if crit {
 		expr.SetCriticalSuccess("Attack Roll")

@@ -106,8 +106,11 @@ func (a Action) Commit() {
 func (a Action) AverageDamage() int {
 	avg := 0
 	for _, d := range a.damage {
-		roll := float64(d.Sides+1) / 2.0
-		avg += int(math.Floor(float64(d.Times) * roll))
+		// Temporary: cast to legacy source during transition
+		if legacy, ok := d.(*core.LegacyDamageSource); ok {
+			roll := float64(legacy.Sides+1) / 2.0
+			avg += int(math.Floor(float64(legacy.Times) * roll))
+		}
 	}
 	return avg
 }

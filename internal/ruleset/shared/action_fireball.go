@@ -28,7 +28,7 @@ func NewFireballAction(owner *core.Actor) FireballAction {
 			cost,
 			30,
 			4,
-			[]core.DamageSource{{Times: 8, Sides: 6, Source: "Fireball", Tags: tag.NewContainer(tags.Fire)}},
+			[]core.DamageSource{core.NewLegacyDamageSource(8, 6, "Fireball", tag.NewContainer(tags.Fire))},
 		),
 	}
 	a.Tags().Add(tag.NewContainer(tags.Attack))

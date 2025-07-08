@@ -14,7 +14,7 @@ func NewDagger() *Weapon {
 		id:        uuid.New().String(),
 		name:      "Dagger",
 		tags:      tag.NewContainer(tags.Melee, tags.SimpleWeapon),
-		damage:    []core.DamageSource{{Times: 1, Sides: 4, Source: "Dagger", Tags: tag.NewContainer(tags.Piercing)}},
+		damage:    []core.DamageSource{core.NewLegacyDamageSource(1, 4, "Dagger", tag.NewContainer(tags.Piercing))},
 		reach:     1,
 	}
 }
@@ -26,7 +26,7 @@ func NewGreatAxe() *Weapon {
 		name:      "Great Axe",
 		tags:      tag.NewContainer(tags.Melee, tags.MartialAxe),
 		damage: []core.DamageSource{
-			{Times: 2, Sides: 6, Source: "Great Axe", Tags: tag.NewContainer(tags.Slashing)},
+			core.NewLegacyDamageSource(2, 6, "Great Axe", tag.NewContainer(tags.Slashing)),
 		},
 		reach: 1,
 	}
