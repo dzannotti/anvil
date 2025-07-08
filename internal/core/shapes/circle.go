@@ -1,17 +1,21 @@
 package shapes
 
-import "anvil/internal/grid"
+import (
+	"math"
+
+	"anvil/internal/grid"
+)
 
 func Circle(origin grid.Position, radius int) []grid.Position {
-	size := (2*radius + 1) * (2*radius + 1)
-	positions := make([]grid.Position, 0, size)
+	capacity := int(math.Pi*float64(radius*radius)) + radius
+	positions := make([]grid.Position, 0, capacity)
 	for y := -radius; y <= radius; y++ {
 		for x := -radius; x <= radius; x++ {
-			offset := grid.Position{X: x, Y: y}
-			if offset.Add(origin).Distance(origin) <= radius {
-				positions = append(positions, origin.Add(offset))
+			if x*x+y*y <= radius*radius {
+				positions = append(positions, grid.Position{X: origin.X + x, Y: origin.Y + y})
 			}
 		}
 	}
+
 	return positions
 }

@@ -2,7 +2,6 @@ package shapes
 
 import "anvil/internal/grid"
 
-//nolint:gocognit,cyclop // reason: cyclop here is allowed
 func FloodFill(start grid.Position, radius int, isBlocked func(grid.Position) bool) []grid.Position {
 	visited := make(map[grid.Position]bool)
 	result := make([]grid.Position, 0)
@@ -19,7 +18,11 @@ func FloodFill(start grid.Position, radius int, isBlocked func(grid.Position) bo
 		current := queue[0]
 		queue = queue[1:]
 
-		if visited[current] || isBlocked(current) {
+		if visited[current] {
+			continue
+		}
+
+		if isBlocked(current) {
 			continue
 		}
 
@@ -32,13 +35,6 @@ func FloodFill(start grid.Position, radius int, isBlocked func(grid.Position) bo
 
 		for _, dir := range directions {
 			next := grid.Position{X: current.X + dir.X, Y: current.Y + dir.Y}
-			if dir.X != 0 && dir.Y != 0 {
-				adjacent1 := grid.Position{X: current.X + dir.X, Y: current.Y}
-				adjacent2 := grid.Position{X: current.X, Y: current.Y + dir.Y}
-				if isBlocked(adjacent1) || isBlocked(adjacent2) {
-					continue
-				}
-			}
 
 			if !visited[next] && !isBlocked(next) {
 				queue = append(queue, next)

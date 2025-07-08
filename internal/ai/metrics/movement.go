@@ -70,11 +70,11 @@ func (m Movement) closestAt(src *core.Actor, dst grid.Position, enemies []*core.
 	distNow := math.MaxInt
 	distThen := math.MaxInt
 	for _, enemy := range enemies {
-		if path, ok := world.FindPath(src.Position, enemy.Position); ok && path.Speed < distNow {
-			distNow = path.Speed
+		if path, ok := world.FindPath(src.Position, enemy.Position); ok && int(path.TotalCost) < distNow {
+			distNow = int(path.TotalCost)
 		}
-		if path, ok := world.FindPath(dst, enemy.Position); ok && path.Speed < distThen {
-			distThen = path.Speed
+		if path, ok := world.FindPath(dst, enemy.Position); ok && int(path.TotalCost) < distThen {
+			distThen = int(path.TotalCost)
 		}
 	}
 	return distNow, distThen

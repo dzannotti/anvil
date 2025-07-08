@@ -1,71 +1,46 @@
 package pathfinding
 
+import "container/heap"
+
+type nodeHeap []*node
+
+func (h nodeHeap) Len() int           { return len(h) }
+func (h nodeHeap) Less(i, j int) bool { return h[i].fScore < h[j].fScore }
+func (h nodeHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *nodeHeap) Push(x any) {
+	*h = append(*h, x.(*node))
+}
+
+func (h *nodeHeap) Pop() any {
+	old := *h
+	n := len(old)
+	item := old[n-1]
+	*h = old[0 : n-1]
+	return item
+}
+
 type minHeap struct {
-	nodes []*node
+	heap *nodeHeap
 }
 
 func newMinHeap() *minHeap {
-	return &minHeap{
-		nodes: make([]*node, 0, 64), // Pre-allocate some capacity
-	}
-}
-
-func (h *minHeap) Len() int {
-	return len(h.nodes)
+	h := make(nodeHeap, 0, 64)
+	heap.Init(&h)
+	return &minHeap{heap: &h}
 }
 
 func (h *minHeap) Push(n *node) {
-	h.nodes = append(h.nodes, n)
-	h.upHeapify(len(h.nodes) - 1)
+	heap.Push(h.heap, n)
 }
 
 func (h *minHeap) Pop() *node {
-	if len(h.nodes) == 0 {
+	if h.Empty() {
 		return nil
 	}
-
-	root := h.nodes[0]
-	lastIdx := len(h.nodes) - 1
-	h.nodes[0] = h.nodes[lastIdx]
-	h.nodes = h.nodes[:lastIdx]
-
-	if lastIdx > 0 {
-		h.downHeapify(0)
-	}
-
-	return root
-}
-
-func (h *minHeap) upHeapify(idx int) {
-	for idx > 0 {
-		parentIdx := (idx - 1) / 2
-		if h.nodes[parentIdx].fScore <= h.nodes[idx].fScore {
-			break
-		}
-		h.nodes[parentIdx], h.nodes[idx] = h.nodes[idx], h.nodes[parentIdx]
-		idx = parentIdx
-	}
-}
-
-func (h *minHeap) downHeapify(idx int) {
-	smallest := idx
-	left := 2*idx + 1
-	right := 2*idx + 2
-
-	if left < len(h.nodes) && h.nodes[left].fScore < h.nodes[smallest].fScore {
-		smallest = left
-	}
-
-	if right < len(h.nodes) && h.nodes[right].fScore < h.nodes[smallest].fScore {
-		smallest = right
-	}
-
-	if smallest != idx {
-		h.nodes[idx], h.nodes[smallest] = h.nodes[smallest], h.nodes[idx]
-		h.downHeapify(smallest)
-	}
+	return heap.Pop(h.heap).(*node)
 }
 
 func (h *minHeap) Empty() bool {
-	return len(h.nodes) == 0
+	return h.heap.Len() == 0
 }

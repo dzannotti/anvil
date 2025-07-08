@@ -290,7 +290,7 @@ func printMove(e core.MoveEvent) string {
 		fmt.Sprintf("🚶 %s wants to move from %s to %s", e.Source.Name, printPosition(e.From), printPosition(e.To)),
 	)
 	sb.WriteString("\n")
-	sb.WriteString(indent(printWorld(e.World, e.Path.Path), 1))
+	sb.WriteString(indent(printWorld(e.World, e.Path.Positions()), 1))
 	return sb.String()
 }
 

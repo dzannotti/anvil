@@ -14,9 +14,3 @@ type Action interface {
 	AffectedPositions(target []grid.Position) []grid.Position
 	AverageDamage() int
 }
-
-type ScoredAction struct {
-	Position []grid.Position
-	Action   Action
-	Score    float32
-}
