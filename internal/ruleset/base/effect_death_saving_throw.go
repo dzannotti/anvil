@@ -34,24 +34,6 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		return false
 	}
 
-	fx.On(func(s *core.SerializeState) {
-		s.State.Data = map[string]int{
-			"Success":  success,
-			"Failures": failures,
-		}
-	})
-
-	fx.On(func(s *core.SerializeState) {
-		data, ok := s.State.Data.(map[string]interface{})
-		if !ok {
-			panic("could not deserialize dst")
-		}
-
-		success = int(data["Success"].(float64))
-
-		failures = int(data["Failures"].(float64))
-	})
-
 	fx.On(func(s *core.AttributeChangedState) {
 		if !s.Attribute.MatchExact(tags.HitPoints) {
 			return

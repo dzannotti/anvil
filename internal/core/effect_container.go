@@ -22,8 +22,8 @@ func (c *EffectContainer) Remove(effect *Effect) {
 	}
 }
 
-func (c *EffectContainer) Evaluate(event string, state any) {
+func (c *EffectContainer) Evaluate(state any) {
 	for _, effect := range c.effects {
-		effect.Evaluate(event, state)
+		effect.Evaluate(state)
 	}
 }

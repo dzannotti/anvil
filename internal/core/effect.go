@@ -31,8 +31,16 @@ type Effect struct {
 	Priority Priority
 }
 
-func (e *Effect) Evaluate(event string, state any) {
-	handler, exists := e.Handlers.get()[event]
+func (e *Effect) Evaluate(state any) {
+	stateType := reflect.TypeOf(state)
+	if stateType.Kind() != reflect.Ptr {
+		panic("state must be a pointer")
+	}
+
+	// Get the event name from the struct type (remove pointer)
+	eventName := stateType.Elem().Name()
+
+	handler, exists := e.Handlers.get()[eventName]
 	if exists {
 		wg := &sync.WaitGroup{}
 		wg.Add(1)
@@ -54,23 +62,22 @@ func (e *Effect) On(handler any) {
 	if handlerType.Kind() != reflect.Func {
 		panic("handler must be a function")
 	}
-	
+
 	if handlerType.NumIn() != 1 {
 		panic("handler must have exactly one parameter")
 	}
-	
+
 	paramType := handlerType.In(0)
 	if paramType.Kind() != reflect.Ptr {
 		panic("handler parameter must be a pointer")
 	}
-	
+
 	// Get the event name from the struct type (remove pointer and "State" suffix)
 	eventName := paramType.Elem().Name()
-	
+
 	// Convert handler to the internal signature
 	handlerValue := reflect.ValueOf(handler)
-	e.Handlers.get()[eventName] = func(eff *Effect, state any) {
+	e.Handlers.get()[eventName] = func(_ *Effect, state any) {
 		handlerValue.Call([]reflect.Value{reflect.ValueOf(state)})
 	}
 }
-

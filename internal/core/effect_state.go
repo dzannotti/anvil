@@ -6,7 +6,6 @@ import (
 	"anvil/internal/tag"
 )
 
-
 type BeforeAttackRollState struct {
 	Source     *Actor
 	Target     *Actor
@@ -79,15 +78,6 @@ type ConditionChangedState struct {
 
 type TurnState struct {
 	Source *Actor
-}
-
-type SerializeState struct {
-	Operation string
-	State     struct {
-		Kind string
-		ID   string
-		Data any
-	}
 }
 
 type MoveState struct {

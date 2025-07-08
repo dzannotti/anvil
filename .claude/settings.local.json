@@ -7,7 +7,8 @@
       "Bash(go run:*)",
       "Bash(git mv:*)",
       "Bash(timeout 5 go run ./cmd/cli)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(make lint)"
     ],
     "deny": []
   }
