@@ -37,12 +37,13 @@ func (e *Expression) ReplaceWith(value int, source string) {
 }
 
 func (e *Expression) DoubleDice(source string) {
-	components := []Component{}
+	var components []Component
 	for _, component := range e.Components {
 		components = append(components, component)
 		if !component.Type.Match(Dice) {
 			continue
 		}
+
 		newComponent := component.Clone()
 		newComponent.Source = source
 		components = append(components, newComponent)
@@ -51,12 +52,13 @@ func (e *Expression) DoubleDice(source string) {
 }
 
 func (e *Expression) MaxDice(source string) {
-	components := []Component{}
+	var components []Component
 	for _, component := range e.Components {
 		components = append(components, component)
 		if !component.Type.Match(Dice) {
 			continue
 		}
+
 		newComponent := component.Clone()
 		newComponent.Source = source
 		newComponent.Type = Constant
@@ -72,5 +74,6 @@ func (e *Expression) HasDamageType(t tag.Tag) bool {
 			return true
 		}
 	}
+
 	return false
 }

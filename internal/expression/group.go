@@ -26,6 +26,7 @@ func (e *Expression) uniqueTags() []string {
 		if slices.Contains(set, tags.ID()) {
 			continue
 		}
+
 		set = append(set, tags.ID())
 	}
 	return set
@@ -40,6 +41,7 @@ func (e *Expression) groupComponentsBy() [][]Component {
 			if tags.ID() != id {
 				continue
 			}
+
 			components[i] = append(components[i], component)
 		}
 	}

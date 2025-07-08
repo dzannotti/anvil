@@ -52,6 +52,7 @@ func (e *Expression) evaluateD20Roll(component *Component) {
 		component.Value = mathi.Max(values[0], values[1])
 		return
 	}
+
 	component.Value = mathi.Min(values[0], values[1])
 }
 
@@ -59,6 +60,7 @@ func (e *Expression) IsCriticalSuccess() bool {
 	if len(e.Components) == 0 {
 		return false
 	}
+
 	return e.Components[0].IsCritical == CriticalSuccess || e.Components[0].Value == e.Components[0].Sides
 }
 
@@ -66,6 +68,7 @@ func (e *Expression) IsCriticalFailure() bool {
 	if len(e.Components) == 0 {
 		return false
 	}
+
 	return e.Components[0].IsCritical == CriticalFailure || e.Components[0].Values[0] == 1
 }
 

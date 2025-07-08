@@ -33,7 +33,7 @@ func formatDiceRolls(component expression.Component) string {
 }
 
 func formatDice(component expression.Component) string {
-	if !component.Type.Match(expression.TypeDice) {
+	if !component.Type.Match(expression.Dice) {
 		return ""
 	}
 
@@ -101,7 +101,7 @@ func buildComponentSource(component expression.Component, indent string, last bo
 	source := strings.Builder{}
 	source.WriteString(component.Source)
 
-	if component.Type.Match(expression.TypeDice) {
+	if component.Type.Match(expression.Dice) {
 		advDisadv := formatAdvantageDisadvantage(component, indent, last)
 		if len(advDisadv) > 0 {
 			source.WriteString(strings.Join(advDisadv, ""))
