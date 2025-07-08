@@ -5,6 +5,8 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"anvil/internal/grid"
 )
 
@@ -57,18 +59,12 @@ func TestBasicPathFinding(t *testing.T) {
 				return 1
 			}
 			result, ok := FindPath(tt.start, tt.end, 5, 5, navCost)
-			if !ok {
-				t.Errorf("path not found")
-			}
+			assert.True(t, ok, "path not found")
 
-			if len(result.Path) != len(tt.expected) {
-				t.Errorf("path length = %v, want %v", len(result.Path), len(tt.expected))
-			}
+			assert.Equal(t, len(tt.expected), len(result.Path), "path length mismatch")
 
 			for i := range result.Path {
-				if result.Path[i] != tt.expected[i] {
-					t.Errorf("path[%d] = %v, want %v", i, result.Path[i], tt.expected[i])
-				}
+				assert.Equal(t, tt.expected[i], result.Path[i], "path position %d mismatch", i)
 			}
 		})
 	}
@@ -92,26 +88,16 @@ func TestObstacleAvoidance(t *testing.T) {
 		end := grid.Position{X: 3, Y: 2}
 		result, ok := FindPath(start, end, 5, 5, navCost)
 
-		if !ok {
-			t.Error("path not found")
-		}
+		assert.True(t, ok, "path not found")
 
-		if len(result.Path) <= 2 {
-			t.Error("path should be longer than direct route")
-		}
+		assert.Greater(t, len(result.Path), 2, "path should be longer than direct route")
 
-		if !containsPosition(result.Path, start) {
-			t.Error("path should contain start position")
-		}
-		if !containsPosition(result.Path, end) {
-			t.Error("path should contain end position")
-		}
+		assert.True(t, containsPosition(result.Path, start), "path should contain start position")
+		assert.True(t, containsPosition(result.Path, end), "path should contain end position")
 
 		for _, pos := range result.Path {
 			cost := navCost(pos)
-			if cost == math.MaxInt {
-				t.Errorf("path contains obstacle at position %v", pos)
-			}
+			assert.NotEqual(t, math.MaxInt, cost, "path contains obstacle at position %v", pos)
 		}
 	})
 
@@ -131,13 +117,9 @@ func TestObstacleAvoidance(t *testing.T) {
 		end := grid.Position{X: 3, Y: 2}
 		result, ok := FindPath(start, end, 5, 5, navCost)
 
-		if ok {
-			t.Error("path found when not expected")
-		}
+		assert.False(t, ok, "path found when not expected")
 
-		if result != nil {
-			t.Error("path should be empty when destination is unreachable")
-		}
+		assert.Nil(t, result, "path should be empty when destination is unreachable")
 	})
 }
 
@@ -150,13 +132,9 @@ func TestPathOptimality(t *testing.T) {
 		}
 		result, ok := FindPath(start, end, 5, 5, navCost)
 
-		if !ok {
-			t.Error("path not found")
-		}
+		assert.True(t, ok, "path not found")
 
-		if len(result.Path) != 3 {
-			t.Error("path should be diagonal with length 3")
-		}
+		assert.Equal(t, 3, len(result.Path), "path should be diagonal with length 3")
 	})
 
 	t.Run("should find optimal path around obstacles", func(t *testing.T) {
@@ -171,16 +149,10 @@ func TestPathOptimality(t *testing.T) {
 		end := grid.Position{X: 2, Y: 2}
 		result, ok := FindPath(start, end, 5, 5, navCost)
 
-		if !ok {
-			t.Error("path not found")
-		}
+		assert.True(t, ok, "path not found")
 
-		if len(result.Path) <= 3 {
-			t.Error("path should be longer than diagonal")
-		}
-		if containsPosition(result.Path, grid.Position{X: 1, Y: 1}) {
-			t.Error("path should not contain obstacle position")
-		}
+		assert.Greater(t, len(result.Path), 3, "path should be longer than diagonal")
+		assert.False(t, containsPosition(result.Path, grid.Position{X: 1, Y: 1}), "path should not contain obstacle position")
 	})
 
 	t.Run("cannot find diagonal path around walls", func(t *testing.T) {
@@ -195,13 +167,9 @@ func TestPathOptimality(t *testing.T) {
 		end := grid.Position{X: 2, Y: 0}
 		result, ok := FindPath(start, end, 5, 5, navCost)
 
-		if !ok {
-			t.Error("path not found")
-		}
+		assert.True(t, ok, "path not found")
 
-		if len(result.Path) <= 3 {
-			t.Error("path should be longer than diagonal")
-		}
+		assert.Greater(t, len(result.Path), 3, "path should be longer than diagonal")
 	})
 }
 

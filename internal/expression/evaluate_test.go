@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestExpression_Evaluate(t *testing.T) {
@@ -169,6 +170,7 @@ func TestExpression_Evaluate(t *testing.T) {
 			res := expression.Evaluate()
 
 			assert.Equal(t, tt.expected.value, res.Value)
+			require.NotEmpty(t, res.Components, "expression should have at least one component")
 			assert.Equal(t, tt.expected.component.Type, res.Components[0].Type)
 			assert.Equal(t, tt.expected.component.Source, res.Components[0].Source)
 			if tt.expected.component.Sides > 0 {

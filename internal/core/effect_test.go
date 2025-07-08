@@ -6,6 +6,7 @@ import (
 	"anvil/internal/expression"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type testState struct {
@@ -43,7 +44,8 @@ func TestEffect_Evaluate(t *testing.T) {
 		expr := expression.FromConstant(10, "test")
 		state := &TestEffect{Expression: &expr}
 		e.withHandler("TestEffect", func(_ *Effect, s any) {
-			estate := s.(*TestEffect) // panics if not the correct type
+			estate, ok := s.(*TestEffect)
+			require.True(t, ok, "state must be *TestEffect for test to continue")
 			estate.Expression.AddConstant(5, "test")
 		})
 		e.Evaluate(state)

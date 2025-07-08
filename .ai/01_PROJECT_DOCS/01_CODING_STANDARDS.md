@@ -97,9 +97,47 @@ processComponent(component)
 
 ### Testing
 
+- **ALWAYS use testify assertions**: Use `github.com/stretchr/testify/assert` and `github.com/stretchr/testify/require`
+- **NEVER use built-in Go test assertions**: No `t.Error`, `t.Errorf`, `t.Fatal`, `t.Fatalf`, etc.
+- **Use `require` for critical preconditions** that must pass for test to continue meaningfully
+- **Use `assert` for value checks** where test can continue after failure
 - Use table-driven tests when appropriate
 - Test public APIs, not implementation details, assuming we'll throw away the whole implementation and want unit test to tell us what we missed
 - Tests should be deterministic and fast
+
+#### Assert vs Require Guidelines
+
+**Use `require` for:**
+- Slice/array bounds checking before access: `require.NotEmpty(t, slice)` before `slice[0]`
+- Type assertions that must succeed: `require.True(t, ok)` after `val, ok := x.(Type)`
+- Setup validation where subsequent test logic depends on success
+- Nil checks for critical objects
+- Length validation when iterating with indices
+
+**Use `assert` for:**
+- Value comparisons and equality checks
+- Boolean condition verification  
+- Behavior validation where other assertions might still be valuable
+- Final result verification
+
+#### Examples
+
+```go
+// ❌ Bad - Built-in assertions
+func TestExample(t *testing.T) {
+    result := someFunction()
+    if result.Items[0].Value != 42 { // Potential panic!
+        t.Errorf("expected 42, got %d", result.Items[0].Value)
+    }
+}
+
+// ✅ Good - Testify with proper require/assert usage
+func TestExample(t *testing.T) {
+    result := someFunction()
+    require.NotEmpty(t, result.Items, "must have items for test to continue")
+    assert.Equal(t, 42, result.Items[0].Value, "first item value should be 42")
+}
+```
 
 ## Git Etiquette
 
