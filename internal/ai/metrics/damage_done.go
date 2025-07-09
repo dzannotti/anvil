@@ -16,10 +16,10 @@ func (d DamageDone) Evaluate(
 	action core.Action,
 	_ grid.Position,
 	affected []grid.Position,
-) int {
+) map[string]int {
 	damage := action.AverageDamage()
 	if damage == 0 {
-		return 0
+		return map[string]int{}
 	}
 	targets := targetsAffected(world, affected)
 	los := make([]*core.Actor, 0, len(targets))
@@ -29,11 +29,46 @@ func (d DamageDone) Evaluate(
 		}
 	}
 	if len(los) == 0 {
-		return 0
+		return map[string]int{}
 	}
-	score := BaseDamageScore
+	
+	totalDamage := 0
+	killPotential := 0
+	threatElimination := 0
+	aoeEfficiency := 0
+	overkillWaste := 0
+	
 	for _, t := range los {
-		score += mathi.Min(damage, t.HitPoints)
+		actualDamage := mathi.Min(damage, t.HitPoints)
+		totalDamage += actualDamage
+		
+		// Kill potential - higher score for enemies we can finish off
+		if damage >= t.HitPoints {
+			killPotential += 15
+		}
+		
+		// Threat elimination - higher score for dangerous enemies
+		if t.HitPoints > 0 {
+			threatLevel := mathi.Min(t.MaxHitPoints/4, 10) // Estimate threat by max HP
+			threatElimination += threatLevel
+		}
+		
+		// AOE efficiency - bonus for hitting multiple targets
+		if len(los) > 1 {
+			aoeEfficiency += 5
+		}
+		
+		// Overkill waste - penalty for excessive damage
+		if damage > t.HitPoints {
+			overkillWaste -= (damage - t.HitPoints) / 2
+		}
 	}
-	return score
+	
+	return map[string]int{
+		"damage_dealt":        BaseDamageScore + totalDamage,
+		"kill_potential":      killPotential,
+		"threat_elimination":  threatElimination,
+		"aoe_efficiency":      aoeEfficiency,
+		"overkill_waste":      overkillWaste,
+	}
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type AIMetric interface {
-	Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, affected []grid.Position) int
+	Evaluate(world *core.World, actor *core.Actor, action core.Action, pos grid.Position, affected []grid.Position) map[string]int
 }
 
 var Default = []AIMetric{
