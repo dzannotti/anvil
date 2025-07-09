@@ -10,10 +10,10 @@ import (
 
 // RegistryReader provides read-only access to the registry
 type RegistryReader interface {
-	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) (core.Action, error)
-	NewEffect(archetype string, options map[string]interface{}) (*core.Effect, error)
-	NewItem(archetype string, options map[string]interface{}) (core.Item, error)
-	NewCreature(archetype string, options map[string]interface{}) (*core.Actor, error)
+	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) core.Action
+	NewEffect(archetype string, options map[string]interface{}) *core.Effect
+	NewItem(archetype string, options map[string]interface{}) core.Item
+	NewCreature(archetype string, options map[string]interface{}) *core.Actor
 	HasAction(archetype string) bool
 	HasEffect(archetype string) bool
 	HasItem(archetype string) bool
@@ -47,23 +47,13 @@ func newActor(
 	w.AddOccupant(pos, a)
 
 	// Add basic effects
-	if effect, err := registry.NewEffect("attribute-modifier", nil); err == nil {
-		a.AddEffect(effect)
-	}
-	if effect, err := registry.NewEffect("proficiency-modifier", nil); err == nil {
-		a.AddEffect(effect)
-	}
-	if effect, err := registry.NewEffect("critical", nil); err == nil {
-		a.AddEffect(effect)
-	}
-	if effect, err := registry.NewEffect("attack-of-opportunity", nil); err == nil {
-		a.AddEffect(effect)
-	}
+	a.AddEffect(registry.NewEffect("attribute-modifier", nil))
+	a.AddEffect(registry.NewEffect("proficiency-modifier", nil))
+	a.AddEffect(registry.NewEffect("critical", nil))
+	a.AddEffect(registry.NewEffect("attack-of-opportunity", nil))
 
 	// Add basic actions
-	if action, err := registry.NewAction("move", a, nil); err == nil {
-		a.AddAction(action)
-	}
+	a.AddAction(registry.NewAction("move", a, nil))
 
 	a.Resources.LongRest()
 	return a
@@ -81,9 +71,7 @@ func NewPCActor(
 	r core.Resources,
 ) *core.Actor {
 	a := newActor(registry, dispatcher, w, core.TeamPlayers, pos, name, hitPoints, at, p, r)
-	if effect, err := registry.NewEffect("death-saving-throw", nil); err == nil {
-		a.AddEffect(effect)
-	}
+	a.AddEffect(registry.NewEffect("death-saving-throw", nil))
 	return a
 }
 
@@ -99,9 +87,7 @@ func NewNPCActor(
 	r core.Resources,
 ) *core.Actor {
 	a := newActor(registry, dispatcher, w, core.TeamEnemies, pos, name, hitPoints, at, p, r)
-	if effect, err := registry.NewEffect("death", nil); err == nil {
-		a.AddEffect(effect)
-	}
+	a.AddEffect(registry.NewEffect("death", nil))
 	a.AddProficiency(tags.NaturalWeapon)
 	return a
 }

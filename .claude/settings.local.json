@@ -17,7 +17,8 @@
       "Bash(./cli)",
       "Bash(mv:*)",
       "Bash(mkdir:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(make test:*)"
     ],
     "deny": []
   }

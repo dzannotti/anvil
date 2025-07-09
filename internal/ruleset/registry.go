@@ -8,10 +8,10 @@ import (
 
 // RegistryReader provides read-only access to the registry for factory functions
 type RegistryReader interface {
-	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) (core.Action, error)
-	NewEffect(archetype string, options map[string]interface{}) (*core.Effect, error)
-	NewItem(archetype string, options map[string]interface{}) (core.Item, error)
-	NewCreature(archetype string, options map[string]interface{}) (*core.Actor, error)
+	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) core.Action
+	NewEffect(archetype string, options map[string]interface{}) *core.Effect
+	NewItem(archetype string, options map[string]interface{}) core.Item
+	NewCreature(archetype string, options map[string]interface{}) *core.Actor
 	HasAction(archetype string) bool
 	HasEffect(archetype string) bool
 	HasItem(archetype string) bool
@@ -53,17 +53,17 @@ func (r *Registry) RegisterAction(archetype string, factory ActionFactory) {
 	r.actions[archetype] = factory
 }
 
-func (r *Registry) NewAction(archetype string, owner *core.Actor, options map[string]interface{}) (core.Action, error) {
+func (r *Registry) NewAction(archetype string, owner *core.Actor, options map[string]interface{}) core.Action {
 	factory, exists := r.actions[archetype]
 	if !exists {
-		return nil, fmt.Errorf("action archetype '%s' not found", archetype)
+		panic(fmt.Sprintf("action archetype '%s' not found", archetype))
 	}
 
 	if options == nil {
 		options = make(map[string]interface{})
 	}
 
-	return factory(owner, options), nil
+	return factory(owner, options)
 }
 
 func (r *Registry) ListActions() []string {
@@ -84,17 +84,17 @@ func (r *Registry) RegisterEffect(archetype string, factory EffectFactory) {
 	r.effects[archetype] = factory
 }
 
-func (r *Registry) NewEffect(archetype string, options map[string]interface{}) (*core.Effect, error) {
+func (r *Registry) NewEffect(archetype string, options map[string]interface{}) *core.Effect {
 	factory, exists := r.effects[archetype]
 	if !exists {
-		return nil, fmt.Errorf("effect archetype '%s' not found", archetype)
+		panic(fmt.Sprintf("effect archetype '%s' not found", archetype))
 	}
 
 	if options == nil {
 		options = make(map[string]interface{})
 	}
 
-	return factory(options), nil
+	return factory(options)
 }
 
 func (r *Registry) ListEffects() []string {
@@ -115,17 +115,17 @@ func (r *Registry) RegisterItem(archetype string, factory ItemFactory) {
 	r.items[archetype] = factory
 }
 
-func (r *Registry) NewItem(archetype string, options map[string]interface{}) (core.Item, error) {
+func (r *Registry) NewItem(archetype string, options map[string]interface{}) core.Item {
 	factory, exists := r.items[archetype]
 	if !exists {
-		return nil, fmt.Errorf("item archetype '%s' not found", archetype)
+		panic(fmt.Sprintf("item archetype '%s' not found", archetype))
 	}
 
 	if options == nil {
 		options = make(map[string]interface{})
 	}
 
-	return factory(options), nil
+	return factory(options)
 }
 
 func (r *Registry) ListItems() []string {
@@ -146,17 +146,17 @@ func (r *Registry) RegisterCreature(archetype string, factory CreatureFactory) {
 	r.creatures[archetype] = factory
 }
 
-func (r *Registry) NewCreature(archetype string, options map[string]interface{}) (*core.Actor, error) {
+func (r *Registry) NewCreature(archetype string, options map[string]interface{}) *core.Actor {
 	factory, exists := r.creatures[archetype]
 	if !exists {
-		return nil, fmt.Errorf("creature archetype '%s' not found", archetype)
+		panic(fmt.Sprintf("creature archetype '%s' not found", archetype))
 	}
 
 	if options == nil {
 		options = make(map[string]interface{})
 	}
 
-	return factory(options), nil
+	return factory(options)
 }
 
 func (r *Registry) ListCreatures() []string {

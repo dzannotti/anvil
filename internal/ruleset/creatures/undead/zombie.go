@@ -12,10 +12,10 @@ import (
 
 // RegistryReader provides read-only access to the registry
 type RegistryReader interface {
-	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) (core.Action, error)
-	NewEffect(archetype string, options map[string]interface{}) (*core.Effect, error)
-	NewItem(archetype string, options map[string]interface{}) (core.Item, error)
-	NewCreature(archetype string, options map[string]interface{}) (*core.Actor, error)
+	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) core.Action
+	NewEffect(archetype string, options map[string]interface{}) *core.Effect
+	NewItem(archetype string, options map[string]interface{}) core.Item
+	NewCreature(archetype string, options map[string]interface{}) *core.Actor
 	HasAction(archetype string) bool
 	HasEffect(archetype string) bool
 	HasItem(archetype string) bool
@@ -37,17 +37,9 @@ func New(registry RegistryReader, dispatcher *eventbus.Dispatcher, world *core.W
 	}}
 	npc := factories.NewNPCActor(registry, dispatcher, world, pos, name, 22, attributes, proficiencies, resources)
 
-	slamAction, err := registry.NewAction("slam", npc, nil)
-	if err != nil {
-		panic("failed to create slam action: " + err.Error())
-	}
-	npc.AddAction(slamAction)
+	npc.AddAction(registry.NewAction("slam", npc, nil))
 
-	undeadFortitude, err := registry.NewEffect("undead-fortitude", nil)
-	if err != nil {
-		panic("failed to create undead fortitude effect: " + err.Error())
-	}
-	npc.AddEffect(undeadFortitude)
+	npc.AddEffect(registry.NewEffect("undead-fortitude", nil))
 
 	return npc
 }
