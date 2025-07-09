@@ -64,7 +64,7 @@ func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
 		}
 
 		path, ok := a.owner.World.FindPath(from, pos)
-		if !ok || int(path.TotalCost) > speed {
+		if !ok || path.Speed() > speed {
 			continue
 		}
 

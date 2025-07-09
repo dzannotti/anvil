@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"anvil/internal/core/tags"
 	weapon "anvil/internal/ruleset/items/weapons"
 	"anvil/internal/tag"
 
@@ -66,7 +65,6 @@ func loadWeaponFiles(weaponsDir string) (map[string]WeaponData, error) {
 		basename := filepath.Base(match)
 		archetype := strings.TrimSuffix(basename, ".yml")
 
-		// Skip base archetype files (starting with _)
 		if !strings.HasPrefix(archetype, "_") {
 			weaponDefs[archetype] = weaponData
 		}
@@ -100,13 +98,13 @@ func createWeapon(archetype string, data WeaponData) *weapon.Weapon {
 		damageEntries = append(damageEntries, weapon.DamageEntry{
 			Times: times,
 			Sides: sides,
-			Kind:  stringToTag(dmg.Kind),
+			Kind:  tag.FromString(dmg.Kind),
 		})
 	}
 
 	weaponTags := make([]tag.Tag, len(data.WeaponTags))
 	for i, tagStr := range data.WeaponTags {
-		weaponTags[i] = stringToTag(tagStr)
+		weaponTags[i] = tag.FromString(tagStr)
 	}
 
 	return weapon.NewWeapon(
@@ -120,7 +118,6 @@ func createWeapon(archetype string, data WeaponData) *weapon.Weapon {
 }
 
 func parseDiceFormula(formula string) (int, int, error) {
-	// Parse formulas like "1d4", "2d6", etc.
 	re := regexp.MustCompile(`^(\d+)d(\d+)$`)
 	matches := re.FindStringSubmatch(formula)
 	if len(matches) != 3 {
@@ -138,27 +135,4 @@ func parseDiceFormula(formula string) (int, int, error) {
 	}
 
 	return times, sides, nil
-}
-
-var knownTags = map[string]tag.Tag{
-	"Damage.Kind.Piercing":    tags.Piercing,
-	"Damage.Kind.Slashing":    tags.Slashing,
-	"Damage.Kind.Bludgeoning": tags.Bludgeoning,
-	"Damage.Kind.Fire":        tags.Fire,
-	"Damage.Kind.Poison":      tags.Poison,
-	"Damage.Kind.Radiant":     tags.Radiant,
-	"Melee":                   tags.Melee,
-	"Ranged":                  tags.Ranged,
-	"Item.Weapon.Simple":      tags.SimpleWeapon,
-	"Item.Weapon.Martial":     tags.MartialWeapon,
-	"Item.Weapon.Martial.Axe": tags.MartialAxe,
-	"Item.Weapon.Natural":     tags.NaturalWeapon,
-	"Item.Weapon.Finesse":     tags.Finesse,
-}
-
-func stringToTag(tagStr string) tag.Tag {
-	if knownTag, exists := knownTags[tagStr]; exists {
-		return knownTag
-	}
-	return tag.FromString(tagStr)
 }

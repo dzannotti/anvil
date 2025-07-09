@@ -36,6 +36,7 @@ func NewAttributeModifierEffect() *core.Effect {
 		if s.Tags.HasTag(tags.Ranged) || s.Tags.HasTag(tags.Melee) {
 			applyAttackModifier(s.Source, s.Expression, s.Tags)
 		}
+
 		if s.Tags.HasTag(tags.Spell) {
 			applySpellModifier(s.Source, s.Expression)
 		}
@@ -45,6 +46,7 @@ func NewAttributeModifierEffect() *core.Effect {
 		if s.Tags.HasTag(tags.Ranged) || s.Tags.HasTag(tags.Melee) {
 			applyAttackModifier(s.Source, s.Expression, s.Tags)
 		}
+
 		if s.Tags.HasTag(tags.Spell) {
 			applySpellModifier(s.Source, s.Expression)
 		}
@@ -54,6 +56,7 @@ func NewAttributeModifierEffect() *core.Effect {
 		if s.Attribute.MatchExact(tags.HitPoints) {
 			return
 		}
+
 		attr := s.Source.Attribute(s.Attribute)
 		mod := stats.AttributeModifier(attr.Value)
 		s.Expression.AddConstant(mod, "Attribute Modifier ("+tags.ToReadable(s.Attribute)+")", attr.Components...)

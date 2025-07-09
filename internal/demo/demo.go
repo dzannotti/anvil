@@ -26,10 +26,12 @@ func setupWorld(world *core.World) {
 			grid.Position{X: 0, Y: y},
 			grid.Position{X: world.Width() - 1, Y: y})
 	}
+
 	limit := mathi.Min(world.Width()-3, world.Height()-3)
 	for y := 1; y < limit; y++ {
 		walls = append(walls, grid.Position{X: world.Width() - 1 - y, Y: y})
 	}
+
 	for _, p := range walls {
 		cell := world.At(p)
 		if cell != nil {
@@ -39,9 +41,8 @@ func setupWorld(world *core.World) {
 }
 
 func New(dispatcher *eventbus.Dispatcher) *core.GameState {
-	// Initialize the registry
-	ruleset.InitializeDefaultRegistry()
-	registry := ruleset.DefaultRegistry
+	// Create a new seeded registry
+	registry := ruleset.NewSeededRegistry()
 
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
@@ -54,6 +55,7 @@ func New(dispatcher *eventbus.Dispatcher) *core.GameState {
 		World:      world,
 		Actors:     []*core.Actor{cedric, mob1, mob2},
 	}
+
 	return &core.GameState{World: world, Encounter: encounter}
 }
 
@@ -74,19 +76,11 @@ func setupPlayer(registry *ruleset.Registry, dispatcher *eventbus.Dispatcher, wo
 		cres,
 	)
 	cedric.SpellCastingSource = tags.Intelligence
-
-	// Equip items through registry
 	cedric.Equip(registry.NewItem("greataxe", nil))
 	cedric.Equip(registry.NewItem("chainmail", nil))
-
-	// Add effects through registry
 	cedric.AddEffect(registry.NewEffect("fighting-style-defense", nil))
-
 	cedric.AddProficiency(tags.MartialWeapon)
-
-	// Add actions through registry
 	cedric.AddAction(registry.NewAction("fireball", cedric, nil))
-
 	return cedric
 }
 
