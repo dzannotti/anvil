@@ -6,21 +6,21 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/expression"
 	"anvil/internal/grid"
-	"anvil/internal/ruleset/base"
+	"anvil/internal/ruleset/actions/basic"
 	"anvil/internal/tag"
 
 	"github.com/google/uuid"
 )
 
 type FireballAction struct {
-	base.Action
+	basic.Action
 }
 
 func NewFireballAction(owner *core.Actor) FireballAction {
 	tc := tag.NewContainer(tags.Spell, tags.Evocation)
 	cost := map[tag.Tag]int{tags.SpellSlot3: 1, tags.Action: 1}
 	a := FireballAction{
-		Action: base.MakeAction(
+		Action: basic.MakeAction(
 			owner,
 			"fireball",
 			uuid.New().String(),
@@ -48,6 +48,7 @@ func (a FireballAction) Perform(pos []grid.Position) {
 		if save.Success {
 			currDmg.HalveDamage(tags.Fire, "Saving throw")
 		}
+
 		t.TakeDamage(currDmg)
 	}
 }
@@ -56,18 +57,22 @@ func (a FireballAction) ValidPositions(from grid.Position) []grid.Position {
 	if !a.CanAfford() {
 		return []grid.Position{}
 	}
+
 	valid := []grid.Position{}
 	shape := shapes.Circle(from, a.CastRange())
 	for _, pos := range shape {
 		if !a.Owner().World.IsValidPosition(pos) {
 			continue
 		}
+
 		if pos == from {
 			continue
 		}
+
 		if !a.Owner().World.HasLineOfSight(from, pos) {
 			continue
 		}
+
 		valid = append(valid, pos)
 	}
 	return valid
@@ -81,6 +86,7 @@ func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {
 		if cell == nil {
 			continue
 		}
+
 		occupant := cell.Occupant()
 		if occupant == nil {
 			continue
@@ -89,6 +95,7 @@ func (a FireballAction) targetsAt(pos grid.Position) []*core.Actor {
 		if occupant.IsDead() {
 			continue
 		}
+
 		targets = append(targets, occupant)
 	}
 	return targets

@@ -15,7 +15,9 @@
       "Bash(rm:*)",
       "Bash(gofmt:*)",
       "Bash(./cli)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }

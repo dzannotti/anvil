@@ -7,12 +7,12 @@ import (
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 	"anvil/internal/mathi"
-	"anvil/internal/ruleset/actor"
-	"anvil/internal/ruleset/fighter"
-	"anvil/internal/ruleset/item/armor"
-	"anvil/internal/ruleset/item/weapon"
-	"anvil/internal/ruleset/monster/undead/zombie"
-	"anvil/internal/ruleset/shared"
+	"anvil/internal/ruleset/actions/shared"
+	"anvil/internal/ruleset/creatures/undead"
+	"anvil/internal/ruleset/effects/classes/fighter"
+	"anvil/internal/ruleset/factories"
+	"anvil/internal/ruleset/items/armor"
+	weapons "anvil/internal/ruleset/items/weapons"
 	"anvil/internal/tag"
 )
 
@@ -58,7 +58,7 @@ func New(dispatcher *eventbus.Dispatcher) *core.GameState {
 		tags.WalkSpeed:  5,
 		tags.SpellSlot3: 1,
 	}}
-	cedric := actor.NewPCActor(
+	cedric := factories.NewPCActor(
 		dispatcher,
 		world,
 		grid.Position{X: 6, Y: 6},
@@ -69,13 +69,13 @@ func New(dispatcher *eventbus.Dispatcher) *core.GameState {
 		cres,
 	)
 	cedric.SpellCastingSource = tags.Intelligence
-	cedric.Equip(weapon.NewGreatAxe())
+	cedric.Equip(weapons.NewGreatAxe())
 	cedric.Equip(armor.NewChainMail())
 	cedric.AddEffect(fighter.NewFightingStyleDefense())
 	cedric.AddProficiency(tags.MartialWeapon)
 	cedric.AddAction(shared.NewFireballAction(cedric))
-	mob1 := zombie.New(dispatcher, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
-	mob2 := zombie.New(dispatcher, world, grid.Position{X: 7, Y: 7}, "Zombie 2")
+	mob1 := undead.New(dispatcher, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
+	mob2 := undead.New(dispatcher, world, grid.Position{X: 7, Y: 7}, "Zombie 2")
 	// mob3 := zombie.New(hub, world, grid.Position{X: 6, Y: 6}, "Zombie 3")
 	encounter := &core.Encounter{
 		Dispatcher: dispatcher,

@@ -1,4 +1,4 @@
-package base
+package basic
 
 import (
 	"anvil/internal/core"
@@ -31,6 +31,7 @@ func (a MoveAction) Perform(pos []grid.Position) {
 	if !ok {
 		panic("attempted to move to unreachable location - this should never happen")
 	}
+
 	src.Dispatcher.Begin(core.MoveEvent{World: world, Source: src, From: src.Position, To: pos[0], Path: path})
 	defer src.Dispatcher.End()
 	positions := path.Positions()
@@ -52,17 +53,21 @@ func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
 		if !a.owner.World.IsValidPosition(pos) {
 			continue
 		}
+
 		if pos == from {
 			continue
 		}
+
 		cell := a.owner.World.Grid.At(pos)
 		if cell.IsOccupied() {
 			continue
 		}
+
 		path, ok := a.owner.World.FindPath(from, pos)
 		if !ok || int(path.TotalCost) > speed {
 			continue
 		}
+
 		valid = append(valid, pos)
 	}
 	return valid

@@ -1,4 +1,4 @@
-package actor
+package factories
 
 import (
 	"anvil/internal/core"
@@ -6,7 +6,8 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
-	"anvil/internal/ruleset/base"
+	actionsBasic "anvil/internal/ruleset/actions/basic"
+	effectsBasic "anvil/internal/ruleset/effects/basic"
 )
 
 func newActor(
@@ -33,12 +34,12 @@ func newActor(
 		Resources:     r,
 	}
 	w.AddOccupant(pos, a)
-	a.AddEffect(base.NewAttributeModifierEffect())
-	a.AddEffect(base.NewProficiencyModifierEffect())
-	a.AddEffect(base.NewCritEffect())
-	a.AddAction(base.NewMoveAction(a))
+	a.AddEffect(effectsBasic.NewAttributeModifierEffect())
+	a.AddEffect(effectsBasic.NewProficiencyModifierEffect())
+	a.AddEffect(effectsBasic.NewCritEffect())
+	a.AddAction(actionsBasic.NewMoveAction(a))
 	a.Resources.LongRest()
-	a.AddEffect(base.NewAttackOfOpportunityEffect())
+	a.AddEffect(effectsBasic.NewAttackOfOpportunityEffect())
 	return a
 }
 
@@ -53,7 +54,7 @@ func NewPCActor(
 	r core.Resources,
 ) *core.Actor {
 	a := newActor(dispatcher, w, core.TeamPlayers, pos, name, hitPoints, at, p, r)
-	a.AddEffect(base.NewDeathSavingThrowEffect())
+	a.AddEffect(effectsBasic.NewDeathSavingThrowEffect())
 	return a
 }
 
@@ -68,7 +69,7 @@ func NewNPCActor(
 	r core.Resources,
 ) *core.Actor {
 	a := newActor(dispatcher, w, core.TeamEnemies, pos, name, hitPoints, at, p, r)
-	a.AddEffect(base.NewDeathEffect())
+	a.AddEffect(effectsBasic.NewDeathEffect())
 	a.AddProficiency(tags.NaturalWeapon)
 	return a
 }

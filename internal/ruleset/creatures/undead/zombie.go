@@ -1,4 +1,4 @@
-package zombie
+package undead
 
 import (
 	"anvil/internal/core"
@@ -7,17 +7,17 @@ import (
 	"anvil/internal/eventbus"
 	"anvil/internal/expression"
 	"anvil/internal/grid"
-	"anvil/internal/ruleset/actor"
-	"anvil/internal/ruleset/base"
-	"anvil/internal/ruleset/shared"
+	"anvil/internal/ruleset/actions/basic"
+	effectsShared "anvil/internal/ruleset/effects/shared"
+	"anvil/internal/ruleset/factories"
 	"anvil/internal/tag"
 )
 
 func NewSlamAction(owner *core.Actor) core.Action {
 	damage := expression.FromDamageDice(1, 6, "Slam", tag.NewContainer(tags.Bludgeoning))
-	slam := base.NewNaturalWeapon("Slam", "slam", damage, tag.NewContainer(tags.Bludgeoning))
+	slam := basic.NewNaturalWeapon("Slam", "slam", damage, tag.NewContainer(tags.Bludgeoning))
 	cost := map[tag.Tag]int{tags.Action: 1}
-	return base.NewMeleeAction(owner, "Slam", slam, 1, tag.NewContainer(tags.Melee, tags.NaturalWeapon), cost)
+	return basic.NewMeleeAction(owner, "Slam", slam, 1, tag.NewContainer(tags.Melee, tags.NaturalWeapon), cost)
 }
 
 func New(dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, name string) *core.Actor {
@@ -33,8 +33,8 @@ func New(dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, 
 	resources := core.Resources{Max: map[tag.Tag]int{
 		tags.WalkSpeed: 4,
 	}}
-	npc := actor.NewNPCActor(dispatcher, world, pos, name, 22, attributes, proficiencies, resources)
+	npc := factories.NewNPCActor(dispatcher, world, pos, name, 22, attributes, proficiencies, resources)
 	npc.AddAction(NewSlamAction(npc))
-	npc.AddEffect(shared.NewUndeadFortitudeEffect())
+	npc.AddEffect(effectsShared.NewUndeadFortitudeEffect())
 	return npc
 }
