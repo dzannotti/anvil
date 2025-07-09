@@ -1,0 +1,8 @@
+name: "Slam"
+damage:
+  - formula: "1d6"
+    kind: "Damage.Kind.Bludgeoning"
+weapon_tags:
+  - "Melee"
+  - "Item.Weapon.Natural"
+reach: 1

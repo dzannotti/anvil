@@ -1,4 +1,4 @@
-package base
+package basic
 
 import (
 	"anvil/internal/core"
@@ -89,6 +89,7 @@ func (a Action) Commit() {
 	if !a.CanAfford() {
 		panic("Attempt to commit action without affording cost")
 	}
+
 	for tag, amount := range a.cost {
 		a.owner.ConsumeResource(tag, amount)
 	}

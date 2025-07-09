@@ -1,4 +1,4 @@
-package base
+package basic
 
 import (
 	"slices"
@@ -71,6 +71,7 @@ func (a *MeleeAction) Commit() {
 	if !a.CanAfford() {
 		panic("Attempt to commit action without affording cost")
 	}
+
 	for tag, amount := range a.cost {
 		a.owner.ConsumeResource(tag, amount)
 	}
@@ -93,6 +94,7 @@ func (a *MeleeAction) ValidPositions(from grid.Position) []grid.Position {
 	if !a.CanAfford() {
 		return []grid.Position{}
 	}
+
 	shape := shapes.Circle(from, a.reach)
 	valid := make([]grid.Position, 0)
 	enemies := a.owner.Enemies()
@@ -100,19 +102,24 @@ func (a *MeleeAction) ValidPositions(from grid.Position) []grid.Position {
 		if !a.owner.World.IsValidPosition(pos) {
 			continue
 		}
+
 		if pos == from {
 			continue
 		}
+
 		other := a.owner.World.ActorAt(pos)
 		if other == nil {
 			continue
 		}
+
 		if !slices.Contains(enemies, other) {
 			continue
 		}
+
 		if other.IsDead() {
 			continue
 		}
+
 		valid = append(valid, pos)
 	}
 	return valid

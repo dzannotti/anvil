@@ -1,4 +1,4 @@
-package base
+package basic
 
 import (
 	"fmt"
@@ -60,9 +60,33 @@ func createTestActor(world *core.World, encounter *core.Encounter, dispatcher *e
 	return actor
 }
 
-func createTestWeapon(name string, _ string, damageType tag.Tag, _ int) *NaturalWeapon {
+// MockWeapon implements the weapon interface for testing
+type MockWeapon struct {
+	name       string
+	damage     *expression.Expression
+	damageType tag.Tag
+}
+
+func (m MockWeapon) Damage() *expression.Expression {
+	return m.damage
+}
+
+func (m MockWeapon) Name() string {
+	return m.name
+}
+
+func (m MockWeapon) Tags() *tag.Container {
+	container := tag.NewContainer(m.damageType)
+	return &container
+}
+
+func createTestWeapon(name string, _ string, damageType tag.Tag, _ int) *MockWeapon {
 	expr := expression.FromDamageDice(1, 8, name, tag.NewContainer(damageType))
-	return NewNaturalWeapon(name, "weapon", expr, tag.NewContainer(damageType))
+	return &MockWeapon{
+		name:       name,
+		damage:     &expr,
+		damageType: damageType,
+	}
 }
 
 func TestMeleeAction_Creation(t *testing.T) {

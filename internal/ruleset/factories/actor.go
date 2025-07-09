@@ -1,4 +1,4 @@
-package actor
+package factories
 
 import (
 	"anvil/internal/core"
@@ -6,10 +6,17 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
-	"anvil/internal/ruleset/base"
 )
 
+type RegistryReader interface {
+	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) core.Action
+	NewEffect(archetype string, options map[string]interface{}) *core.Effect
+	NewItem(archetype string, options map[string]interface{}) core.Item
+	NewCreature(archetype string, options map[string]interface{}) *core.Actor
+}
+
 func newActor(
+	registry RegistryReader,
 	dispatcher *eventbus.Dispatcher,
 	w *core.World,
 	t core.TeamID,
@@ -33,16 +40,20 @@ func newActor(
 		Resources:     r,
 	}
 	w.AddOccupant(pos, a)
-	a.AddEffect(base.NewAttributeModifierEffect())
-	a.AddEffect(base.NewProficiencyModifierEffect())
-	a.AddEffect(base.NewCritEffect())
-	a.AddAction(base.NewMoveAction(a))
+
+	a.AddEffect(registry.NewEffect("attribute-modifier", nil))
+	a.AddEffect(registry.NewEffect("proficiency-modifier", nil))
+	a.AddEffect(registry.NewEffect("critical", nil))
+	a.AddEffect(registry.NewEffect("attack-of-opportunity", nil))
+
+	a.AddAction(registry.NewAction("move", a, nil))
+
 	a.Resources.LongRest()
-	a.AddEffect(base.NewAttackOfOpportunityEffect())
 	return a
 }
 
 func NewPCActor(
+	registry RegistryReader,
 	dispatcher *eventbus.Dispatcher,
 	w *core.World,
 	pos grid.Position,
@@ -52,12 +63,13 @@ func NewPCActor(
 	p stats.Proficiencies,
 	r core.Resources,
 ) *core.Actor {
-	a := newActor(dispatcher, w, core.TeamPlayers, pos, name, hitPoints, at, p, r)
-	a.AddEffect(base.NewDeathSavingThrowEffect())
+	a := newActor(registry, dispatcher, w, core.TeamPlayers, pos, name, hitPoints, at, p, r)
+	a.AddEffect(registry.NewEffect("death-saving-throw", nil))
 	return a
 }
 
 func NewNPCActor(
+	registry RegistryReader,
 	dispatcher *eventbus.Dispatcher,
 	w *core.World,
 	pos grid.Position,
@@ -67,8 +79,8 @@ func NewNPCActor(
 	p stats.Proficiencies,
 	r core.Resources,
 ) *core.Actor {
-	a := newActor(dispatcher, w, core.TeamEnemies, pos, name, hitPoints, at, p, r)
-	a.AddEffect(base.NewDeathEffect())
+	a := newActor(registry, dispatcher, w, core.TeamEnemies, pos, name, hitPoints, at, p, r)
+	a.AddEffect(registry.NewEffect("death", nil))
 	a.AddProficiency(tags.NaturalWeapon)
 	return a
 }

@@ -1,4 +1,4 @@
-package base
+package basic
 
 import (
 	"anvil/internal/core"
@@ -28,21 +28,26 @@ func NewAttackOfOpportunityEffect() *core.Effect {
 			if !other.CanAct() {
 				continue
 			}
+
 			if s.Source.Encounter.IsOver() {
 				return
 			}
+
 			if !other.Resources.CanAfford(map[tag.Tag]int{tags.Reaction: 1}) {
 				continue
 			}
+
 			response := s.Source.World.Ask(other, "Take attack of opportunity?", options)
 			b, ok := response.Value.(bool)
 			if !ok || !b {
 				continue
 			}
+
 			baseAttack := other.BestWeaponAttack()
 			if baseAttack == nil {
 				continue
 			}
+
 			s.Source.Dispatcher.Begin(core.EffectEvent{Source: s.Source, Effect: fx})
 			other.ConsumeResource(tags.Reaction, 1)
 			// TODO: Create proper AOO action with Reaction cost instead of Action cost
