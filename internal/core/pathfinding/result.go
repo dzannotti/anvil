@@ -1,6 +1,9 @@
 package pathfinding
 
-import "anvil/internal/grid"
+import (
+	"anvil/internal/grid"
+	"math"
+)
 
 type Result struct {
 	Steps     []PathStep
@@ -17,4 +20,8 @@ func (r *Result) Positions() []grid.Position {
 		positions[i] = step.Position
 	}
 	return positions
+}
+
+func (r *Result) Speed() int {
+	return int(math.Ceil(r.TotalCost))
 }

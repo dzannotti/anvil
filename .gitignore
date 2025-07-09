@@ -21,6 +21,10 @@ go.work
 /bin/
 /dist/
 
+# Compiled binaries
+cli
+gui
+
 # IDE
 .idea/
 

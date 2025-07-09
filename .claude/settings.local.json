@@ -23,7 +23,23 @@
       "Bash(timeout 10s make run-cli)",
       "Bash(timeout 5s make run-cli)",
       "Bash(timeout 3s make run-cli)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "Bash(git pull:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(cp:*)",
+      "Bash(make test:*)",
+      "Bash(go mod:*)",
+      "Bash(goimports:*)",
+      "Bash(timeout 5s go run ./cmd/gui)",
+      "Bash(git rebase:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch cli gui' --prune-empty -- --all)",
+      "Bash(git ls-tree:*)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch cli gui' HEAD~10..HEAD)",
+      "Bash(git reset:*)",
+      "Bash(git restore:*)",
+      "Bash(git rm:*)"
     ],
     "deny": []
   }

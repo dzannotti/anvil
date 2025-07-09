@@ -1,32 +1,62 @@
 # Anvil
 
-- [x] fix concurrency
-- [x] aiutils
-- [x] AIActions
-- [x] death
-- [x] actual pc/npc values
-- [x] attribute modifiers in rolls
-- [x] Armor class Modifier
-- [x] proficiency modifier
-- [x] action use is on grid cell (targets listed below)
-- [x] items/weapons
-- [x] weapon attack (unarmed/natural/weapon)
-- [x] chain mail
-- [x] Fighting style defense
-- [x] crit
-- [x] undead fortitude
-- [x] saving throws implementation
-- [x] resources
-- [x] existing attacks using resources
-- [x] score based on damage
-- [x] conditions
-- [x] move based on resources
-- [x] refactor team to have a struct (we need IsHostileTo and replace all team != other team to support neutrals)
-- [x] death saving throws for PC
-- [x] fire ball
-- [x] attacks of opportunity
-- [x] reduce number of deps
-- [x] DamageSource interface refactor (Phase 1-5 complete)
+A game project focused on core game logic implementation.
+
+## Development Commands
+
+| Command              | Description                                 |
+| -------------------- | ------------------------------------------- |
+| `make build`         | Build both CLI and GUI binaries             |
+| `make cli`           | Build CLI binary only                       |
+| `make gui`           | Build GUI binary only                       |
+| `make test`          | Run all tests                               |
+| `make tdd`           | Run tests in watch mode with concise output |
+| `make test-coverage` | Run tests with coverage report              |
+| `make fmt`           | Format all Go code                          |
+| `make fmt-check`     | Check if code is formatted (CI)             |
+| `make lint`          | Run linter on all code                      |
+| `make lint-fix`      | Run linter and auto-fix issues              |
+| `make clean`         | Remove build artifacts                      |
+| `make clean-cache`   | Clean Go cache and module cache             |
+| `make deps`          | Install development tools                   |
+| `make hooks`         | Install pre-commit hooks                    |
+| `make ci`            | Run full CI pipeline locally                |
+| `make help`          | Show this help message                      |
+
+## Project Structure
+
+```text
+├── cmd/
+│   ├── cli/          # CLI application
+│   └── gui/          # GUI application
+├── internal/         # Internal packages
+├── bin/              # Built binaries
+└── Makefile          # Build automation
+```
+
+## Getting Started
+
+**One-time setup after cloning:**
+
+```bash
+make setup
+```
+
+This installs all tools and sets up git hooks automatically.
+
+**Daily development:**
+
+```bash
+make tdd    # Test-driven development mode
+make ci     # Run full CI pipeline locally
+```
+
+## TODO Tracker 
+
+- [ ] make actions definition based like items
+- [ ] make creatures definition based like items and actions
+- [ ] leverage registry to replace demo package
+- [ ] rewrite ai
 - [ ] finesse
 - [ ] unarmed strike
 - [ ] fire bolt

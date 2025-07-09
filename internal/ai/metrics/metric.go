@@ -13,6 +13,7 @@ type AIMetric interface {
 var Default = []AIMetric{
 	DamageMetric{},
 	PositioningMetric{},
+	TargetSelectionMetric{},
 }
 
 func targetsAffected(world *core.World, pos []grid.Position) []*core.Actor {
@@ -46,4 +47,18 @@ func friendliesAffected(world *core.World, actor *core.Actor, pos []grid.Positio
 		}
 	}
 	return friendlies
+}
+
+func calculateDistance(pos1, pos2 grid.Position) int {
+	dx := pos1.X - pos2.X
+	dy := pos1.Y - pos2.Y
+	if dx < 0 {
+		dx = -dx
+	}
+	if dy < 0 {
+		dy = -dy
+	}
+	
+	// Manhattan distance
+	return dx + dy
 }
