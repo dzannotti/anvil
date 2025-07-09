@@ -120,11 +120,13 @@ func client(_ net.Conn) {
 
 	keyBinds := ui.KeyBinds{
 		SelectAction: func(i int) {
-			if world.Request != nil {
-				if i > len(world.Request.Options) {
+			if world.RequestManager().HasPendingRequest() {
+				request := world.RequestManager().GetPendingRequest()
+				if i > len(request.Options) {
 					return
 				}
-				world.Request.Answer(world.Request.Options[i-1])
+
+				request.Answer(request.Options[i-1])
 				return
 			}
 			actor := encounter.ActiveActor()
@@ -132,6 +134,7 @@ func client(_ net.Conn) {
 				endTurn()
 				return
 			}
+
 			am.SetActive(actor.Actions[i-1])
 		},
 	}

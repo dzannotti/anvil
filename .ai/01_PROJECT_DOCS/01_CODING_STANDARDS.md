@@ -71,7 +71,7 @@ processComponent(component)
 ## Naming
 
 - Use concise, clear names: `user` not `currentUserObject`
-- Interface names should describe capability: `ComponentKind` not `ComponentBehavior`
+- Interface names should describe capability with a verb: `ComponentDoer` not `ComponentBehavior`
 - Field names should be consistent across similar structs
 
 ## Function/Method Design
