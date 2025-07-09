@@ -10,6 +10,7 @@ import (
 	"anvil/internal/tag"
 )
 
+// nolint:funlen // TODO: refactor
 func NewAttributeModifierEffect() *core.Effect {
 	applyAttackModifier := func(src *core.Actor, e *expression.Expression, tc tag.Container) {
 		str := src.Attribute(tags.Strength)

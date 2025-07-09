@@ -126,12 +126,13 @@ func registerCreatures(registry *Registry) {
 	})
 }
 
-func InitializeDefaultRegistry() {
-	SeedRegistry(DefaultRegistry)
-}
-
-func NewSeededRegistry() *Registry {
-	registry := NewRegistry()
+func NewRegistry() *Registry {
+	registry := &Registry{
+		actions:   make(map[string]ActionFactory),
+		effects:   make(map[string]EffectFactory),
+		items:     make(map[string]ItemFactory),
+		creatures: make(map[string]CreatureFactory),
+	}
 	SeedRegistry(registry)
 	return registry
 }

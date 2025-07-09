@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"anvil/internal/expression"
 	weapon "anvil/internal/ruleset/items/weapons"
 	"anvil/internal/tag"
 
@@ -89,17 +90,11 @@ func createWeaponFactories(weaponDefs map[string]WeaponData) map[string]func() *
 }
 
 func createWeapon(archetype string, data WeaponData) *weapon.Weapon {
-	damageEntries := make([]weapon.DamageEntry, 0, len(data.Damage))
+	damageExpr := expression.Expression{Rng: expression.DefaultRoller{}}
 	for _, dmg := range data.Damage {
-		times, sides, formulaErr := parseDiceFormula(dmg.Formula)
-		if formulaErr != nil {
-			panic(fmt.Sprintf("invalid dice formula '%s' for weapon '%s': %v", dmg.Formula, archetype, formulaErr))
+		if err := parseDamageFormula(dmg.Formula, data.Name, dmg.Kind, &damageExpr); err != nil {
+			panic(fmt.Sprintf("invalid damage formula '%s' for weapon '%s': %v", dmg.Formula, archetype, err))
 		}
-		damageEntries = append(damageEntries, weapon.DamageEntry{
-			Times: times,
-			Sides: sides,
-			Kind:  tag.FromString(dmg.Kind),
-		})
 	}
 
 	weaponTags := make([]tag.Tag, len(data.WeaponTags))
@@ -111,28 +106,33 @@ func createWeapon(archetype string, data WeaponData) *weapon.Weapon {
 		archetype,
 		uuid.New().String(),
 		data.Name,
-		damageEntries,
+		damageExpr,
 		tag.NewContainer(weaponTags...),
 		data.Reach,
 	)
 }
 
-func parseDiceFormula(formula string) (int, int, error) {
-	re := regexp.MustCompile(`^(\d+)d(\d+)$`)
-	matches := re.FindStringSubmatch(formula)
-	if len(matches) != 3 {
-		return 0, 0, fmt.Errorf("invalid dice formula format, expected format like '1d4' or '2d6'")
+func parseDamageFormula(formula, weaponName, kind string, expr *expression.Expression) error {
+	diceRe := regexp.MustCompile(`^(\d+)d(\d+)$`)
+	if matches := diceRe.FindStringSubmatch(formula); len(matches) == 3 {
+		times, err := strconv.Atoi(matches[1])
+		if err != nil {
+			return fmt.Errorf("invalid number of dice: %s", matches[1])
+		}
+
+		sides, err := strconv.Atoi(matches[2])
+		if err != nil {
+			return fmt.Errorf("invalid number of sides: %s", matches[2])
+		}
+
+		expr.AddDamageDice(times, sides, weaponName, tag.NewContainer(tag.FromString(kind)))
+		return nil
 	}
 
-	times, err := strconv.Atoi(matches[1])
-	if err != nil {
-		return 0, 0, fmt.Errorf("invalid number of dice: %s", matches[1])
+	if constant, err := strconv.Atoi(formula); err == nil {
+		expr.AddDamageConstant(constant, weaponName, tag.NewContainer(tag.FromString(kind)))
+		return nil
 	}
 
-	sides, err := strconv.Atoi(matches[2])
-	if err != nil {
-		return 0, 0, fmt.Errorf("invalid number of sides: %s", matches[2])
-	}
-
-	return times, sides, nil
+	return fmt.Errorf("invalid damage formula format: %s (expected format like '1d4', '2d6', or '5')", formula)
 }

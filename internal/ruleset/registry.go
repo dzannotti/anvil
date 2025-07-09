@@ -29,15 +29,6 @@ type Registry struct {
 	creatures map[string]CreatureFactory
 }
 
-func NewRegistry() *Registry {
-	return &Registry{
-		actions:   make(map[string]ActionFactory),
-		effects:   make(map[string]EffectFactory),
-		items:     make(map[string]ItemFactory),
-		creatures: make(map[string]CreatureFactory),
-	}
-}
-
 func (r *Registry) RegisterAction(archetype string, factory ActionFactory) {
 	r.actions[archetype] = factory
 }
@@ -106,4 +97,22 @@ func (r *Registry) NewCreature(archetype string, options map[string]interface{})
 	return factory(options)
 }
 
-var DefaultRegistry = NewRegistry()
+func (r *Registry) HasAction(archetype string) bool {
+	_, exists := r.actions[archetype]
+	return exists
+}
+
+func (r *Registry) HasEffect(archetype string) bool {
+	_, exists := r.effects[archetype]
+	return exists
+}
+
+func (r *Registry) HasItem(archetype string) bool {
+	_, exists := r.items[archetype]
+	return exists
+}
+
+func (r *Registry) HasCreature(archetype string) bool {
+	_, exists := r.creatures[archetype]
+	return exists
+}

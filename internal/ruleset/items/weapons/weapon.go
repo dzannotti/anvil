@@ -10,22 +10,16 @@ import (
 	"anvil/internal/tag"
 )
 
-type DamageEntry struct {
-	Times int
-	Sides int
-	Kind  tag.Tag
-}
-
 type Weapon struct {
 	archetype string
 	id        string
 	name      string
-	damage    []DamageEntry
+	damage    expression.Expression
 	tags      tag.Container
 	reach     int
 }
 
-func NewWeapon(archetype, id, name string, damage []DamageEntry, weaponTags tag.Container, reach int) *Weapon {
+func NewWeapon(archetype, id, name string, damage expression.Expression, weaponTags tag.Container, reach int) *Weapon {
 	return &Weapon{
 		archetype: archetype,
 		id:        id,
@@ -49,7 +43,8 @@ func (w Weapon) Name() string {
 }
 
 func (w Weapon) Tags() *tag.Container {
-	return &w.tags
+	tags := w.tags.Clone()
+	return &tags
 }
 
 func (w Weapon) OnEquip(a *core.Actor) {
@@ -58,20 +53,6 @@ func (w Weapon) OnEquip(a *core.Actor) {
 }
 
 func (w Weapon) Damage() *expression.Expression {
-	if len(w.damage) == 0 {
-		// Return empty expression if no damage entries
-		return &expression.Expression{}
-	}
-
-	// Start with the first damage entry
-	first := w.damage[0]
-	expr := expression.FromDamageDice(first.Times, first.Sides, w.name, tag.NewContainer(first.Kind))
-
-	// Add remaining damage entries
-	for i := 1; i < len(w.damage); i++ {
-		entry := w.damage[i]
-		expr.AddDamageDice(entry.Times, entry.Sides, w.name, tag.NewContainer(entry.Kind))
-	}
-
-	return &expr
+	dmg := w.damage.Clone()
+	return &dmg
 }

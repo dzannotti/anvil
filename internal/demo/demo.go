@@ -41,8 +41,7 @@ func setupWorld(world *core.World) {
 }
 
 func New(dispatcher *eventbus.Dispatcher) *core.GameState {
-	// Create a new seeded registry
-	registry := ruleset.NewSeededRegistry()
+	registry := ruleset.NewRegistry()
 
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
