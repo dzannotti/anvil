@@ -1,6 +1,10 @@
 package ruleset
 
 import (
+	"log"
+	"path/filepath"
+	"runtime"
+
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
@@ -13,7 +17,7 @@ import (
 	effectsFighter "anvil/internal/ruleset/effects/classes/fighter"
 	effectsShared "anvil/internal/ruleset/effects/shared"
 	itemsArmor "anvil/internal/ruleset/items/armor"
-	itemsWeapons "anvil/internal/ruleset/items/weapons"
+	"anvil/internal/ruleset/loader"
 	"anvil/internal/tag"
 )
 
@@ -118,14 +122,23 @@ func registerItems(registry *Registry) {
 		return itemsArmor.NewChainMail()
 	})
 
-	// Weapons
-	registry.RegisterItem("dagger", func(_ map[string]interface{}) core.Item {
-		return itemsWeapons.NewDagger()
-	})
+	// Load weapons from YAML
+	_, file, _, _ := runtime.Caller(0)
+	projectRoot := filepath.Dir(filepath.Dir(filepath.Dir(file)))
+	dataDir := filepath.Join(projectRoot, "data")
 
-	registry.RegisterItem("greataxe", func(_ map[string]interface{}) core.Item {
-		return itemsWeapons.NewGreatAxe()
-	})
+	weaponFactories, err := loader.LoadWeapons(dataDir)
+	if err != nil {
+		log.Fatalf("Failed to load weapons: %v", err)
+	}
+
+	for archetype, factory := range weaponFactories {
+		// Capture the factory for the closure
+		f := factory
+		registry.RegisterItem(archetype, func(_ map[string]interface{}) core.Item {
+			return f()
+		})
+	}
 }
 
 // registerCreatures registers creature archetypes

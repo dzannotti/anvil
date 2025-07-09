@@ -18,7 +18,10 @@
       "Bash(mv:*)",
       "Bash(mkdir:*)",
       "Bash(cp:*)",
-      "Bash(make test:*)"
+      "Bash(make test:*)",
+      "Bash(go mod:*)",
+      "Bash(goimports:*)",
+      "Bash(timeout 5s go run ./cmd/gui)"
     ],
     "deny": []
   }

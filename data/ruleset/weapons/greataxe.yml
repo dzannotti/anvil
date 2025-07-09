@@ -1,0 +1,8 @@
+name: "Great Axe"
+damage:
+  - formula: "2d6"
+    kind: "Damage.Kind.Slashing"
+weapon_tags:
+  - "Melee"
+  - "Item.Weapon.Martial.Axe"
+reach: 1

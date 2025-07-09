@@ -1,0 +1,10 @@
+name: "Flaming Sword"
+damage:
+  - formula: "1d8"
+    kind: "Damage.Kind.Slashing"
+  - formula: "1d6"
+    kind: "Damage.Kind.Fire"
+weapon_tags:
+  - "Melee"
+  - "Item.Weapon.Martial"
+reach: 1

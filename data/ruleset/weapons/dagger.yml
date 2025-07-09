@@ -1,0 +1,8 @@
+name: "Dagger"
+damage:
+  - formula: "1d4"
+    kind: "Damage.Kind.Piercing"
+weapon_tags:
+  - "Melee"
+  - "Item.Weapon.Simple"
+reach: 1
