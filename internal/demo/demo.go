@@ -75,12 +75,13 @@ func New(dispatcher *eventbus.Dispatcher) *core.GameState {
 	cedric.AddProficiency(tags.MartialWeapon)
 	cedric.AddAction(shared.NewFireballAction(cedric))
 	mob1 := zombie.New(dispatcher, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
-	mob2 := zombie.New(dispatcher, world, grid.Position{X: 7, Y: 7}, "Zombie 2")
+	mob2 := zombie.New(dispatcher, world, grid.Position{X: 5, Y: 6}, "Zombie 2")
 	// mob3 := zombie.New(hub, world, grid.Position{X: 6, Y: 6}, "Zombie 3")
 	encounter := &core.Encounter{
 		Dispatcher: dispatcher,
 		World:      world,
 		Actors:     []*core.Actor{ /*wizard, */ cedric, mob1, mob2 /* mob3*/},
 	}
+	
 	return &core.GameState{World: world, Encounter: encounter}
 }

@@ -19,6 +19,9 @@ func main() {
 	gameState := demo.New(&dispatcher)
 	encounter := gameState.Encounter
 
+	// Create AI weights - for now using default weights for all actors
+	weights := ai.NewDefaultWeights()
+
 	start := time.Now()
 	encounter.Start()
 	go func() {
@@ -30,7 +33,7 @@ func main() {
 		}
 	}()
 	for !encounter.IsOver() {
-		ai.Play(gameState)
+		ai.Play(gameState, weights)
 	}
 	encounter.End()
 	total := time.Since(start)

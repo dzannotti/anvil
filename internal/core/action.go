@@ -15,4 +15,5 @@ type Action interface {
 	ValidPositions(from grid.Position) []grid.Position
 	AffectedPositions(target []grid.Position) []grid.Position
 	AverageDamage() int
+	CanAfford() bool
 }

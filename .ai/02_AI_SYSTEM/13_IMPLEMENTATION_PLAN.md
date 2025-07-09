@@ -245,7 +245,6 @@ func findBestAction(world *core.World, actor *core.Actor) (core.Action, grid.Pos
 
 **Acceptance Criteria**:
 - ✅ Damage metric calculates real damage values based on action.AverageDamage()
-- ✅ Line-of-sight checking works correctly
 - ✅ Enemy damage is positive, ally damage is negative
 - ✅ Kill potential bonus is applied when damage >= target HP
 - ✅ AI preferentially targets enemies it can kill

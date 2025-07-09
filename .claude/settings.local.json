@@ -15,7 +15,15 @@
       "Bash(rm:*)",
       "Bash(gofmt:*)",
       "Bash(./cli)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "WebFetch(domain:docs.larian.game)",
+      "Bash(mkdir:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(timeout 10s make run-cli)",
+      "Bash(timeout 5s make run-cli)",
+      "Bash(timeout 3s make run-cli)",
+      "Bash(make:*)"
     ],
     "deny": []
   }

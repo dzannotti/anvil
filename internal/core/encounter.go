@@ -60,3 +60,13 @@ func (e *Encounter) startTurn() {
 	e.Dispatcher.Begin(TurnEvent{Turn: e.Turn, Actor: e.ActiveActor()})
 	e.ActiveActor().StartTurn()
 }
+
+func (e *Encounter) HostileActors(actor *Actor) []*Actor {
+	var hostiles []*Actor
+	for _, other := range e.Actors {
+		if actor.IsHostileTo(other) && !other.IsDead() {
+			hostiles = append(hostiles, other)
+		}
+	}
+	return hostiles
+}
