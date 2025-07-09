@@ -5,22 +5,24 @@ import (
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
-	"anvil/internal/expression"
 	"anvil/internal/grid"
-	"anvil/internal/ruleset/actions/basic"
-	effectsShared "anvil/internal/ruleset/effects/shared"
 	"anvil/internal/ruleset/factories"
 	"anvil/internal/tag"
 )
 
-func NewSlamAction(owner *core.Actor) core.Action {
-	damage := expression.FromDamageDice(1, 6, "Slam", tag.NewContainer(tags.Bludgeoning))
-	slam := basic.NewNaturalWeapon("Slam", "slam", damage, tag.NewContainer(tags.Bludgeoning))
-	cost := map[tag.Tag]int{tags.Action: 1}
-	return basic.NewMeleeAction(owner, "Slam", slam, 1, tag.NewContainer(tags.Melee, tags.NaturalWeapon), cost)
+// RegistryReader provides read-only access to the registry
+type RegistryReader interface {
+	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) (core.Action, error)
+	NewEffect(archetype string, options map[string]interface{}) (*core.Effect, error)
+	NewItem(archetype string, options map[string]interface{}) (core.Item, error)
+	NewCreature(archetype string, options map[string]interface{}) (*core.Actor, error)
+	HasAction(archetype string) bool
+	HasEffect(archetype string) bool
+	HasItem(archetype string) bool
+	HasCreature(archetype string) bool
 }
 
-func New(dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, name string) *core.Actor {
+func New(registry RegistryReader, dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, name string) *core.Actor {
 	attributes := stats.Attributes{
 		Strength:     13,
 		Dexterity:    6,
@@ -33,8 +35,19 @@ func New(dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, 
 	resources := core.Resources{Max: map[tag.Tag]int{
 		tags.WalkSpeed: 4,
 	}}
-	npc := factories.NewNPCActor(dispatcher, world, pos, name, 22, attributes, proficiencies, resources)
-	npc.AddAction(NewSlamAction(npc))
-	npc.AddEffect(effectsShared.NewUndeadFortitudeEffect())
+	npc := factories.NewNPCActor(registry, dispatcher, world, pos, name, 22, attributes, proficiencies, resources)
+
+	slamAction, err := registry.NewAction("slam", npc, nil)
+	if err != nil {
+		panic("failed to create slam action: " + err.Error())
+	}
+	npc.AddAction(slamAction)
+
+	undeadFortitude, err := registry.NewEffect("undead-fortitude", nil)
+	if err != nil {
+		panic("failed to create undead fortitude effect: " + err.Error())
+	}
+	npc.AddEffect(undeadFortitude)
+
 	return npc
 }

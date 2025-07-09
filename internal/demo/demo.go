@@ -7,6 +7,7 @@ import (
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 	"anvil/internal/mathi"
+	"anvil/internal/ruleset"
 	"anvil/internal/ruleset/actions/shared"
 	"anvil/internal/ruleset/creatures/undead"
 	"anvil/internal/ruleset/effects/classes/fighter"
@@ -43,6 +44,10 @@ func setupWorld(world *core.World) {
 }
 
 func New(dispatcher *eventbus.Dispatcher) *core.GameState {
+	// Initialize the registry
+	ruleset.InitializeDefaultRegistry()
+	registry := ruleset.DefaultRegistry
+
 	world := core.NewWorld(10, 10)
 	setupWorld(world)
 
@@ -59,6 +64,7 @@ func New(dispatcher *eventbus.Dispatcher) *core.GameState {
 		tags.SpellSlot3: 1,
 	}}
 	cedric := factories.NewPCActor(
+		registry,
 		dispatcher,
 		world,
 		grid.Position{X: 6, Y: 6},
@@ -74,8 +80,8 @@ func New(dispatcher *eventbus.Dispatcher) *core.GameState {
 	cedric.AddEffect(fighter.NewFightingStyleDefense())
 	cedric.AddProficiency(tags.MartialWeapon)
 	cedric.AddAction(shared.NewFireballAction(cedric))
-	mob1 := undead.New(dispatcher, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
-	mob2 := undead.New(dispatcher, world, grid.Position{X: 7, Y: 7}, "Zombie 2")
+	mob1 := undead.New(registry, dispatcher, world, grid.Position{X: 7, Y: 6}, "Zombie 1")
+	mob2 := undead.New(registry, dispatcher, world, grid.Position{X: 7, Y: 7}, "Zombie 2")
 	// mob3 := zombie.New(hub, world, grid.Position{X: 6, Y: 6}, "Zombie 3")
 	encounter := &core.Encounter{
 		Dispatcher: dispatcher,

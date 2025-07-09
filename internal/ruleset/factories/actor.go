@@ -6,11 +6,22 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
-	actionsBasic "anvil/internal/ruleset/actions/basic"
-	effectsBasic "anvil/internal/ruleset/effects/basic"
 )
 
+// RegistryReader provides read-only access to the registry
+type RegistryReader interface {
+	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) (core.Action, error)
+	NewEffect(archetype string, options map[string]interface{}) (*core.Effect, error)
+	NewItem(archetype string, options map[string]interface{}) (core.Item, error)
+	NewCreature(archetype string, options map[string]interface{}) (*core.Actor, error)
+	HasAction(archetype string) bool
+	HasEffect(archetype string) bool
+	HasItem(archetype string) bool
+	HasCreature(archetype string) bool
+}
+
 func newActor(
+	registry RegistryReader,
 	dispatcher *eventbus.Dispatcher,
 	w *core.World,
 	t core.TeamID,
@@ -34,16 +45,32 @@ func newActor(
 		Resources:     r,
 	}
 	w.AddOccupant(pos, a)
-	a.AddEffect(effectsBasic.NewAttributeModifierEffect())
-	a.AddEffect(effectsBasic.NewProficiencyModifierEffect())
-	a.AddEffect(effectsBasic.NewCritEffect())
-	a.AddAction(actionsBasic.NewMoveAction(a))
+
+	// Add basic effects
+	if effect, err := registry.NewEffect("attribute-modifier", nil); err == nil {
+		a.AddEffect(effect)
+	}
+	if effect, err := registry.NewEffect("proficiency-modifier", nil); err == nil {
+		a.AddEffect(effect)
+	}
+	if effect, err := registry.NewEffect("critical", nil); err == nil {
+		a.AddEffect(effect)
+	}
+	if effect, err := registry.NewEffect("attack-of-opportunity", nil); err == nil {
+		a.AddEffect(effect)
+	}
+
+	// Add basic actions
+	if action, err := registry.NewAction("move", a, nil); err == nil {
+		a.AddAction(action)
+	}
+
 	a.Resources.LongRest()
-	a.AddEffect(effectsBasic.NewAttackOfOpportunityEffect())
 	return a
 }
 
 func NewPCActor(
+	registry RegistryReader,
 	dispatcher *eventbus.Dispatcher,
 	w *core.World,
 	pos grid.Position,
@@ -53,12 +80,15 @@ func NewPCActor(
 	p stats.Proficiencies,
 	r core.Resources,
 ) *core.Actor {
-	a := newActor(dispatcher, w, core.TeamPlayers, pos, name, hitPoints, at, p, r)
-	a.AddEffect(effectsBasic.NewDeathSavingThrowEffect())
+	a := newActor(registry, dispatcher, w, core.TeamPlayers, pos, name, hitPoints, at, p, r)
+	if effect, err := registry.NewEffect("death-saving-throw", nil); err == nil {
+		a.AddEffect(effect)
+	}
 	return a
 }
 
 func NewNPCActor(
+	registry RegistryReader,
 	dispatcher *eventbus.Dispatcher,
 	w *core.World,
 	pos grid.Position,
@@ -68,8 +98,10 @@ func NewNPCActor(
 	p stats.Proficiencies,
 	r core.Resources,
 ) *core.Actor {
-	a := newActor(dispatcher, w, core.TeamEnemies, pos, name, hitPoints, at, p, r)
-	a.AddEffect(effectsBasic.NewDeathEffect())
+	a := newActor(registry, dispatcher, w, core.TeamEnemies, pos, name, hitPoints, at, p, r)
+	if effect, err := registry.NewEffect("death", nil); err == nil {
+		a.AddEffect(effect)
+	}
 	a.AddProficiency(tags.NaturalWeapon)
 	return a
 }

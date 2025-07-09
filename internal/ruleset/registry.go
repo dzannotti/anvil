@@ -6,6 +6,18 @@ import (
 	"anvil/internal/core"
 )
 
+// RegistryReader provides read-only access to the registry for factory functions
+type RegistryReader interface {
+	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) (core.Action, error)
+	NewEffect(archetype string, options map[string]interface{}) (*core.Effect, error)
+	NewItem(archetype string, options map[string]interface{}) (core.Item, error)
+	NewCreature(archetype string, options map[string]interface{}) (*core.Actor, error)
+	HasAction(archetype string) bool
+	HasEffect(archetype string) bool
+	HasItem(archetype string) bool
+	HasCreature(archetype string) bool
+}
+
 // ActionFactory creates actions for actors with options
 type ActionFactory func(owner *core.Actor, options map[string]interface{}) core.Action
 

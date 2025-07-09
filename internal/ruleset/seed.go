@@ -2,7 +2,9 @@ package ruleset
 
 import (
 	"anvil/internal/core"
+	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
+	"anvil/internal/expression"
 	"anvil/internal/grid"
 	actionsBasic "anvil/internal/ruleset/actions/basic"
 	actionsShared "anvil/internal/ruleset/actions/shared"
@@ -11,6 +13,8 @@ import (
 	effectsFighter "anvil/internal/ruleset/effects/classes/fighter"
 	effectsShared "anvil/internal/ruleset/effects/shared"
 	itemsArmor "anvil/internal/ruleset/items/armor"
+	itemsWeapons "anvil/internal/ruleset/items/weapons"
+	"anvil/internal/tag"
 )
 
 // SeedRegistry populates the registry with all available archetypes
@@ -42,6 +46,14 @@ func SeedRegistry(registry *Registry) {
 func registerBasicActions(registry *Registry) {
 	registry.RegisterAction("move", func(owner *core.Actor, _ map[string]interface{}) core.Action {
 		return actionsBasic.NewMoveAction(owner)
+	})
+
+	// Natural weapon actions
+	registry.RegisterAction("slam", func(owner *core.Actor, _ map[string]interface{}) core.Action {
+		damage := expression.FromDamageDice(1, 6, "Slam", tag.NewContainer(tags.Bludgeoning))
+		slam := actionsBasic.NewNaturalWeapon("Slam", "slam", damage, tag.NewContainer(tags.Bludgeoning))
+		cost := map[tag.Tag]int{tags.Action: 1}
+		return actionsBasic.NewMeleeAction(owner, "Slam", slam, 1, tag.NewContainer(tags.Melee, tags.NaturalWeapon), cost)
 	})
 
 	// TODO: Add other basic actions as they're refactored
@@ -106,10 +118,14 @@ func registerItems(registry *Registry) {
 		return itemsArmor.NewChainMail()
 	})
 
-	// Weapons - TODO: Add weapon registration based on existing weapons.go
-	// registry.RegisterItem("longsword", func(options map[string]interface{}) core.Item {
-	//     return weapons.NewLongsword()
-	// })
+	// Weapons
+	registry.RegisterItem("dagger", func(_ map[string]interface{}) core.Item {
+		return itemsWeapons.NewDagger()
+	})
+
+	registry.RegisterItem("greataxe", func(_ map[string]interface{}) core.Item {
+		return itemsWeapons.NewGreatAxe()
+	})
 }
 
 // registerCreatures registers creature archetypes
@@ -136,7 +152,7 @@ func registerCreatures(registry *Registry) {
 			name = "Zombie" // Default name
 		}
 
-		return creaturesUndead.New(dispatcher, world, pos, name)
+		return creaturesUndead.New(registry, dispatcher, world, pos, name)
 	})
 }
 
