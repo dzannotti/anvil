@@ -81,3 +81,17 @@ func (e *Effect) On(handler any) {
 		handlerValue.Call([]reflect.Value{reflect.ValueOf(state)})
 	}
 }
+
+func (e *Effect) Clone() *Effect {
+	newEffect := &Effect{
+		Archetype: e.Archetype,
+		ID:        e.ID,
+		Name:      e.Name,
+		Handlers:  make(Handlers),
+		Priority:  e.Priority,
+	}
+	for k, v := range e.Handlers {
+		newEffect.Handlers[k] = v
+	}
+	return newEffect
+}

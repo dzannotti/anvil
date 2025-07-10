@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type MeleeAction struct {
+type WeaponAttackAction struct {
 	owner        *core.Actor
 	archetype    string
 	id           string
@@ -24,8 +24,8 @@ type MeleeAction struct {
 	damageSource core.DamageSource
 }
 
-func NewMeleeAction(owner *core.Actor, name string, damageSource core.DamageSource, reach int, actionTags tag.Container, cost map[tag.Tag]int) *MeleeAction {
-	a := &MeleeAction{
+func NewWeaponAttackAction(owner *core.Actor, name string, damageSource core.DamageSource, reach int, actionTags tag.Container, cost map[tag.Tag]int) *WeaponAttackAction {
+	a := &WeaponAttackAction{
 		owner:        owner,
 		archetype:    "attack",
 		id:           uuid.New().String(),
@@ -39,35 +39,35 @@ func NewMeleeAction(owner *core.Actor, name string, damageSource core.DamageSour
 	return a
 }
 
-func (a *MeleeAction) Owner() *core.Actor {
+func (a *WeaponAttackAction) Owner() *core.Actor {
 	return a.owner
 }
 
-func (a *MeleeAction) Archetype() string {
+func (a *WeaponAttackAction) Archetype() string {
 	return a.archetype
 }
 
-func (a *MeleeAction) ID() string {
+func (a *WeaponAttackAction) ID() string {
 	return a.id
 }
 
-func (a *MeleeAction) Name() string {
+func (a *WeaponAttackAction) Name() string {
 	return a.name
 }
 
-func (a *MeleeAction) Reach() int {
+func (a *WeaponAttackAction) Reach() int {
 	return a.reach
 }
 
-func (a *MeleeAction) Cost() map[tag.Tag]int {
+func (a *WeaponAttackAction) Cost() map[tag.Tag]int {
 	return a.cost
 }
 
-func (a *MeleeAction) CanAfford() bool {
+func (a *WeaponAttackAction) CanAfford() bool {
 	return a.owner.Resources.CanAfford(a.cost)
 }
 
-func (a *MeleeAction) Commit() {
+func (a *WeaponAttackAction) Commit() {
 	if !a.CanAfford() {
 		panic("Attempt to commit action without affording cost")
 	}
@@ -77,7 +77,7 @@ func (a *MeleeAction) Commit() {
 	}
 }
 
-func (a *MeleeAction) Perform(pos []grid.Position) {
+func (a *WeaponAttackAction) Perform(pos []grid.Position) {
 	target := a.owner.World.ActorAt(pos[0])
 	a.owner.Dispatcher.Begin(core.UseActionEvent{Action: a, Source: a.owner, Target: pos})
 	a.owner.Dispatcher.Emit(core.TargetEvent{Target: []*core.Actor{target}})
@@ -90,7 +90,7 @@ func (a *MeleeAction) Perform(pos []grid.Position) {
 	}
 }
 
-func (a *MeleeAction) ValidPositions(from grid.Position) []grid.Position {
+func (a *WeaponAttackAction) ValidPositions(from grid.Position) []grid.Position {
 	if !a.CanAfford() {
 		return []grid.Position{}
 	}
@@ -125,20 +125,20 @@ func (a *MeleeAction) ValidPositions(from grid.Position) []grid.Position {
 	return valid
 }
 
-func (a *MeleeAction) AffectedPositions(tar []grid.Position) []grid.Position {
+func (a *WeaponAttackAction) AffectedPositions(tar []grid.Position) []grid.Position {
 	return []grid.Position{tar[0]}
 }
 
-func (a *MeleeAction) Damage() *expression.Expression {
+func (a *WeaponAttackAction) Damage() *expression.Expression {
 	return a.damageSource.Damage()
 }
 
-func (a *MeleeAction) Tags() *tag.Container {
+func (a *WeaponAttackAction) Tags() *tag.Container {
 	combined := tag.NewContainerFromContainer(a.tags)
 	combined.Add(*a.damageSource.Tags())
 	return &combined
 }
 
-func (a *MeleeAction) AverageDamage() int {
+func (a *WeaponAttackAction) AverageDamage() int {
 	return a.Damage().ExpectedValue()
 }

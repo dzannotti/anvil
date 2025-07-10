@@ -89,13 +89,13 @@ func createTestWeapon(name string, _ string, damageType tag.Tag, _ int) *MockWea
 	}
 }
 
-func TestMeleeAction_Creation(t *testing.T) {
+func TestWeaponAttackAction_Creation(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	actor := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(actor, "Attack with Sword", weapon, 1, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(actor, "Attack with Sword", weapon, 1, tag.NewContainer(tags.Melee), cost)
 
 	assert.NotNil(t, action)
 	assert.Equal(t, "Attack with Sword", action.Name())
@@ -107,14 +107,14 @@ func TestMeleeAction_Creation(t *testing.T) {
 	assert.Equal(t, actor, action.Owner())
 }
 
-func TestMeleeAction_ValidPositions_ReachConstraint(t *testing.T) {
+func TestWeaponAttackAction_ValidPositions_ReachConstraint(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	target := createTestActor(world, encounter, dispatcher, grid.Position{X: 6, Y: 5}, "Orc", core.TeamEnemies)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
 	valid := action.ValidPositions(attacker.Position)
 
 	// Should be able to attack adjacent enemy
@@ -130,21 +130,21 @@ func TestMeleeAction_ValidPositions_ReachConstraint(t *testing.T) {
 	assert.NotContains(t, valid, target.Position)
 }
 
-func TestMeleeAction_ValidPositions_ExtendedReach(t *testing.T) {
+func TestWeaponAttackAction_ValidPositions_ExtendedReach(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	target := createTestActor(world, encounter, dispatcher, grid.Position{X: 7, Y: 5}, "Orc", core.TeamEnemies)
 	weapon := createTestWeapon("Spear", "1d8", tags.Piercing, 2)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 2, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 2, tag.NewContainer(tags.Melee), cost)
 	valid := action.ValidPositions(attacker.Position)
 
 	// Should be able to attack enemy 2 squares away with reach 2
 	assert.Contains(t, valid, target.Position)
 }
 
-func TestMeleeAction_ValidPositions_OnlyTargetsEnemies(t *testing.T) {
+func TestWeaponAttackAction_ValidPositions_OnlyTargetsEnemies(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	ally := createTestActor(world, encounter, dispatcher, grid.Position{X: 6, Y: 5}, "Wizard", core.TeamPlayers)
@@ -152,7 +152,7 @@ func TestMeleeAction_ValidPositions_OnlyTargetsEnemies(t *testing.T) {
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
 	valid := action.ValidPositions(attacker.Position)
 
 	// Should be able to attack enemy
@@ -163,14 +163,14 @@ func TestMeleeAction_ValidPositions_OnlyTargetsEnemies(t *testing.T) {
 	assert.NotContains(t, valid, grid.Position{X: 5, Y: 6})
 }
 
-func TestMeleeAction_ValidPositions_SkipsDeadEnemies(t *testing.T) {
+func TestWeaponAttackAction_ValidPositions_SkipsDeadEnemies(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	enemy := createTestActor(world, encounter, dispatcher, grid.Position{X: 6, Y: 5}, "Orc", core.TeamEnemies)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
 
 	// Enemy is alive - should be valid target
 	valid := action.ValidPositions(attacker.Position)
@@ -184,14 +184,14 @@ func TestMeleeAction_ValidPositions_SkipsDeadEnemies(t *testing.T) {
 	assert.NotContains(t, valid, enemy.Position)
 }
 
-func TestMeleeAction_ValidPositions_RequiresAffordableCost(t *testing.T) {
+func TestWeaponAttackAction_ValidPositions_RequiresAffordableCost(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	enemy := createTestActor(world, encounter, dispatcher, grid.Position{X: 6, Y: 5}, "Orc", core.TeamEnemies)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
 
 	// With action available - should be valid
 	valid := action.ValidPositions(attacker.Position)
@@ -205,13 +205,13 @@ func TestMeleeAction_ValidPositions_RequiresAffordableCost(t *testing.T) {
 	assert.Empty(t, valid)
 }
 
-func TestMeleeAction_AffectedPositions(t *testing.T) {
+func TestWeaponAttackAction_AffectedPositions(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
 	target := grid.Position{X: 6, Y: 5}
 	affected := action.AffectedPositions([]grid.Position{target})
 
@@ -220,14 +220,14 @@ func TestMeleeAction_AffectedPositions(t *testing.T) {
 	assert.Equal(t, target, affected[0])
 }
 
-func TestMeleeAction_TagCombination(t *testing.T) {
+func TestWeaponAttackAction_TagCombination(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	actionTags := tag.NewContainer(tags.Melee, tags.MartialWeapon)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 1, actionTags, cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 1, actionTags, cost)
 	combinedTags := action.Tags()
 
 	// Should have action tags
@@ -239,13 +239,13 @@ func TestMeleeAction_TagCombination(t *testing.T) {
 	assert.True(t, combinedTags.MatchTag(tags.Slashing))
 }
 
-func TestMeleeAction_AverageDamage(t *testing.T) {
+func TestWeaponAttackAction_AverageDamage(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
 	avgDamage := action.AverageDamage()
 
 	// 1d8 has average of 4.5, should be rounded/calculated appropriately
@@ -253,35 +253,35 @@ func TestMeleeAction_AverageDamage(t *testing.T) {
 	assert.LessOrEqual(t, avgDamage, 8) // Max damage of 1d8
 }
 
-func TestMeleeAction_ConfigurableCost(t *testing.T) {
+func TestWeaponAttackAction_ConfigurableCost(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 
 	// Test standard action cost
 	standardCost := map[tag.Tag]int{tags.Action: 1}
-	standardAction := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), standardCost)
+	standardAction := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), standardCost)
 	assert.Equal(t, standardCost, standardAction.Cost())
 
 	// Test AOO cost (reaction instead of action)
 	aooCost := map[tag.Tag]int{tags.Reaction: 1}
-	aooAction := NewMeleeAction(attacker, "Attack of Opportunity", weapon, 1, tag.NewContainer(tags.Melee), aooCost)
+	aooAction := NewWeaponAttackAction(attacker, "Attack of Opportunity", weapon, 1, tag.NewContainer(tags.Melee), aooCost)
 	assert.Equal(t, aooCost, aooAction.Cost())
 
 	// Test bonus action cost
 	bonusCost := map[tag.Tag]int{tags.BonusAction: 1}
-	bonusAction := NewMeleeAction(attacker, "Offhand Attack", weapon, 1, tag.NewContainer(tags.Melee), bonusCost)
+	bonusAction := NewWeaponAttackAction(attacker, "Offhand Attack", weapon, 1, tag.NewContainer(tags.Melee), bonusCost)
 	assert.Equal(t, bonusCost, bonusAction.Cost())
 }
 
-func TestMeleeAction_Perform_ExecutesAttackSequence(t *testing.T) {
+func TestWeaponAttackAction_Perform_ExecutesAttackSequence(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	target := createTestActor(world, encounter, dispatcher, grid.Position{X: 6, Y: 5}, "Orc", core.TeamEnemies)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
 
 	// Should have action available before attack
 	assert.True(t, action.CanAfford())
@@ -295,7 +295,7 @@ func TestMeleeAction_Perform_ExecutesAttackSequence(t *testing.T) {
 	assert.Equal(t, 0, attacker.Resources.Remaining(tags.Action))
 }
 
-func TestMeleeAction_Perform_ConsumesCorrectResource(t *testing.T) {
+func TestWeaponAttackAction_Perform_ConsumesCorrectResource(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	target := createTestActor(world, encounter, dispatcher, grid.Position{X: 6, Y: 5}, "Orc", core.TeamEnemies)
@@ -307,7 +307,7 @@ func TestMeleeAction_Perform_ConsumesCorrectResource(t *testing.T) {
 
 	// Test action cost
 	actionCost := map[tag.Tag]int{tags.Action: 1}
-	actionAttack := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), actionCost)
+	actionAttack := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), actionCost)
 	actionAttack.Perform([]grid.Position{target.Position})
 	assert.Equal(t, 0, attacker.Resources.Remaining(tags.Action))
 	assert.Equal(t, 1, attacker.Resources.Remaining(tags.Reaction)) // Should not consume reaction
@@ -315,19 +315,19 @@ func TestMeleeAction_Perform_ConsumesCorrectResource(t *testing.T) {
 	// Reset and test reaction cost (AOO)
 	attacker.Resources.LongRest()
 	reactionCost := map[tag.Tag]int{tags.Reaction: 1}
-	aooAttack := NewMeleeAction(attacker, "AOO", weapon, 1, tag.NewContainer(tags.Melee), reactionCost)
+	aooAttack := NewWeaponAttackAction(attacker, "AOO", weapon, 1, tag.NewContainer(tags.Melee), reactionCost)
 	aooAttack.Perform([]grid.Position{target.Position})
 	assert.Equal(t, 1, attacker.Resources.Remaining(tags.Action)) // Should not consume action
 	assert.Equal(t, 0, attacker.Resources.Remaining(tags.Reaction))
 }
 
-func TestMeleeAction_ValidPositions_CircularReach(t *testing.T) {
+func TestWeaponAttackAction_ValidPositions_CircularReach(t *testing.T) {
 	world, encounter, dispatcher := createTestSetup()
 	attacker := createTestActor(world, encounter, dispatcher, grid.Position{X: 5, Y: 5}, "Fighter", core.TeamPlayers)
 	weapon := createTestWeapon("Sword", "1d8", tags.Slashing, 1)
 	cost := map[tag.Tag]int{tags.Action: 1}
 
-	action := NewMeleeAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
+	action := NewWeaponAttackAction(attacker, "Attack", weapon, 1, tag.NewContainer(tags.Melee), cost)
 
 	// Place enemies at orthogonally adjacent positions (reach 1)
 	orthogonalPositions := []grid.Position{

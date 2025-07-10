@@ -49,7 +49,7 @@ func (w Weapon) Tags() *tag.Container {
 
 func (w Weapon) OnEquip(a *core.Actor) {
 	cost := map[tag.Tag]int{tags.Action: 1}
-	a.AddAction(basic.NewMeleeAction(a, fmt.Sprintf("Attack with %s", w.name), &w, w.reach, w.tags, cost))
+	a.AddAction(basic.NewWeaponAttackAction(a, fmt.Sprintf("Attack with %s", w.name), &w, w.reach, w.tags, cost))
 }
 
 func (w Weapon) Damage() *expression.Expression {

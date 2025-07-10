@@ -110,6 +110,9 @@ var (
 	Incapacitated = tag.FromString("Condition.Incapacitated")
 	Unconscious   = tag.FromString("Condition.Incapacitated.Unconscious")
 	Dead          = tag.FromString("Condition.Incapacitated.Unconscious.Dead")
+
+	EffectSaveHalfDamage = tag.FromString("Effect.Save.HalfDamage")
+	EffectSaveNegate     = tag.FromString("Effect.Save.Negate")
 )
 
 func ToReadable(tag tag.Tag) string {
