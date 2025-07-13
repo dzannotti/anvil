@@ -4,6 +4,7 @@ import (
 	"maps"
 
 	"anvil/internal/core/tags"
+	"anvil/internal/loader"
 	"anvil/internal/mathi"
 	"anvil/internal/tag"
 )
@@ -11,6 +12,34 @@ import (
 type Resources struct {
 	Current map[tag.Tag]int
 	Max     map[tag.Tag]int
+}
+
+func NewResourcesFromDefinition(def loader.ResourcesDefinition) Resources {
+	resources := Resources{Max: map[tag.Tag]int{
+		tags.WalkSpeed: def.WalkSpeed,
+	}}
+	
+	optionalResources := map[tag.Tag]int{
+		tags.FlySpeed:    def.FlySpeed,
+		tags.SwimSpeed:   def.SwimSpeed,
+		tags.SpellSlot1:  def.SpellSlot1,
+		tags.SpellSlot2:  def.SpellSlot2,
+		tags.SpellSlot3:  def.SpellSlot3,
+		tags.SpellSlot4:  def.SpellSlot4,
+		tags.SpellSlot5:  def.SpellSlot5,
+		tags.SpellSlot6:  def.SpellSlot6,
+		tags.SpellSlot7:  def.SpellSlot7,
+		tags.SpellSlot8:  def.SpellSlot8,
+		tags.SpellSlot9:  def.SpellSlot9,
+	}
+	
+	for resource, value := range optionalResources {
+		if value > 0 {
+			resources.Max[resource] = value
+		}
+	}
+	
+	return resources
 }
 
 func (r *Resources) init() {

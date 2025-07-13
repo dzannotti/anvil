@@ -9,19 +9,78 @@ import (
 )
 
 type MoveAction struct {
-	Action
+	owner     *core.Actor
+	archetype string
+	id        string
+	name      string
+	tags      tag.Container
+	cost      map[tag.Tag]int
+	castRange int
+	reach     int
 }
 
 func NewMoveAction(owner *core.Actor) *MoveAction {
 	a := &MoveAction{
-		Action: Action{
-			owner: owner,
-			name:  "Move",
-			cost:  map[tag.Tag]int{tags.Speed: 1},
-			tags:  tag.NewContainer(tags.Move),
-		},
+		owner:     owner,
+		archetype: "",
+		id:        "",
+		name:      "Move",
+		tags:      tag.NewContainer(tags.Move),
+		cost:      map[tag.Tag]int{tags.Speed: 1},
+		castRange: 0,
+		reach:     0,
 	}
 	return a
+}
+
+func (a MoveAction) Owner() *core.Actor {
+	return a.owner
+}
+
+func (a MoveAction) Archetype() string {
+	return a.archetype
+}
+
+func (a MoveAction) ID() string {
+	return a.id
+}
+
+func (a MoveAction) Name() string {
+	return a.name
+}
+
+func (a MoveAction) Tags() *tag.Container {
+	return &a.tags
+}
+
+func (a MoveAction) Cost() map[tag.Tag]int {
+	return a.cost
+}
+
+func (a MoveAction) Reach() int {
+	return a.reach
+}
+
+func (a MoveAction) CastRange() int {
+	return a.castRange
+}
+
+func (a MoveAction) CanAfford() bool {
+	return a.owner.Resources.CanAfford(a.cost)
+}
+
+func (a MoveAction) Commit() {
+	if !a.CanAfford() {
+		panic("Attempt to commit action without affording cost")
+	}
+
+	for tag, amount := range a.cost {
+		a.owner.ConsumeResource(tag, amount)
+	}
+}
+
+func (a MoveAction) AverageDamage() int {
+	return 0
 }
 
 func (a MoveAction) Perform(pos []grid.Position) {

@@ -4,6 +4,10 @@ import (
 	"fmt"
 
 	"anvil/internal/core"
+	"anvil/internal/core/tags"
+	"anvil/internal/eventbus"
+	"anvil/internal/grid"
+	"anvil/internal/loader"
 )
 
 type RegistryReader interface {
@@ -15,6 +19,7 @@ type RegistryReader interface {
 	HasEffect(archetype string) bool
 	HasItem(archetype string) bool
 	HasCreature(archetype string) bool
+	CreateActorFromDefinition(dispatcher *eventbus.Dispatcher, world *core.World, position grid.Position, definition loader.ActorDefinition) *core.Actor
 }
 
 type ActionFactory func(owner *core.Actor, options map[string]interface{}) core.Action
@@ -115,4 +120,37 @@ func (r *Registry) HasItem(archetype string) bool {
 func (r *Registry) HasCreature(archetype string) bool {
 	_, exists := r.creatures[archetype]
 	return exists
+}
+
+func (r *Registry) CreateActorFromDefinition(
+	dispatcher *eventbus.Dispatcher,
+	world *core.World,
+	position grid.Position,
+	definition loader.ActorDefinition,
+) *core.Actor {
+	actor := core.NewActor(dispatcher, world, position, definition)
+	r.addBasicEffects(actor)
+	r.applyTeamConfiguration(actor, definition.Team)
+	actor.AddAction(r.NewAction("move", actor, nil))
+	return actor
+}
+
+func (r *Registry) addBasicEffects(actor *core.Actor) {
+	actor.AddEffect(r.NewEffect("attribute-modifier", nil))
+	actor.AddEffect(r.NewEffect("proficiency-modifier", nil))
+	actor.AddEffect(r.NewEffect("critical", nil))
+	actor.AddEffect(r.NewEffect("attack-of-opportunity", nil))
+}
+
+func (r *Registry) applyTeamConfiguration(actor *core.Actor, team string) {
+	switch team {
+	case "players":
+		actor.AddEffect(r.NewEffect("death-saving-throw", nil))
+	case "enemies":
+		actor.AddEffect(r.NewEffect("death", nil))
+		actor.AddProficiency(tags.NaturalWeapon)
+	default:
+		actor.AddEffect(r.NewEffect("death", nil))
+		actor.AddProficiency(tags.NaturalWeapon)
+	}
 }

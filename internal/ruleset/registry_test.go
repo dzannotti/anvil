@@ -6,6 +6,7 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 	"anvil/internal/tag"
 
 	"github.com/stretchr/testify/assert"
@@ -37,7 +38,6 @@ func TestNewRegistry(t *testing.T) {
 
 	// Check that basic actions are registered
 	assert.True(t, registry.HasAction("move"))
-	assert.True(t, registry.HasAction("fireball"))
 
 	// Check that basic effects are registered
 	assert.True(t, registry.HasEffect("critical"))
@@ -157,7 +157,7 @@ func TestRegistry_ZombieCreation(t *testing.T) {
 	registry := NewRegistry()
 
 	dispatcher := &eventbus.Dispatcher{}
-	world := core.NewWorld(10, 10)
+	world := core.NewWorld(loader.WorldDefinition{Width: 10, Height: 10})
 	pos := grid.Position{X: 5, Y: 5}
 	name := "Test Zombie"
 
@@ -178,7 +178,7 @@ func TestRegistry_ZombieCreationWithoutName(t *testing.T) {
 	registry := NewRegistry()
 
 	dispatcher := &eventbus.Dispatcher{}
-	world := core.NewWorld(10, 10)
+	world := core.NewWorld(loader.WorldDefinition{Width: 10, Height: 10})
 	pos := grid.Position{X: 5, Y: 5}
 
 	options := map[string]interface{}{
@@ -197,7 +197,7 @@ func TestRegistry_ZombieCreationPanicsOnMissingOptions(t *testing.T) {
 	registry := NewRegistry()
 
 	dispatcher := &eventbus.Dispatcher{}
-	world := core.NewWorld(10, 10)
+	world := core.NewWorld(loader.WorldDefinition{Width: 10, Height: 10})
 	pos := grid.Position{X: 5, Y: 5}
 
 	// Test panic when missing dispatcher

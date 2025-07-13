@@ -9,7 +9,6 @@ import (
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 	actionsBasic "anvil/internal/ruleset/actions/basic"
-	actionsShared "anvil/internal/ruleset/actions/shared"
 	creaturesUndead "anvil/internal/ruleset/creatures/undead"
 	effectsBasic "anvil/internal/ruleset/effects/basic"
 	effectsFighter "anvil/internal/ruleset/effects/classes/fighter"
@@ -20,7 +19,6 @@ import (
 
 func SeedRegistry(registry *Registry) {
 	registerBasicActions(registry)
-	registerSharedActions(registry)
 	registerBasicEffects(registry)
 	registerSharedEffects(registry)
 	registerClassEffects(registry)
@@ -31,12 +29,6 @@ func SeedRegistry(registry *Registry) {
 func registerBasicActions(registry *Registry) {
 	registry.RegisterAction("move", func(owner *core.Actor, _ map[string]interface{}) core.Action {
 		return actionsBasic.NewMoveAction(owner)
-	})
-}
-
-func registerSharedActions(registry *Registry) {
-	registry.RegisterAction("fireball", func(owner *core.Actor, _ map[string]interface{}) core.Action {
-		return actionsShared.NewFireballAction(owner)
 	})
 }
 

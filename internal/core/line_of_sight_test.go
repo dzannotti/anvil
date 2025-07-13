@@ -6,11 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 )
 
 func TestLineOfSightCalculator(t *testing.T) {
 	createTestWorld := func() *World {
-		world := NewWorld(5, 5)
+		world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 		// Create a simple 5x5 grid with some walls
 		// Layout:
 		// . . . . .
@@ -89,7 +90,7 @@ func TestLineOfSightCalculator(t *testing.T) {
 	t.Run("Diagonal Line of Sight", func(t *testing.T) {
 
 		t.Run("should be blocked by corner walls", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			// Create a corner blocking scenario
 			// . . . . .
 			// . W W . .
@@ -110,7 +111,7 @@ func TestLineOfSightCalculator(t *testing.T) {
 		})
 
 		t.Run("should allow diagonal movement around single wall", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			// Create a single wall
 			// . . . . .
 			// . W . . .
@@ -150,7 +151,7 @@ func TestLineOfSightCalculator(t *testing.T) {
 		})
 
 		t.Run("should handle line blocked by wall in middle", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			// Create a wall in the middle of a horizontal line
 			// . . W . .
 			// . . . . .

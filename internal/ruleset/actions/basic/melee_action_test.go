@@ -12,12 +12,13 @@ import (
 	"anvil/internal/eventbus"
 	"anvil/internal/expression"
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 	"anvil/internal/tag"
 )
 
 func createTestSetup() (*core.World, *core.Encounter, *eventbus.Dispatcher) {
 	dispatcher := &eventbus.Dispatcher{}
-	world := core.NewWorld(10, 10)
+	world := core.NewWorld(loader.WorldDefinition{Width: 10, Height: 10})
 	encounter := &core.Encounter{
 		Dispatcher: dispatcher,
 		World:      world,

@@ -2,14 +2,12 @@ package demo
 
 import (
 	"anvil/internal/core"
-	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 	"anvil/internal/mathi"
 	"anvil/internal/ruleset"
-	"anvil/internal/ruleset/factories"
-	"anvil/internal/tag"
 )
 
 func setupWorld(world *core.World) {
@@ -43,7 +41,7 @@ func setupWorld(world *core.World) {
 func New(dispatcher *eventbus.Dispatcher) *core.GameState {
 	registry := ruleset.NewRegistry()
 
-	world := core.NewWorld(10, 10)
+	world := core.NewWorld(loader.WorldDefinition{Width: 10, Height: 10})
 	setupWorld(world)
 
 	cedric := setupPlayer(registry, dispatcher, world)
@@ -59,27 +57,36 @@ func New(dispatcher *eventbus.Dispatcher) *core.GameState {
 }
 
 func setupPlayer(registry *ruleset.Registry, dispatcher *eventbus.Dispatcher, world *core.World) *core.Actor {
-	cres := core.Resources{Max: map[tag.Tag]int{
-		tags.WalkSpeed:  5,
-		tags.SpellSlot3: 1,
-	}}
-	cedric := factories.NewPCActor(
-		registry,
-		dispatcher,
-		world,
-		grid.Position{X: 6, Y: 6},
-		"Cedric",
-		12,
-		stats.Attributes{Strength: 16, Dexterity: 13, Constitution: 14, Intelligence: 8, Wisdom: 14, Charisma: 10},
-		stats.Proficiencies{Bonus: 2},
-		cres,
-	)
+	definition := loader.ActorDefinition{
+		Name:               "Cedric",
+		Team:               "players",
+		HitPoints:          12,
+		MaxHitPoints:       12,
+		SpellCastingSource: "intelligence",
+		Attributes: loader.AttributesDefinition{
+			Strength:     16,
+			Dexterity:    13,
+			Constitution: 14,
+			Intelligence: 8,
+			Wisdom:       14,
+			Charisma:     10,
+		},
+		Proficiencies: loader.ProficienciesDefinition{
+			Skills: []string{},
+			Bonus:  2,
+		},
+		Resources: loader.ResourcesDefinition{
+			WalkSpeed:  5,
+			SpellSlot3: 1,
+		},
+	}
+	
+	cedric := registry.CreateActorFromDefinition(dispatcher, world, grid.Position{X: 6, Y: 6}, definition)
 	cedric.SpellCastingSource = tags.Intelligence
 	cedric.Equip(registry.NewItem("greataxe", nil))
 	cedric.Equip(registry.NewItem("chainmail", nil))
 	cedric.AddEffect(registry.NewEffect("fighting-style-defense", nil))
 	cedric.AddProficiency(tags.MartialWeapon)
-	cedric.AddAction(registry.NewAction("fireball", cedric, nil))
 	return cedric
 }
 
