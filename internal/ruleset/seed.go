@@ -6,6 +6,7 @@ import (
 	"anvil/internal/grid"
 	"anvil/internal/loader"
 	"anvil/internal/ruleset/basic"
+	"anvil/internal/ruleset/seed"
 )
 
 func SeedRegistry(registry *Registry) {
@@ -14,7 +15,7 @@ func SeedRegistry(registry *Registry) {
 	registerSharedEffects(registry)
 	registerClassEffects(registry)
 	registerItems(registry)
-	registerCreatures(registry)
+	registerActors(registry)
 }
 
 func registerBasicActions(registry *Registry) {
@@ -74,7 +75,7 @@ func registerItems(registry *Registry) {
 		return basic.NewChainMail()
 	})
 
-	weaponDefs := weaponDefinitions()
+	weaponDefs := seed.WeaponDefinitions()
 	for archetype, weaponDef := range weaponDefs {
 		def := weaponDef
 		registry.RegisterItem(archetype, func(_ map[string]interface{}) core.Item {
@@ -83,47 +84,12 @@ func registerItems(registry *Registry) {
 	}
 }
 
-func zombieDefinition(name string) loader.ActorDefinition {
-	return loader.ActorDefinition{
-		Name:         name,
-		Team:         "enemies",
-		HitPoints:    22,
-		MaxHitPoints: 22,
-		Attributes: loader.AttributesDefinition{
-			Strength:     13,
-			Dexterity:    6,
-			Constitution: 16,
-			Intelligence: 3,
-			Wisdom:       6,
-			Charisma:     5,
-		},
-		Proficiencies: loader.ProficienciesDefinition{
-			Skills: []string{},
-			Bonus:  2,
-		},
-		Resources: loader.ResourcesDefinition{
-			WalkSpeed: 4,
-		},
-	}
-}
-
-func zombieSlamDefinition() loader.MeleeActionDefinition {
-	return loader.MeleeActionDefinition{
-		Name:          "Zombie Slam",
-		Cost:          map[string]int{"action": 1},
-		Tags:          []string{"attack", "natural"},
-		Reach:         1,
-		DamageFormula: "1d6",
-		DamageType:    "bludgeoning",
-	}
-}
-
 func newZombie(registry *Registry, dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, name string) *core.Actor {
-	definition := zombieDefinition(name)
+	definition := seed.ZombieDefinition(name)
 	npc := registry.CreateActorFromDefinition(dispatcher, world, pos, definition)
 
 	// Create zombie slam action from definition
-	slamDef := zombieSlamDefinition()
+	slamDef := seed.ZombieSlamDefinition()
 	slamAction := registry.NewAction("melee", npc, map[string]interface{}{
 		"definition": slamDef,
 	})
@@ -133,8 +99,8 @@ func newZombie(registry *Registry, dispatcher *eventbus.Dispatcher, world *core.
 	return npc
 }
 
-func registerCreatures(registry *Registry) {
-	registry.RegisterCreature("zombie", func(options map[string]interface{}) *core.Actor {
+func registerActors(registry *Registry) {
+	registry.RegisterActor("zombie", func(options map[string]interface{}) *core.Actor {
 		dispatcher, ok := options["dispatcher"].(*eventbus.Dispatcher)
 		if !ok {
 			panic("zombie creation requires dispatcher")
@@ -161,10 +127,10 @@ func registerCreatures(registry *Registry) {
 
 func NewRegistry() *Registry {
 	registry := &Registry{
-		actions:   make(map[string]ActionFactory),
-		effects:   make(map[string]EffectFactory),
-		items:     make(map[string]ItemFactory),
-		creatures: make(map[string]CreatureFactory),
+		actions: make(map[string]ActionFactory),
+		effects: make(map[string]EffectFactory),
+		items:   make(map[string]ItemFactory),
+		actors:  make(map[string]ActorFactory),
 	}
 	SeedRegistry(registry)
 	return registry

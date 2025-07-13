@@ -14,10 +14,10 @@ import (
 
 func newEmptyRegistry() *Registry {
 	return &Registry{
-		actions:   make(map[string]ActionFactory),
-		effects:   make(map[string]EffectFactory),
-		items:     make(map[string]ItemFactory),
-		creatures: make(map[string]CreatureFactory),
+		actions: make(map[string]ActionFactory),
+		effects: make(map[string]EffectFactory),
+		items:   make(map[string]ItemFactory),
+		actors:  make(map[string]ActorFactory),
 	}
 }
 
@@ -28,7 +28,7 @@ func TestRegistry_EmptyRegistry(t *testing.T) {
 	assert.False(t, registry.HasAction("test"))
 	assert.False(t, registry.HasEffect("test"))
 	assert.False(t, registry.HasItem("test"))
-	assert.False(t, registry.HasCreature("test"))
+	assert.False(t, registry.HasActor("test"))
 }
 
 func TestNewRegistry(t *testing.T) {
@@ -52,8 +52,8 @@ func TestNewRegistry(t *testing.T) {
 	// Check that basic items are registered
 	assert.True(t, registry.HasItem("chainmail"))
 
-	// Check that creatures are registered
-	assert.True(t, registry.HasCreature("zombie"))
+	// Check that actors are registered
+	assert.True(t, registry.HasActor("zombie"))
 
 	// Check that some weapons are loaded from YAML
 	assert.True(t, registry.HasItem("dagger"))
@@ -114,21 +114,21 @@ func TestRegistry_ItemRegistration(t *testing.T) {
 	assert.Equal(t, "test-item", mockItem.name)
 }
 
-func TestRegistry_CreatureRegistration(t *testing.T) {
+func TestRegistry_ActorRegistration(t *testing.T) {
 	registry := newEmptyRegistry()
 
-	// Register a test creature
-	registry.RegisterCreature("test-creature", func(_ map[string]interface{}) *core.Actor {
-		return &core.Actor{Name: "test-creature"}
+	// Register a test actor
+	registry.RegisterActor("test-actor", func(_ map[string]interface{}) *core.Actor {
+		return &core.Actor{Name: "test-actor"}
 	})
 
-	assert.True(t, registry.HasCreature("test-creature"))
+	assert.True(t, registry.HasActor("test-actor"))
 
-	// Create a creature
-	creature := registry.NewCreature("test-creature", nil)
+	// Create an actor
+	actor := registry.NewActor("test-actor", nil)
 
-	assert.NotNil(t, creature)
-	assert.Equal(t, "test-creature", creature.Name)
+	assert.NotNil(t, actor)
+	assert.Equal(t, "test-actor", actor.Name)
 }
 
 func TestRegistry_PanicOnMissingArchetype(t *testing.T) {
@@ -149,7 +149,7 @@ func TestRegistry_PanicOnMissingArchetype(t *testing.T) {
 	})
 
 	assert.Panics(t, func() {
-		registry.NewCreature("missing-creature", nil)
+		registry.NewActor("missing-actor", nil)
 	})
 }
 
@@ -168,7 +168,7 @@ func TestRegistry_ZombieCreation(t *testing.T) {
 		"name":       name,
 	}
 
-	zombie := registry.NewCreature("zombie", options)
+	zombie := registry.NewActor("zombie", options)
 
 	assert.NotNil(t, zombie)
 	assert.Equal(t, name, zombie.Name)
@@ -187,7 +187,7 @@ func TestRegistry_ZombieCreationWithoutName(t *testing.T) {
 		"position":   pos,
 	}
 
-	zombie := registry.NewCreature("zombie", options)
+	zombie := registry.NewActor("zombie", options)
 
 	assert.NotNil(t, zombie)
 	assert.Equal(t, "Zombie", zombie.Name)
@@ -206,7 +206,7 @@ func TestRegistry_ZombieCreationPanicsOnMissingOptions(t *testing.T) {
 			"world":    world,
 			"position": pos,
 		}
-		registry.NewCreature("zombie", options)
+		registry.NewActor("zombie", options)
 	})
 
 	// Test panic when missing world
@@ -215,7 +215,7 @@ func TestRegistry_ZombieCreationPanicsOnMissingOptions(t *testing.T) {
 			"dispatcher": dispatcher,
 			"position":   pos,
 		}
-		registry.NewCreature("zombie", options)
+		registry.NewActor("zombie", options)
 	})
 
 	// Test panic when missing position
@@ -224,7 +224,7 @@ func TestRegistry_ZombieCreationPanicsOnMissingOptions(t *testing.T) {
 			"dispatcher": dispatcher,
 			"world":      world,
 		}
-		registry.NewCreature("zombie", options)
+		registry.NewActor("zombie", options)
 	})
 }
 

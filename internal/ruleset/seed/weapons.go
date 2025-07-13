@@ -1,8 +1,8 @@
-package ruleset
+package seed
 
 import "anvil/internal/loader"
 
-func weaponDefinitions() map[string]loader.WeaponDefinition {
+func WeaponDefinitions() map[string]loader.WeaponDefinition {
 	return map[string]loader.WeaponDefinition{
 		"dagger": {
 			Archetype: "dagger",

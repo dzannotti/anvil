@@ -89,14 +89,14 @@ func setupPlayer(registry *ruleset.Registry, dispatcher *eventbus.Dispatcher, wo
 }
 
 func setupEnemies(registry *ruleset.Registry, dispatcher *eventbus.Dispatcher, world *core.World) (*core.Actor, *core.Actor) {
-	mob1 := registry.NewCreature("zombie", map[string]interface{}{
+	mob1 := registry.NewActor("zombie", map[string]interface{}{
 		"dispatcher": dispatcher,
 		"world":      world,
 		"position":   grid.Position{X: 7, Y: 6},
 		"name":       "Zombie 1",
 	})
 
-	mob2 := registry.NewCreature("zombie", map[string]interface{}{
+	mob2 := registry.NewActor("zombie", map[string]interface{}{
 		"dispatcher": dispatcher,
 		"world":      world,
 		"position":   grid.Position{X: 7, Y: 7},

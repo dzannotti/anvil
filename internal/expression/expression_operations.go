@@ -107,7 +107,6 @@ func (e *Expression) IsCriticalFailure() bool {
 	return d20.IsCriticalFailure()
 }
 
-
 func (e *Expression) Expected() int {
 	total := 0
 	for _, component := range e.Components {
