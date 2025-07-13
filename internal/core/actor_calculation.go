@@ -118,16 +118,13 @@ func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 
 func (a *Actor) DamageRoll(ds DamageSource, crit bool) *expression.Expression {
 	expr := ds.Damage().Clone()
-	if crit {
-		expr.SetCriticalSuccess("Attack Roll")
-	}
 	a.Dispatcher.Begin(DamageRollEvent{Source: a, DamageSource: ds})
 	defer a.Dispatcher.End()
-	before := PreDamageRoll{Source: a, Expression: expr, Tags: *ds.Tags()}
+	before := PreDamageRoll{Source: a, Expression: expr, Tags: *ds.Tags(), Critical: crit}
 	a.Effects.Evaluate(&before)
 	res := expr.EvaluateDamage()
 	a.Dispatcher.Emit(ExpressionResultEvent{Expression: res})
-	after := PostDamageRoll{Source: a, Result: res, Tags: *ds.Tags()}
+	after := PostDamageRoll{Source: a, Result: res, Tags: *ds.Tags(), Critical: crit}
 	a.Effects.Evaluate(&after)
 	return res
 }

@@ -41,12 +41,14 @@ type PreDamageRoll struct {
 	Expression *expression.Expression
 	Source     *Actor
 	Tags       tag.Container
+	Critical   bool
 }
 
 type PostDamageRoll struct {
-	Result *expression.Expression
-	Source *Actor
-	Tags   tag.Container
+	Result   *expression.Expression
+	Source   *Actor
+	Tags     tag.Container
+	Critical bool
 }
 
 type PreSavingThrow struct {
