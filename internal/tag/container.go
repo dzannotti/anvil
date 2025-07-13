@@ -9,23 +9,23 @@ type Container struct {
 	tags []Tag
 }
 
-func NewContainerFromString(values ...string) Container {
+func NewContainer() Container {
+	return Container{}
+}
+
+func ContainerFromString(values ...string) Container {
 	c := Container{}
 	for _, v := range values {
-		c.AddTag(New(v))
+		c.AddTag(FromString(v))
 	}
 
 	return c
 }
 
-func NewContainer(tag ...Tag) Container {
+func ContainerFromTag(tag ...Tag) Container {
 	c := Container{}
 	c.AddTag(tag...)
 	return c
-}
-
-func NewContainerFromContainer(other Container) Container {
-	return NewContainer(other.tags...)
 }
 
 func (c *Container) AsStrings() []string {
@@ -148,5 +148,5 @@ func (c *Container) Len() int {
 }
 
 func (c Container) Clone() Container {
-	return NewContainer(c.tags...)
+	return ContainerFromTag(c.tags...)
 }

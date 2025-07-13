@@ -63,11 +63,27 @@ func TestTag_Match(t *testing.T) {
 		c := tag.FromString("ability.damage.fire")
 		assert.False(t, c.Match(tag.FromString("ability.dam")))
 	})
+
+	t.Run("matches itself exactly", func(t *testing.T) {
+		tt := tag.FromString("ability.damage")
+		assert.True(t, tt.Match(tag.FromString("ability.damage")))
+	})
+
+	t.Run("does not match empty tag", func(t *testing.T) {
+		tt := tag.FromString("ability.damage")
+		emptyTag := tag.FromString("")
+		assert.False(t, tt.Match(emptyTag))
+	})
 }
 
-func TestTag_AsStrings(t *testing.T) {
-	t.Run("splits tag into strings", func(t *testing.T) {
-		tt := tag.FromString("ability.damage.fire")
-		assert.Equal(t, []string{"ability", "damage", "fire"}, tt.AsStrings())
+func TestTag_IsValid(t *testing.T) {
+	t.Run("returns true for non-empty tag", func(t *testing.T) {
+		tt := tag.FromString("ability.damage")
+		assert.True(t, tt.IsValid())
+	})
+
+	t.Run("returns false for empty tag", func(t *testing.T) {
+		tt := tag.FromString("")
+		assert.False(t, tt.IsValid())
 	})
 }

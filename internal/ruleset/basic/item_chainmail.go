@@ -28,7 +28,7 @@ func newChainMailEffect() *core.Effect {
 			return
 		}
 
-		s.Expression.ReplaceWith(16, "Chain Mail", tag.NewContainer())
+		s.Expression.ReplaceWith(16, "Chain Mail", tag.ContainerFromTag())
 	})
 
 	return fx
@@ -38,7 +38,7 @@ func NewChainMail() *ChainMail {
 	return &ChainMail{
 		archetype: "chain-mail",
 		id:        uuid.New().String(),
-		tags:      tag.NewContainer(tags.MediumArmor),
+		tags:      tag.ContainerFromTag(tags.MediumArmor),
 	}
 }
 

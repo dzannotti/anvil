@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"anvil/internal/core/tags"
 	"anvil/internal/expression"
 	"anvil/internal/tag"
 )
@@ -347,16 +348,16 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 
 	t.Run("groups damage by tag types", func(t *testing.T) {
 		expr := &expression.Expression{Rng: newMockRoller()}
-		expr.AddDamageConstant(5, tag.NewContainer(expression.DamageSlashing), "sword")
-		expr.AddDamageConstant(3, tag.NewContainer(expression.DamageFire), "fire enchant")
-		expr.AddDamageConstant(2, tag.NewContainer(expression.DamageFire), "more fire")
+		expr.AddDamageConstant(5, tag.ContainerFromTag(tags.Slashing), "sword")
+		expr.AddDamageConstant(3, tag.ContainerFromTag(tags.Fire), "fire enchant")
+		expr.AddDamageConstant(2, tag.ContainerFromTag(tags.Fire), "more fire")
 
 		result := expr.EvaluateDamage()
 		assert.Equal(t, 10, result.Value)
 		assert.Len(t, result.Components, 2)
 
-		slashingComp := findComponentByTag(result, expression.DamageSlashing)
-		fireComp := findComponentByTag(result, expression.DamageFire)
+		slashingComp := findComponentByTag(result, tags.Slashing)
+		fireComp := findComponentByTag(result, tags.Fire)
 
 		assert.NotNil(t, slashingComp)
 		assert.NotNil(t, fireComp)
@@ -366,7 +367,7 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 
 	t.Run("groups primary tags under first component tags", func(t *testing.T) {
 		expr := &expression.Expression{Rng: newMockRoller()}
-		expr.AddDamageConstant(8, tag.NewContainer(expression.DamageSlashing), "base weapon")
+		expr.AddDamageConstant(8, tag.ContainerFromTag(tags.Slashing), "base weapon")
 		expr.AddConstant(3, "strength modifier")
 		expr.AddConstant(2, "magic bonus")
 
@@ -376,23 +377,23 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 
 		comp := result.Components[0]
 		assert.Equal(t, 13, comp.Value())
-		tags := comp.Tags()
-		assert.True(t, tags.HasTag(expression.DamageSlashing))
+		compTags := comp.Tags()
+		assert.True(t, compTags.HasTag(tags.Slashing))
 	})
 
 	t.Run("handles mixed primary and typed damage", func(t *testing.T) {
 		expr := &expression.Expression{Rng: newMockRoller()}
-		expr.AddDamageConstant(6, tag.NewContainer(expression.DamagePiercing), "weapon")
+		expr.AddDamageConstant(6, tag.ContainerFromTag(tags.Piercing), "weapon")
 		expr.AddConstant(4, "strength")
-		expr.AddDamageConstant(3, tag.NewContainer(expression.DamagePoison), "poison")
+		expr.AddDamageConstant(3, tag.ContainerFromTag(tags.Poison), "poison")
 		expr.AddConstant(1, "magic")
 
 		result := expr.EvaluateDamage()
 		assert.Equal(t, 14, result.Value)
 		assert.Len(t, result.Components, 2)
 
-		piercingComp := findComponentByTag(result, expression.DamagePiercing)
-		poisonComp := findComponentByTag(result, expression.DamagePoison)
+		piercingComp := findComponentByTag(result, tags.Piercing)
+		poisonComp := findComponentByTag(result, tags.Poison)
 
 		assert.NotNil(t, piercingComp)
 		assert.NotNil(t, poisonComp)
@@ -402,16 +403,16 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 
 	t.Run("handles dice components in grouping", func(t *testing.T) {
 		expr := &expression.Expression{Rng: newMockRoller(4, 2, 6)}
-		expr.AddDamageDice(1, 8, tag.NewContainer(expression.DamageSlashing), "weapon")
-		expr.AddDamageDice(1, 6, tag.NewContainer(expression.DamageSlashing), "sneak attack")
-		expr.AddDamageDice(1, 4, tag.NewContainer(expression.DamageFire), "fire")
+		expr.AddDamageDice(1, 8, tag.ContainerFromTag(tags.Slashing), "weapon")
+		expr.AddDamageDice(1, 6, tag.ContainerFromTag(tags.Slashing), "sneak attack")
+		expr.AddDamageDice(1, 4, tag.ContainerFromTag(tags.Fire), "fire")
 
 		result := expr.EvaluateDamage()
 		assert.Equal(t, 12, result.Value)
 		assert.Len(t, result.Components, 2)
 
-		slashingComp := findComponentByTag(result, expression.DamageSlashing)
-		fireComp := findComponentByTag(result, expression.DamageFire)
+		slashingComp := findComponentByTag(result, tags.Slashing)
+		fireComp := findComponentByTag(result, tags.Fire)
 
 		assert.NotNil(t, slashingComp)
 		assert.NotNil(t, fireComp)
@@ -421,7 +422,7 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 
 	t.Run("preserves first component tags for primary grouping", func(t *testing.T) {
 		expr := &expression.Expression{Rng: newMockRoller()}
-		expr.AddDamageConstant(10, tag.NewContainer(expression.DamageForce), "magic missile")
+		expr.AddDamageConstant(10, tag.ContainerFromTag(tags.Force), "magic missile")
 		expr.AddConstant(5, "spell modifier")
 
 		result := expr.EvaluateDamage()
@@ -429,14 +430,14 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 		assert.Len(t, result.Components, 1)
 
 		comp := result.Components[0]
-		tags := comp.Tags()
-		assert.True(t, tags.HasTag(expression.DamageForce))
+		compTags := comp.Tags()
+		assert.True(t, compTags.HasTag(tags.Force))
 		assert.Equal(t, "magic missile", comp.Source())
 	})
 
 	t.Run("handles empty tag components", func(t *testing.T) {
 		expr := &expression.Expression{Rng: newMockRoller()}
-		expr.AddDamageConstant(5, tag.NewContainer(expression.DamageSlashing), "weapon")
+		expr.AddDamageConstant(5, tag.ContainerFromTag(tags.Slashing), "weapon")
 		emptyExpr := expression.FromConstant(3, "empty tag component")
 		expr.Components = append(expr.Components, emptyExpr.Components[0])
 
@@ -445,16 +446,16 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 		assert.Len(t, result.Components, 1)
 
 		comp := result.Components[0]
-		tags := comp.Tags()
-		assert.True(t, tags.HasTag(expression.DamageSlashing))
+		compTags := comp.Tags()
+		assert.True(t, compTags.HasTag(tags.Slashing))
 		assert.Equal(t, 8, comp.Value())
 	})
 
 	t.Run("builds appropriate group sources", func(t *testing.T) {
 		expr := &expression.Expression{Rng: newMockRoller()}
-		expr.AddDamageConstant(3, tag.NewContainer(expression.DamageFire), "fire spell")
-		expr.AddDamageConstant(2, tag.NewContainer(expression.DamageFire), "fire enchant")
-		expr.AddDamageConstant(1, tag.NewContainer(expression.DamageFire), "fire aura")
+		expr.AddDamageConstant(3, tag.ContainerFromTag(tags.Fire), "fire spell")
+		expr.AddDamageConstant(2, tag.ContainerFromTag(tags.Fire), "fire enchant")
+		expr.AddDamageConstant(1, tag.ContainerFromTag(tags.Fire), "fire aura")
 
 		result := expr.EvaluateDamage()
 		assert.Equal(t, 6, result.Value)
@@ -497,7 +498,7 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 
 	t.Run("preserves single component source when same", func(t *testing.T) {
 		expr := &expression.Expression{Rng: newMockRoller()}
-		expr.AddDamageConstant(5, tag.NewContainer(expression.DamageFire), "fire spell")
+		expr.AddDamageConstant(5, tag.ContainerFromTag(tags.Fire), "fire spell")
 
 		result := expr.EvaluateDamage()
 		assert.Equal(t, 5, result.Value)
@@ -510,9 +511,9 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 	t.Run("preserves same source across multiple components in group", func(t *testing.T) {
 		expr := &expression.Expression{Rng: newMockRoller()}
 		// Add multiple components with same source and same tag
-		expr.AddDamageConstant(3, tag.NewContainer(expression.DamageFire), "same source")
-		expr.AddDamageConstant(2, tag.NewContainer(expression.DamageFire), "same source")
-		expr.AddDamageConstant(1, tag.NewContainer(expression.DamageFire), "same source")
+		expr.AddDamageConstant(3, tag.ContainerFromTag(tags.Fire), "same source")
+		expr.AddDamageConstant(2, tag.ContainerFromTag(tags.Fire), "same source")
+		expr.AddDamageConstant(1, tag.ContainerFromTag(tags.Fire), "same source")
 
 		result := expr.EvaluateDamage()
 		assert.Equal(t, 6, result.Value)
@@ -521,31 +522,6 @@ func TestExpression_EvaluateDamage(t *testing.T) {
 		comp := result.Components[0]
 		// This should hit line 246 - the fallback return for same sources
 		assert.Equal(t, "same source", comp.Source())
-	})
-}
-
-func TestDamageConstants(t *testing.T) {
-	t.Run("damage constants are properly defined", func(t *testing.T) {
-		constants := map[string]tag.Tag{
-			"damage.acid":        expression.DamageAcid,
-			"damage.bludgeoning": expression.DamageBludgeoning,
-			"damage.cold":        expression.DamageCold,
-			"damage.fire":        expression.DamageFire,
-			"damage.force":       expression.DamageForce,
-			"damage.lightning":   expression.DamageLightning,
-			"damage.necrotic":    expression.DamageNecrotic,
-			"damage.piercing":    expression.DamagePiercing,
-			"damage.poison":      expression.DamagePoison,
-			"damage.psychic":     expression.DamagePsychic,
-			"damage.radiant":     expression.DamageRadiant,
-			"damage.slashing":    expression.DamageSlashing,
-			"damage.thunder":     expression.DamageThunder,
-		}
-
-		for expected, actual := range constants {
-			assert.Equal(t, expected, actual.AsString())
-			assert.True(t, actual.IsValid())
-		}
 	})
 }
 

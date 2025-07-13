@@ -30,7 +30,7 @@ func (p Plan) Evaluate(
 	world.RemoveOccupant(oldPos, actor)
 	world.AddOccupant(pos, actor)
 	for _, suba := range actor.Actions {
-		if suba.Tags().MatchAny(tag.NewContainer(tags.Move, tags.Dash)) {
+		if suba.Tags().MatchAny(tag.ContainerFromTag(tags.Move, tags.Dash)) {
 			continue
 		}
 		valid := suba.ValidPositions(pos)

@@ -1,8 +1,9 @@
 package expression
 
 import (
-	"fmt"
+	"anvil/internal/core/tags"
 	"anvil/internal/tag"
+	"fmt"
 )
 
 func groupComponentsByTags(components []Component) [][]Component {
@@ -34,7 +35,7 @@ func groupComponentsByTags(components []Component) [][]Component {
 
 func resolveComponentTags(component Component, components []Component) tag.Container {
 	componentTags := component.Tags()
-	if componentTags.HasTag(Primary) && len(components) > 0 {
+	if componentTags.HasTag(tags.Primary) && len(components) > 0 {
 		return components[0].Tags()
 	}
 
@@ -70,8 +71,8 @@ func findPrimarySource(group []Component) string {
 	var primarySource string
 
 	for _, comp := range group {
-		tags := comp.Tags()
-		if tags.HasTag(Primary) || tags.IsEmpty() {
+		tt := comp.Tags()
+		if tt.HasTag(tags.Primary) || tt.IsEmpty() {
 			primaryComponents++
 		} else if primarySource == "" {
 			primarySource = comp.Source()

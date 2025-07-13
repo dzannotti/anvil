@@ -11,6 +11,8 @@ import (
 )
 
 var (
+	Primary = tag.FromString("Primary")
+
 	Actor           = tag.FromString("Actor")
 	ActorDefense    = tag.FromString("Actor.Defense")
 	ActorHitPoints  = tag.FromString("Actor.Defense.HitPoints")
@@ -75,6 +77,7 @@ var (
 	Poison      = tag.FromString("Damage.Kind.Poison")
 	Radiant     = tag.FromString("Damage.Kind.Radiant")
 	Fire        = tag.FromString("Damage.Kind.Fire")
+	Force       = tag.FromString("Damage.Kind.Force")
 
 	Melee  = tag.FromString("Melee")
 	Ranged = tag.FromString("Ranged")

@@ -1,6 +1,9 @@
 package expression
 
-import "anvil/internal/tag"
+import (
+	"anvil/internal/core/tags"
+	"anvil/internal/tag"
+)
 
 func FromConstant(value int, source string, components ...Component) *Expression {
 	expr := &Expression{Rng: NewRngRoller()}
@@ -33,15 +36,15 @@ func FromDamageDice(times int, sides int, tags tag.Container, source string, com
 }
 
 func (e *Expression) AddConstant(value int, source string, components ...Component) {
-	e.Components = append(e.Components, newConstantComponent(value, tag.NewContainer(Primary), source, components...))
+	e.Components = append(e.Components, newConstantComponent(value, tag.ContainerFromTag(tags.Primary), source, components...))
 }
 
 func (e *Expression) AddDice(times int, sides int, source string, components ...Component) {
-	e.Components = append(e.Components, newDiceComponent(times, sides, tag.NewContainer(Primary), source, components...))
+	e.Components = append(e.Components, newDiceComponent(times, sides, tag.ContainerFromTag(tags.Primary), source, components...))
 }
 
 func (e *Expression) AddD20(source string, components ...Component) {
-	e.Components = append(e.Components, newD20Component(tag.NewContainer(Primary), source, components...))
+	e.Components = append(e.Components, newD20Component(tag.ContainerFromTag(tags.Primary), source, components...))
 }
 
 func (e *Expression) AddDamageConstant(value int, tags tag.Container, source string, components ...Component) {

@@ -42,7 +42,7 @@ func TestEffect_Evaluate(t *testing.T) {
 	t.Run("state is modified by handler", func(t *testing.T) {
 		e := &Effect{}
 		expr := expression.FromConstant(10, "test")
-		state := &TestEffect{Expression: &expr}
+		state := &TestEffect{Expression: expr}
 		e.withHandler("TestEffect", func(_ *Effect, s any) {
 			estate, ok := s.(*TestEffect)
 			require.True(t, ok, "state must be *TestEffect for test to continue")

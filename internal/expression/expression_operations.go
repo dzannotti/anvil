@@ -1,8 +1,8 @@
 package expression
 
 import (
-	"fmt"
 	"anvil/internal/tag"
+	"fmt"
 )
 
 func (e *Expression) GiveAdvantage(source string) {
@@ -110,7 +110,7 @@ func (e *Expression) IsCriticalFailure() bool {
 func (e *Expression) SetCriticalSuccess(source string) {
 	// Add a D20 component with value 20 to force critical success
 	// This is used for damage rolls when an attack was already determined to be critical
-	d20 := newD20Component(tag.NewContainer(), source)
+	d20 := newD20Component(tag.ContainerFromTag(), source)
 	d20.value = 20 // Force critical value
 	e.Components = append([]Component{d20}, e.Components...)
 }

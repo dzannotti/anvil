@@ -52,7 +52,7 @@ func NewWeaponFromDefinition(def loader.WeaponDefinition) *Weapon {
 		id:        uuid.New().String(),
 		name:      def.Name,
 		damage:    damageExpr,
-		tags:      tag.NewContainer(weaponTags...),
+		tags:      tag.ContainerFromTag(weaponTags...),
 		reach:     def.Reach,
 	}
 }
@@ -70,12 +70,12 @@ func parseDamageFormula(formula, weaponName, kind string, expr *expression.Expre
 			return fmt.Errorf("invalid number of sides: %s", matches[2])
 		}
 
-		expr.AddDamageDice(times, sides, tag.NewContainer(tag.FromString(kind)), weaponName)
+		expr.AddDamageDice(times, sides, tag.ContainerFromTag(tag.FromString(kind)), weaponName)
 		return nil
 	}
 
 	if constant, err := strconv.Atoi(formula); err == nil {
-		expr.AddDamageConstant(constant, tag.NewContainer(tag.FromString(kind)), weaponName)
+		expr.AddDamageConstant(constant, tag.ContainerFromTag(tag.FromString(kind)), weaponName)
 		return nil
 	}
 

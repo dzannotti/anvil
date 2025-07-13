@@ -36,7 +36,7 @@ func NewMeleeAction(owner *core.Actor, name string, damageSource core.DamageSour
 		reach:        reach,
 		damageSource: damageSource,
 	}
-	a.tags.Add(tag.NewContainer(tags.Attack))
+	a.tags.Add(tag.ContainerFromTag(tags.Attack))
 	return a
 }
 
@@ -46,16 +46,16 @@ func NewMeleeActionFromDefinition(owner *core.Actor, def loader.MeleeActionDefin
 		cost[tag.FromString(key)] = value
 	}
 
-	actionTags := tag.NewContainer()
+	actionTags := tag.ContainerFromTag()
 	for _, tagStr := range def.Tags {
-		actionTags.Add(tag.NewContainer(tag.FromString(tagStr)))
+		actionTags.Add(tag.ContainerFromTag(tag.FromString(tagStr)))
 	}
 
 	// For now, only support simple "1d6" format - will add parser later
-	damageExpr := expression.FromDamageDice(1, 6, tag.NewContainer(tag.FromString(def.DamageType)), def.Name)
-	
+	damageExpr := expression.FromDamageDice(1, 6, tag.ContainerFromTag(tag.FromString(def.DamageType)), def.Name)
+
 	damageType := tag.FromString(def.DamageType)
-	damageSource := core.NewDamageSource(*damageExpr, tag.NewContainer(damageType))
+	damageSource := core.NewDamageSource(*damageExpr, tag.ContainerFromTag(damageType))
 
 	a := &MeleeAction{
 		owner:        owner,
@@ -67,7 +67,7 @@ func NewMeleeActionFromDefinition(owner *core.Actor, def loader.MeleeActionDefin
 		reach:        def.Reach,
 		damageSource: damageSource,
 	}
-	a.tags.Add(tag.NewContainer(tags.Attack))
+	a.tags.Add(tag.ContainerFromTag(tags.Attack))
 	return a
 }
 
@@ -166,7 +166,7 @@ func (a *MeleeAction) Damage() *expression.Expression {
 }
 
 func (a *MeleeAction) Tags() *tag.Container {
-	combined := tag.NewContainerFromContainer(a.tags)
+	combined := a.tags.Clone()
 	combined.Add(*a.damageSource.Tags())
 	return &combined
 }

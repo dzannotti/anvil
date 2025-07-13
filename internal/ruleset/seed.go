@@ -121,14 +121,14 @@ func zombieSlamDefinition() loader.MeleeActionDefinition {
 func newZombie(registry *Registry, dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, name string) *core.Actor {
 	definition := zombieDefinition(name)
 	npc := registry.CreateActorFromDefinition(dispatcher, world, pos, definition)
-	
+
 	// Create zombie slam action from definition
 	slamDef := zombieSlamDefinition()
 	slamAction := registry.NewAction("melee", npc, map[string]interface{}{
 		"definition": slamDef,
 	})
 	npc.AddAction(slamAction)
-	
+
 	npc.AddEffect(registry.NewEffect("undead-fortitude", nil))
 	return npc
 }

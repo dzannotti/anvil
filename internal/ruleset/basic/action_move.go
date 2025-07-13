@@ -25,7 +25,7 @@ func NewMoveAction(owner *core.Actor) *MoveAction {
 		archetype: "",
 		id:        "",
 		name:      "Move",
-		tags:      tag.NewContainer(tags.Move),
+		tags:      tag.ContainerFromTag(tags.Move),
 		cost:      map[tag.Tag]int{tags.ResourceSpeed: 1},
 		castRange: 0,
 		reach:     0,

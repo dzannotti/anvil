@@ -25,17 +25,21 @@ func printValue(value int, first bool) string {
 func formatDiceRolls(component expression.Component) string {
 	var values []int
 	var times, sides int
-	
+
 	// Type assert to get dice-specific methods
 	switch c := component.(type) {
-	case interface{ Values() []int; Times() int; Sides() int }:
+	case interface {
+		Values() []int
+		Times() int
+		Sides() int
+	}:
 		values = c.Values()
 		times = c.Times()
 		sides = c.Sides()
 	default:
 		return ""
 	}
-	
+
 	if len(values) <= 1 {
 		return ""
 	}
@@ -52,7 +56,11 @@ func formatDice(component expression.Component) string {
 
 	// Type assert to get dice-specific methods
 	switch c := component.(type) {
-	case interface{ Values() []int; Times() int; Sides() int }:
+	case interface {
+		Values() []int
+		Times() int
+		Sides() int
+	}:
 		if len(c.Values()) <= 1 {
 			return fmt.Sprintf(" (%dd%d)", c.Times(), c.Sides())
 		}
@@ -77,9 +85,12 @@ func formatBranch(indent string, last bool) string {
 
 func formatAdvantageDisadvantage(component expression.Component, indent string, last bool) []string {
 	var advantages, disadvantages []string
-	
+
 	// Type assert to get D20-specific methods
-	if d20, ok := component.(interface{ Advantage() []string; Disadvantage() []string }); ok {
+	if d20, ok := component.(interface {
+		Advantage() []string
+		Disadvantage() []string
+	}); ok {
 		advantages = d20.Advantage()
 		disadvantages = d20.Disadvantage()
 	} else {

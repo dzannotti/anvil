@@ -248,7 +248,7 @@ type MockAction struct {
 func (m *MockAction) Name() string                                        { return m.name }
 func (m *MockAction) Archetype() string                                   { return "mock-action" }
 func (m *MockAction) ID() string                                          { return "mock-id" }
-func (m *MockAction) Tags() *tag.Container                                { tags := tag.NewContainer(); return &tags }
+func (m *MockAction) Tags() *tag.Container                                { tags := tag.ContainerFromTag(); return &tags }
 func (m *MockAction) Perform(_ []grid.Position)                           {}
 func (m *MockAction) ValidPositions(_ grid.Position) []grid.Position      { return nil }
 func (m *MockAction) AffectedPositions(_ []grid.Position) []grid.Position { return nil }
@@ -261,5 +261,5 @@ type MockItem struct {
 func (m *MockItem) Name() string         { return m.name }
 func (m *MockItem) Archetype() string    { return "mock-item" }
 func (m *MockItem) ID() string           { return "mock-id" }
-func (m *MockItem) Tags() *tag.Container { tags := tag.NewContainer(); return &tags }
+func (m *MockItem) Tags() *tag.Container { tags := tag.ContainerFromTag(); return &tags }
 func (m *MockItem) OnEquip(*core.Actor)  {}

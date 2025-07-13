@@ -19,7 +19,7 @@ func NewFightingStyleDefense() *core.Effect {
 			return
 		}
 
-		valid := tag.NewContainer(tags.LightArmor, tags.MediumArmor, tags.HeavyArmor, tags.Shield)
+		valid := tag.ContainerFromTag(tags.LightArmor, tags.MediumArmor, tags.HeavyArmor, tags.Shield)
 		trigger := false
 		for _, e := range s.Source.Equipped {
 			if e.Tags().HasAny(valid) {
