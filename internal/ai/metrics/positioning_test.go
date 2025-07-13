@@ -168,7 +168,7 @@ func (m *mockMoveAction) Archetype() string { return "movement" }
 func (m *mockMoveAction) ID() string { return "move" }
 func (m *mockMoveAction) Perform([]grid.Position) {}
 func (m *mockMoveAction) Tags() *tag.Container {
-	container := tag.NewContainer(tags.Move)
+	container := tag.ContainerFromTag(tags.Move)
 	return &container
 }
 func (m *mockMoveAction) ValidPositions(grid.Position) []grid.Position { return []grid.Position{} }

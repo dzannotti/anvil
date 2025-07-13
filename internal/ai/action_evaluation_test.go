@@ -6,6 +6,7 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 	"anvil/internal/tag"
 )
 
@@ -203,7 +204,7 @@ func TestSelectBestFallbackAction_Preferences(t *testing.T) {
 
 // Test helpers and mocks
 func setupTestActionWorld() (*core.World, *core.Actor, *core.Encounter) {
-	world := core.NewWorld(20, 20)
+	world := core.NewWorld(loader.WorldDefinition{Width: 20, Height: 20})
 	encounter := &core.Encounter{}
 	
 	actor := &core.Actor{
@@ -269,7 +270,7 @@ func (m *mockMoveActionAI) ID() string { return "test-move" }
 func (m *mockMoveActionAI) AverageDamage() int { return 0 }
 func (m *mockMoveActionAI) Perform([]grid.Position) {}
 func (m *mockMoveActionAI) Tags() *tag.Container {
-	container := tag.NewContainer(tags.Move)
+	container := tag.ContainerFromTag(tags.Move)
 	return &container
 }
 func (m *mockMoveActionAI) CanAfford() bool { return true }
@@ -291,7 +292,7 @@ func (m *mockDodgeAction) ID() string { return "test-dodge" }
 func (m *mockDodgeAction) AverageDamage() int { return 0 }
 func (m *mockDodgeAction) Perform([]grid.Position) {}
 func (m *mockDodgeAction) Tags() *tag.Container {
-	container := tag.NewContainer(tags.Dodge)
+	container := tag.ContainerFromTag(tags.Dodge)
 	return &container
 }
 func (m *mockDodgeAction) CanAfford() bool { return true }

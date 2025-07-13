@@ -5,6 +5,7 @@ import (
 
 	"anvil/internal/core"
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 	"anvil/internal/tag"
 )
 
@@ -131,7 +132,7 @@ func (m *mockAction) CanAfford() bool { return true }
 
 // Helper to set up test world with actor and enemy
 func setupTestWorld() (*core.World, *core.Actor, *core.Actor) {
-	world := core.NewWorld(20, 20)
+	world := core.NewWorld(loader.WorldDefinition{Width: 20, Height: 20})
 	
 	actor := &core.Actor{
 		Name: "TestActor",

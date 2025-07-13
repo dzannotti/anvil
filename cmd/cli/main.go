@@ -92,9 +92,6 @@ func executeTurn(gameState *core.GameState, weights *ai.Weights) {
 func printResults(encounter *core.Encounter, total time.Duration) {
 	winner, _ := encounter.Winner()
 
-	fmt.Println("\n📊 STEP 10 TESTING RESULTS")
-	fmt.Println("==========================")
-
 	printWinner(winner)
 	printPerformanceStats(encounter, total)
 	printAcceptanceCriteria(encounter, total)

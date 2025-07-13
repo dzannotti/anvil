@@ -5,6 +5,7 @@ import (
 
 	"anvil/internal/core"
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 	"anvil/internal/tag"
 )
 
@@ -153,7 +154,7 @@ func TestExecuteAction_CedricMovementRevert(t *testing.T) {
 
 // Test helpers
 func setupTestGameState() (*core.GameState, *core.Actor) {
-	world := core.NewWorld(20, 20)
+	world := core.NewWorld(loader.WorldDefinition{Width: 20, Height: 20})
 	encounter := &core.Encounter{}
 	
 	actor := &core.Actor{
