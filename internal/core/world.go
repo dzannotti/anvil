@@ -6,6 +6,7 @@ import (
 	"anvil/internal/core/pathfinding"
 	"anvil/internal/core/shapes"
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 )
 
 type World struct {
@@ -14,9 +15,9 @@ type World struct {
 	requestManager  *RequestManager
 }
 
-func NewWorld(width int, height int) *World {
+func NewWorld(definition loader.WorldDefinition) *World {
 	w := &World{
-		Grid: grid.New(width, height, func(pos grid.Position) WorldCell {
+		Grid: grid.New(definition.Width, definition.Height, func(pos grid.Position) WorldCell {
 			return WorldCell{Position: pos}
 		}),
 		requestManager: NewRequestManager(),

@@ -21,7 +21,6 @@ jobs:
             feat
             fix
             docs
-            style
             refactor
             perf
             test
@@ -32,7 +31,6 @@ jobs:
           scopes: |
             core
             combat
-            ruleset
             cli
             gui
             config

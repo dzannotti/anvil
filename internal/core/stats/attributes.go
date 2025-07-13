@@ -18,17 +18,17 @@ type Attributes struct {
 
 func (a Attributes) Value(tag tag.Tag) int {
 	switch tag {
-	case tags.Strength:
+	case tags.AttributeStrength:
 		return a.Strength
-	case tags.Dexterity:
+	case tags.AttributeDexterity:
 		return a.Dexterity
-	case tags.Constitution:
+	case tags.AttributeConstitution:
 		return a.Constitution
-	case tags.Intelligence:
+	case tags.AttributeIntelligence:
 		return a.Intelligence
-	case tags.Wisdom:
+	case tags.AttributeWisdom:
 		return a.Wisdom
-	case tags.Charisma:
+	case tags.AttributeCharisma:
 		return a.Charisma
 	}
 	return 0

@@ -1,131 +1,536 @@
-package expression
+package expression_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"anvil/internal/core/tags"
+	"anvil/internal/expression"
 	"anvil/internal/tag"
 )
 
-func TestExpression_Clone(t *testing.T) {
-	tests := []struct {
-		name  string
-		setup func() Expression
-	}{
-		{
-			name: "clones simple expression",
-			setup: func() Expression {
-				expr := Expression{Value: 42}
-				expr.AddConstant(10, "Base")
-				return expr
-			},
-		},
-		{
-			name: "clones complex expression with multiple components",
-			setup: func() Expression {
-				expr := Expression{Value: 15, Rng: &mockRoller{}}
-				expr.AddD20("Attack")
-				expr.AddConstant(5, "Bonus")
-				expr.AddDamageDice(2, 6, "Damage", tag.NewContainerFromString("fire"))
-				return expr
-			},
-		},
-		{
-			name: "clones empty expression",
-			setup: func() Expression {
-				return Expression{Value: 0}
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			original := tt.setup()
-			clone := original.Clone()
-
-			// Verify values are equal
-			assert.Equal(t, original.Value, clone.Value)
-			assert.Equal(t, original.Rng, clone.Rng)
-			assert.Equal(t, len(original.Components), len(clone.Components))
-
-			// Verify components are deeply cloned
-			for i := range original.Components {
-				assert.Equal(t, original.Components[i], clone.Components[i])
-
-				// Verify it's a deep copy - modifying clone shouldn't affect original
-				if len(clone.Components) > 0 {
-					clone.Components[i].Value = 999
-					assert.NotEqual(t, clone.Components[i].Value, original.Components[i].Value)
-				}
-			}
-
-			// Verify modifying clone doesn't affect original
-			clone.Value = 999
-			assert.NotEqual(t, clone.Value, original.Value)
-		})
-	}
+type mockRoller struct {
+	values []int
+	index  int
 }
 
-func TestExpression_ExpectedValue(t *testing.T) {
-	tests := []struct {
-		name     string
-		setup    func() Expression
-		expected int
-	}{
-		{
-			name: "empty expression",
-			setup: func() Expression {
-				return Expression{}
-			},
-			expected: 0,
-		},
-		{
-			name: "single constant",
-			setup: func() Expression {
-				expr := Expression{}
-				expr.AddConstant(5, "Base")
-				return expr
-			},
-			expected: 5,
-		},
-		{
-			name: "single dice",
-			setup: func() Expression {
-				expr := Expression{}
-				expr.AddDice(2, 6, "Damage")
-				return expr
-			},
-			expected: 7, // 2 * (6+1) / 2 = 7
-		},
-		{
-			name: "constant plus dice",
-			setup: func() Expression {
-				expr := Expression{}
-				expr.AddConstant(3, "Bonus")
-				expr.AddDice(1, 8, "Weapon")
-				return expr
-			},
-			expected: 7, // 3 + 4 = 7 (1 * (8+1) / 2 = 4)
-		},
-		{
-			name: "multiple dice types",
-			setup: func() Expression {
-				expr := Expression{}
-				expr.AddD20("Attack")                                // 10 (1 * (20+1) / 2 = 10)
-				expr.AddDamageDice(2, 6, "Main", tag.NewContainer()) // 7 (2 * (6+1) / 2 = 7)
-				expr.AddConstant(4, "Bonus")                         // 4
-				return expr
-			},
-			expected: 21, // 10 + 7 + 4 = 21
-		},
+func newMockRoller(values ...int) *mockRoller {
+	return &mockRoller{values: values}
+}
+
+func (m *mockRoller) Roll(_ int) int {
+	if m.index >= len(m.values) {
+		return 1
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			expr := tt.setup()
-			result := expr.ExpectedValue()
-			assert.Equal(t, tt.expected, result)
+	value := m.values[m.index]
+	m.index++
+	return value
+}
+
+func TestFromConstant(t *testing.T) {
+	t.Run("creates expression with constant value", func(t *testing.T) {
+		expr := expression.FromConstant(5, "test")
+		require.NotNil(t, expr)
+		assert.Equal(t, 0, expr.Value)
+		assert.Len(t, expr.Components, 1)
+	})
+
+	t.Run("evaluates to constant value", func(t *testing.T) {
+		expr := expression.FromConstant(10, "test")
+		expr.Evaluate()
+		assert.Equal(t, 10, expr.Value)
+	})
+}
+
+func TestFromDice(t *testing.T) {
+	t.Run("creates expression with dice component", func(t *testing.T) {
+		expr := expression.FromDice(2, 6, "test")
+		require.NotNil(t, expr)
+		assert.Equal(t, 0, expr.Value)
+		assert.Len(t, expr.Components, 1)
+	})
+
+	t.Run("evaluates dice rolls", func(t *testing.T) {
+		expr := expression.FromDice(2, 6, "test")
+		expr.Rng = newMockRoller(3, 4)
+		expr.Evaluate()
+		assert.Equal(t, 7, expr.Value)
+	})
+}
+
+func TestFromD20(t *testing.T) {
+	t.Run("creates expression with d20 component", func(t *testing.T) {
+		expr := expression.FromD20("test")
+		require.NotNil(t, expr)
+		assert.Equal(t, 0, expr.Value)
+		assert.Len(t, expr.Components, 1)
+	})
+
+	t.Run("evaluates d20 roll", func(t *testing.T) {
+		expr := expression.FromD20("test")
+		expr.Rng = newMockRoller(15)
+		expr.Evaluate()
+		assert.Equal(t, 15, expr.Value)
+	})
+}
+
+func TestFromDamageConstant(t *testing.T) {
+	t.Run("creates expression with damage constant", func(t *testing.T) {
+		tags := tag.ContainerFromString("damage.fire")
+		expr := expression.FromDamageConstant(8, tags, "test")
+		require.NotNil(t, expr)
+		assert.Equal(t, 0, expr.Value)
+		assert.Len(t, expr.Components, 1)
+	})
+
+	t.Run("evaluates to damage value", func(t *testing.T) {
+		tags := tag.ContainerFromString("damage.fire")
+		expr := expression.FromDamageConstant(12, tags, "test")
+		expr.Evaluate()
+		assert.Equal(t, 12, expr.Value)
+	})
+}
+
+func TestFromDamageDice(t *testing.T) {
+	t.Run("creates expression with damage dice", func(t *testing.T) {
+		tags := tag.ContainerFromString("damage.fire")
+		expr := expression.FromDamageDice(3, 6, tags, "test")
+		require.NotNil(t, expr)
+		assert.Equal(t, 0, expr.Value)
+		assert.Len(t, expr.Components, 1)
+	})
+
+	t.Run("evaluates damage dice", func(t *testing.T) {
+		tags := tag.ContainerFromString("damage.fire")
+		expr := expression.FromDamageDice(2, 8, tags, "test")
+		expr.Rng = newMockRoller(5, 7)
+		expr.Evaluate()
+		assert.Equal(t, 12, expr.Value)
+	})
+}
+
+func TestExpression_AddConstant(t *testing.T) {
+	t.Run("adds constant to existing expression", func(t *testing.T) {
+		expr := expression.FromConstant(5, "base")
+		expr.AddConstant(3, "bonus")
+		assert.Len(t, expr.Components, 2)
+
+		expr.Evaluate()
+		assert.Equal(t, 8, expr.Value)
+	})
+}
+
+func TestExpression_AddDice(t *testing.T) {
+	t.Run("adds dice to existing expression", func(t *testing.T) {
+		expr := expression.FromConstant(5, "base")
+		expr.AddDice(1, 6, "bonus")
+		assert.Len(t, expr.Components, 2)
+
+		expr.Rng = newMockRoller(4)
+		expr.Evaluate()
+		assert.Equal(t, 9, expr.Value)
+	})
+}
+
+func TestExpression_AddD20(t *testing.T) {
+	t.Run("adds d20 to existing expression", func(t *testing.T) {
+		expr := expression.FromConstant(5, "base")
+		expr.AddD20("ability")
+		assert.Len(t, expr.Components, 2)
+
+		expr.Rng = newMockRoller(12)
+		expr.Evaluate()
+		assert.Equal(t, 17, expr.Value)
+	})
+}
+
+func TestExpression_AddDamageConstant(t *testing.T) {
+	t.Run("adds damage constant to existing expression", func(t *testing.T) {
+		expr := expression.FromConstant(5, "base")
+		tags := tag.ContainerFromString("damage.fire")
+		expr.AddDamageConstant(3, tags, "fire damage")
+		assert.Len(t, expr.Components, 2)
+
+		expr.Evaluate()
+		assert.Equal(t, 8, expr.Value)
+	})
+}
+
+func TestExpression_AddDamageDice(t *testing.T) {
+	t.Run("adds damage dice to existing expression", func(t *testing.T) {
+		expr := expression.FromConstant(5, "base")
+		tags := tag.ContainerFromString("damage.fire")
+		expr.AddDamageDice(2, 4, tags, "fire damage")
+		assert.Len(t, expr.Components, 2)
+
+		expr.Rng = newMockRoller(3, 4)
+		expr.Evaluate()
+		assert.Equal(t, 12, expr.Value)
+	})
+}
+
+func TestExpression_Evaluate(t *testing.T) {
+	t.Run("evaluates complex expression", func(t *testing.T) {
+		expr := expression.FromConstant(10, "base")
+		expr.AddDice(2, 6, "bonus dice")
+		expr.AddConstant(5, "flat bonus")
+		expr.Rng = newMockRoller(3, 4)
+
+		result := expr.Evaluate()
+		assert.Equal(t, expr, result)
+		assert.Equal(t, 22, expr.Value)
+	})
+
+	t.Run("re-evaluates expression correctly", func(t *testing.T) {
+		expr := expression.FromDice(1, 6, "test")
+		expr.Rng = newMockRoller(3, 5)
+
+		expr.Evaluate()
+		assert.Equal(t, 3, expr.Value)
+
+		expr.Rng = newMockRoller(5)
+		expr.Evaluate()
+		assert.Equal(t, 5, expr.Value)
+	})
+}
+
+func TestExpression_GiveAdvantage(t *testing.T) {
+	t.Run("gives advantage to d20 component", func(t *testing.T) {
+		expr := expression.FromD20("attack")
+		expr.Rng = newMockRoller(8, 15)
+
+		expr.GiveAdvantage("source")
+		expr.Evaluate()
+		assert.Equal(t, 15, expr.Value)
+	})
+
+	t.Run("panics when no components", func(t *testing.T) {
+		expr := &expression.Expression{}
+		assert.Panics(t, func() {
+			expr.GiveAdvantage("source")
 		})
+	})
+
+	t.Run("panics when first component is not d20", func(t *testing.T) {
+		expr := expression.FromConstant(5, "test")
+		assert.Panics(t, func() {
+			expr.GiveAdvantage("source")
+		})
+	})
+}
+
+func TestExpression_GiveDisadvantage(t *testing.T) {
+	t.Run("gives disadvantage to d20 component", func(t *testing.T) {
+		expr := expression.FromD20("attack")
+		expr.Rng = newMockRoller(8, 15)
+
+		expr.GiveDisadvantage("source")
+		expr.Evaluate()
+		assert.Equal(t, 8, expr.Value)
+	})
+
+	t.Run("panics when no components", func(t *testing.T) {
+		expr := &expression.Expression{}
+		assert.Panics(t, func() {
+			expr.GiveDisadvantage("source")
+		})
+	})
+
+	t.Run("panics when first component is not d20", func(t *testing.T) {
+		expr := expression.FromConstant(5, "test")
+		assert.Panics(t, func() {
+			expr.GiveDisadvantage("source")
+		})
+	})
+}
+
+func TestExpression_ReplaceWith(t *testing.T) {
+	t.Run("replaces all components with constant", func(t *testing.T) {
+		expr := expression.FromDice(2, 6, "original")
+		expr.AddConstant(5, "bonus")
+		assert.Len(t, expr.Components, 2)
+
+		tags := tag.ContainerFromString("replaced")
+		expr.ReplaceWith(20, "critical", tags)
+		assert.Len(t, expr.Components, 1)
+
+		expr.Evaluate()
+		assert.Equal(t, 20, expr.Value)
+	})
+}
+
+func TestExpression_DoubleDice(t *testing.T) {
+	t.Run("doubles only dice components", func(t *testing.T) {
+		expr := expression.FromDice(2, 6, "weapon")
+		expr.AddConstant(5, "modifier")
+		assert.Len(t, expr.Components, 2)
+
+		expr.DoubleDice("critical hit")
+		assert.Len(t, expr.Components, 3)
+
+		expr.Rng = newMockRoller(3, 4, 5, 6)
+		expr.Evaluate()
+		assert.Equal(t, 23, expr.Value)
+	})
+
+	t.Run("ignores non-dice components", func(t *testing.T) {
+		expr := expression.FromConstant(10, "base")
+		expr.DoubleDice("critical")
+		assert.Len(t, expr.Components, 1)
+
+		expr.Evaluate()
+		assert.Equal(t, 10, expr.Value)
+	})
+
+	t.Run("handles multiple dice components", func(t *testing.T) {
+		expr := expression.FromDice(1, 8, "weapon")
+		expr.AddDice(1, 6, "sneak attack")
+		assert.Len(t, expr.Components, 2)
+
+		expr.DoubleDice("critical")
+		assert.Len(t, expr.Components, 4)
+
+		expr.Rng = newMockRoller(5, 3, 6, 4)
+		expr.Evaluate()
+		assert.Equal(t, 18, expr.Value)
+	})
+}
+
+func TestExpression_MaxDice(t *testing.T) {
+	t.Run("maximizes only dice components", func(t *testing.T) {
+		expr := expression.FromDice(2, 6, "weapon")
+		expr.AddConstant(3, "modifier")
+		assert.Len(t, expr.Components, 2)
+
+		expr.MaxDice("brutal critical")
+		assert.Len(t, expr.Components, 3)
+
+		expr.Rng = newMockRoller(1, 2)
+		expr.Evaluate()
+		assert.Equal(t, 18, expr.Value)
+	})
+
+	t.Run("ignores non-dice components", func(t *testing.T) {
+		expr := expression.FromConstant(10, "base")
+		expr.MaxDice("brutal")
+		assert.Len(t, expr.Components, 1)
+
+		expr.Evaluate()
+		assert.Equal(t, 10, expr.Value)
+	})
+
+	t.Run("handles multiple dice components", func(t *testing.T) {
+		expr := expression.FromDice(2, 8, "weapon")
+		expr.AddDice(3, 4, "poison")
+		assert.Len(t, expr.Components, 2)
+
+		expr.MaxDice("brutal critical")
+		assert.Len(t, expr.Components, 4)
+
+		expr.Rng = newMockRoller(1, 1, 1, 1, 1)
+		expr.Evaluate()
+		assert.Equal(t, 33, expr.Value)
+	})
+}
+
+func TestExpression_EvaluateDamage(t *testing.T) {
+	t.Run("returns empty expression when no components", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		result := expr.EvaluateDamage()
+
+		assert.NotNil(t, result)
+		assert.Equal(t, 0, result.Value)
+		assert.Len(t, result.Components, 0)
+	})
+
+	t.Run("groups damage by tag types", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		expr.AddDamageConstant(5, tag.ContainerFromTag(tags.Slashing), "sword")
+		expr.AddDamageConstant(3, tag.ContainerFromTag(tags.Fire), "fire enchant")
+		expr.AddDamageConstant(2, tag.ContainerFromTag(tags.Fire), "more fire")
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 10, result.Value)
+		assert.Len(t, result.Components, 2)
+
+		slashingComp := findComponentByTag(result, tags.Slashing)
+		fireComp := findComponentByTag(result, tags.Fire)
+
+		assert.NotNil(t, slashingComp)
+		assert.NotNil(t, fireComp)
+		assert.Equal(t, 5, slashingComp.Value())
+		assert.Equal(t, 5, fireComp.Value())
+	})
+
+	t.Run("groups primary tags under first component tags", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		expr.AddDamageConstant(8, tag.ContainerFromTag(tags.Slashing), "base weapon")
+		expr.AddConstant(3, "strength modifier")
+		expr.AddConstant(2, "magic bonus")
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 13, result.Value)
+		assert.Len(t, result.Components, 1)
+
+		comp := result.Components[0]
+		assert.Equal(t, 13, comp.Value())
+		compTags := comp.Tags()
+		assert.True(t, compTags.HasTag(tags.Slashing))
+	})
+
+	t.Run("handles mixed primary and typed damage", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		expr.AddDamageConstant(6, tag.ContainerFromTag(tags.Piercing), "weapon")
+		expr.AddConstant(4, "strength")
+		expr.AddDamageConstant(3, tag.ContainerFromTag(tags.Poison), "poison")
+		expr.AddConstant(1, "magic")
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 14, result.Value)
+		assert.Len(t, result.Components, 2)
+
+		piercingComp := findComponentByTag(result, tags.Piercing)
+		poisonComp := findComponentByTag(result, tags.Poison)
+
+		assert.NotNil(t, piercingComp)
+		assert.NotNil(t, poisonComp)
+		assert.Equal(t, 11, piercingComp.Value())
+		assert.Equal(t, 3, poisonComp.Value())
+	})
+
+	t.Run("handles dice components in grouping", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller(4, 2, 6)}
+		expr.AddDamageDice(1, 8, tag.ContainerFromTag(tags.Slashing), "weapon")
+		expr.AddDamageDice(1, 6, tag.ContainerFromTag(tags.Slashing), "sneak attack")
+		expr.AddDamageDice(1, 4, tag.ContainerFromTag(tags.Fire), "fire")
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 12, result.Value)
+		assert.Len(t, result.Components, 2)
+
+		slashingComp := findComponentByTag(result, tags.Slashing)
+		fireComp := findComponentByTag(result, tags.Fire)
+
+		assert.NotNil(t, slashingComp)
+		assert.NotNil(t, fireComp)
+		assert.Equal(t, 6, slashingComp.Value())
+		assert.Equal(t, 6, fireComp.Value())
+	})
+
+	t.Run("preserves first component tags for primary grouping", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		expr.AddDamageConstant(10, tag.ContainerFromTag(tags.Force), "magic missile")
+		expr.AddConstant(5, "spell modifier")
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 15, result.Value)
+		assert.Len(t, result.Components, 1)
+
+		comp := result.Components[0]
+		compTags := comp.Tags()
+		assert.True(t, compTags.HasTag(tags.Force))
+		assert.Equal(t, "magic missile", comp.Source())
+	})
+
+	t.Run("handles empty tag components", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		expr.AddDamageConstant(5, tag.ContainerFromTag(tags.Slashing), "weapon")
+		emptyExpr := expression.FromConstant(3, "empty tag component")
+		expr.Components = append(expr.Components, emptyExpr.Components[0])
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 8, result.Value)
+		assert.Len(t, result.Components, 1)
+
+		comp := result.Components[0]
+		compTags := comp.Tags()
+		assert.True(t, compTags.HasTag(tags.Slashing))
+		assert.Equal(t, 8, comp.Value())
+	})
+
+	t.Run("builds appropriate group sources", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		expr.AddDamageConstant(3, tag.ContainerFromTag(tags.Fire), "fire spell")
+		expr.AddDamageConstant(2, tag.ContainerFromTag(tags.Fire), "fire enchant")
+		expr.AddDamageConstant(1, tag.ContainerFromTag(tags.Fire), "fire aura")
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 6, result.Value)
+		assert.Len(t, result.Components, 1)
+
+		comp := result.Components[0]
+		assert.Equal(t, "grouped damage (3 sources)", comp.Source())
+	})
+
+	t.Run("handles edge case with empty groups", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 0, result.Value)
+		assert.Len(t, result.Components, 0)
+	})
+
+	t.Run("hits groupComponentsByTags early return with empty expression", func(t *testing.T) {
+		// Create completely empty expression (no components at all)
+		expr := &expression.Expression{Rng: newMockRoller()}
+		// This should hit line 178: early return when len(e.Components) == 0
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 0, result.Value)
+		assert.Len(t, result.Components, 0)
+	})
+
+	t.Run("handles expression with only empty tag components", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		emptyExpr1 := expression.FromConstant(5, "first")
+		emptyExpr2 := expression.FromConstant(3, "second")
+		expr.Components = append(expr.Components, emptyExpr1.Components[0], emptyExpr2.Components[0])
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 8, result.Value)
+		assert.Len(t, result.Components, 1)
+
+		comp := result.Components[0]
+		assert.Equal(t, 8, comp.Value())
+		assert.Equal(t, "grouped damage (2 sources)", comp.Source())
+	})
+
+	t.Run("preserves single component source when same", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		expr.AddDamageConstant(5, tag.ContainerFromTag(tags.Fire), "fire spell")
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 5, result.Value)
+		assert.Len(t, result.Components, 1)
+
+		comp := result.Components[0]
+		assert.Equal(t, "fire spell", comp.Source())
+	})
+
+	t.Run("preserves same source across multiple components in group", func(t *testing.T) {
+		expr := &expression.Expression{Rng: newMockRoller()}
+		// Add multiple components with same source and same tag
+		expr.AddDamageConstant(3, tag.ContainerFromTag(tags.Fire), "same source")
+		expr.AddDamageConstant(2, tag.ContainerFromTag(tags.Fire), "same source")
+		expr.AddDamageConstant(1, tag.ContainerFromTag(tags.Fire), "same source")
+
+		result := expr.EvaluateDamage()
+		assert.Equal(t, 6, result.Value)
+		assert.Len(t, result.Components, 1)
+
+		comp := result.Components[0]
+		// This should hit line 246 - the fallback return for same sources
+		assert.Equal(t, "same source", comp.Source())
+	})
+}
+
+func findComponentByTag(expr *expression.Expression, targetTag tag.Tag) expression.Component {
+	for _, comp := range expr.Components {
+		tags := comp.Tags()
+		if tags.HasTag(targetTag) {
+			return comp
+		}
 	}
+	return nil
 }

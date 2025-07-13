@@ -25,10 +25,9 @@ func (e *Encounter) Start() {
 }
 
 func (e *Encounter) End() {
-	if !e.IsOver() {
-		return
-	}
-	e.Dispatcher.End()
+	// This method is now mostly a no-op since EndTurn() handles
+	// ending the encounter when it's over. We keep it for compatibility
+	// but make it safe to call multiple times.
 }
 
 func (e *Encounter) EndTurn() {
@@ -36,6 +35,7 @@ func (e *Encounter) EndTurn() {
 	e.Dispatcher.End()
 	if e.IsOver() {
 		e.endRound()
+		e.Dispatcher.End() // End the encounter when it's over
 		return
 	}
 	e.Turn++

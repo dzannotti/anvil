@@ -1,6 +1,41 @@
 # Anvil
 
-A game project focused on core game logic implementation.
+A modular D&D 2024 rules engine with clean architecture and comprehensive system integration.
+
+## Overview
+
+Anvil (formerly Spellbinder) is a sophisticated rules engine implementing D&D 2024 mechanics through a series of interconnected systems. The architecture emphasizes clean interfaces, complete audit trails, and extensible design patterns.
+
+### Core Systems
+
+- **Tags System** - Hierarchical identification and categorization
+- **Expression System** - Calculation engine with complete audit trails  
+- **Event Bus** - Hierarchical event communication system
+- **Effect System** - Rule resolution callbacks for D&D mechanics
+- **Action System** - Game actions with resource management and targeting
+- **AI System** - Decision making for NPCs _(in development)_
+
+### Architecture Principles
+
+- **Clean Architecture** - No circular dependencies between systems
+- **Event-Driven** - All interactions flow through well-defined events  
+- **Modular** - Each component is self-contained and testable
+- **Audit Trail** - Every calculation and action is fully traceable
+
+## Documentation
+
+Comprehensive system documentation is available in `.ai/01_PROJECT_DOCS/`:
+
+- [00_OVERVIEW.md](.ai/01_PROJECT_DOCS/00_OVERVIEW.md) - Architecture overview and design principles
+- [01_CODING_STANDARDS.md](.ai/01_PROJECT_DOCS/01_CODING_STANDARDS.md) - Code style and conventions  
+- [02_TAGS_SYSTEM.md](.ai/01_PROJECT_DOCS/02_TAGS_SYSTEM.md) - Hierarchical tagging system
+- [03_EXPRESSION_SYSTEM.md](.ai/01_PROJECT_DOCS/03_EXPRESSION_SYSTEM.md) - Calculation and dice rolling engine
+- [04_EVENT_BUS.md](.ai/01_PROJECT_DOCS/04_EVENT_BUS.md) - Event communication system
+- [05_EFFECT_SYSTEM.md](.ai/01_PROJECT_DOCS/05_EFFECT_SYSTEM.md) - Rule resolution and effect callbacks
+- [06_ACTION_SYSTEM.md](.ai/01_PROJECT_DOCS/06_ACTION_SYSTEM.md) - Game actions and resource management
+- [07_AI_SYSTEM.md](.ai/01_PROJECT_DOCS/07_AI_SYSTEM.md) - AI decision making _(planned)_
+
+Start with the [Overview](.ai/01_PROJECT_DOCS/00_OVERVIEW.md) for architecture principles and system interactions.
 
 ## Development Commands
 

@@ -1,12 +1,21 @@
 package stats
 
 import (
+	"anvil/internal/loader"
 	"anvil/internal/tag"
 )
 
 type Proficiencies struct {
 	Skills tag.Container
 	Bonus  int
+}
+
+func NewProficienciesFromDefinition(def loader.ProficienciesDefinition) Proficiencies {
+	proficiencies := Proficiencies{Bonus: def.Bonus}
+	for _, skill := range def.Skills {
+		proficiencies.Add(tag.FromString(skill))
+	}
+	return proficiencies
 }
 
 func (p *Proficiencies) Add(tag tag.Tag) {

@@ -1,43 +1,25 @@
 package expression
 
-import (
-	"anvil/internal/tag"
-)
-
 type Expression struct {
-	Components []Component
 	Value      int
-	Rng        DiceRoller
+	Components []Component
+	Rng        Roller
 }
 
-func (e *Expression) Clone() Expression {
-	components := make([]Component, len(e.Components))
-	for i := range e.Components {
-		components[i] = e.Components[i].Clone()
-	}
-	return Expression{
-		Value:      e.Value,
-		Components: components,
-		Rng:        e.Rng,
-	}
-}
-
-func (e *Expression) ExpectedValue() int {
-	total := 0
+func (e *Expression) Evaluate() *Expression {
+	e.Value = 0
+	ctx := &Context{Rng: e.Rng}
 	for _, component := range e.Components {
-		total += component.ExpectedValue()
+		e.Value += component.Evaluate(ctx)
 	}
-	return total
+	return e
 }
 
-func (e *Expression) primaryTags(inputTags tag.Container) tag.Container {
-	if len(e.Components) == 0 {
-		return inputTags
+func (e *Expression) Clone() *Expression {
+	clone := *e
+	clone.Components = make([]Component, len(e.Components))
+	for i, component := range e.Components {
+		clone.Components[i] = component.Clone()
 	}
-
-	if inputTags.IsEmpty() || inputTags.HasTag(tag.FromString("primary")) {
-		return e.Components[0].Tags
-	}
-
-	return inputTags
+	return &clone
 }

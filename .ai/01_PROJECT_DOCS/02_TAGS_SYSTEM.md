@@ -83,12 +83,12 @@ The Container system manages collections of tags with advanced querying capabili
 ```go
 // Multiple creation patterns
 container1 := tag.NewContainer()
-container2 := tag.NewContainerFromString("damage.fire,damage.cold")
+container2 := tag.ContainerFromString("damage.fire,damage.cold")
 container3 := tag.ContainerFromString("spell.school.evocation")
 
 // From individual tags
 weaponTag := tag.New("item.weapon.martial")
-container4 := tag.NewContainerFromTag(weaponTag)
+container4 := tag.ContainerFromTag(weaponTag)
 ```
 
 ### Container Management

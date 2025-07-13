@@ -4,29 +4,34 @@ import (
 	"fmt"
 
 	"anvil/internal/core"
+	"anvil/internal/core/tags"
+	"anvil/internal/eventbus"
+	"anvil/internal/grid"
+	"anvil/internal/loader"
 )
 
 type RegistryReader interface {
 	NewAction(archetype string, owner *core.Actor, options map[string]interface{}) core.Action
 	NewEffect(archetype string, options map[string]interface{}) *core.Effect
 	NewItem(archetype string, options map[string]interface{}) core.Item
-	NewCreature(archetype string, options map[string]interface{}) *core.Actor
+	NewActor(archetype string, options map[string]interface{}) *core.Actor
 	HasAction(archetype string) bool
 	HasEffect(archetype string) bool
 	HasItem(archetype string) bool
-	HasCreature(archetype string) bool
+	HasActor(archetype string) bool
+	CreateActorFromDefinition(dispatcher *eventbus.Dispatcher, world *core.World, position grid.Position, definition loader.ActorDefinition) *core.Actor
 }
 
 type ActionFactory func(owner *core.Actor, options map[string]interface{}) core.Action
 type EffectFactory func(options map[string]interface{}) *core.Effect
 type ItemFactory func(options map[string]interface{}) core.Item
-type CreatureFactory func(options map[string]interface{}) *core.Actor
+type ActorFactory func(options map[string]interface{}) *core.Actor
 
 type Registry struct {
-	actions   map[string]ActionFactory
-	effects   map[string]EffectFactory
-	items     map[string]ItemFactory
-	creatures map[string]CreatureFactory
+	actions map[string]ActionFactory
+	effects map[string]EffectFactory
+	items   map[string]ItemFactory
+	actors  map[string]ActorFactory
 }
 
 func (r *Registry) RegisterAction(archetype string, factory ActionFactory) {
@@ -80,14 +85,14 @@ func (r *Registry) NewItem(archetype string, options map[string]interface{}) cor
 	return factory(options)
 }
 
-func (r *Registry) RegisterCreature(archetype string, factory CreatureFactory) {
-	r.creatures[archetype] = factory
+func (r *Registry) RegisterActor(archetype string, factory ActorFactory) {
+	r.actors[archetype] = factory
 }
 
-func (r *Registry) NewCreature(archetype string, options map[string]interface{}) *core.Actor {
-	factory, exists := r.creatures[archetype]
+func (r *Registry) NewActor(archetype string, options map[string]interface{}) *core.Actor {
+	factory, exists := r.actors[archetype]
 	if !exists {
-		panic(fmt.Sprintf("creature archetype '%s' not found", archetype))
+		panic(fmt.Sprintf("actor archetype '%s' not found", archetype))
 	}
 
 	if options == nil {
@@ -112,7 +117,40 @@ func (r *Registry) HasItem(archetype string) bool {
 	return exists
 }
 
-func (r *Registry) HasCreature(archetype string) bool {
-	_, exists := r.creatures[archetype]
+func (r *Registry) HasActor(archetype string) bool {
+	_, exists := r.actors[archetype]
 	return exists
+}
+
+func (r *Registry) CreateActorFromDefinition(
+	dispatcher *eventbus.Dispatcher,
+	world *core.World,
+	position grid.Position,
+	definition loader.ActorDefinition,
+) *core.Actor {
+	actor := core.NewActor(dispatcher, world, position, definition)
+	r.addBasicEffects(actor)
+	r.applyTeamConfiguration(actor, definition.Team)
+	actor.AddAction(r.NewAction("move", actor, nil))
+	return actor
+}
+
+func (r *Registry) addBasicEffects(actor *core.Actor) {
+	actor.AddEffect(r.NewEffect("attribute-modifier", nil))
+	actor.AddEffect(r.NewEffect("proficiency-modifier", nil))
+	actor.AddEffect(r.NewEffect("critical", nil))
+	actor.AddEffect(r.NewEffect("attack-of-opportunity", nil))
+}
+
+func (r *Registry) applyTeamConfiguration(actor *core.Actor, team string) {
+	switch team {
+	case "players":
+		actor.AddEffect(r.NewEffect("death-saving-throw", nil))
+	case "enemies":
+		actor.AddEffect(r.NewEffect("death", nil))
+		actor.AddProficiency(tags.NaturalWeapon)
+	default:
+		actor.AddEffect(r.NewEffect("death", nil))
+		actor.AddProficiency(tags.NaturalWeapon)
+	}
 }
