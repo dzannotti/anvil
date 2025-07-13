@@ -59,15 +59,31 @@ func TestAI_WeightRanges(t *testing.T) {
 	for i, weights := range archetypes {
 		archetypeName := []string{"Berserker", "Defensive", "Default"}[i]
 		
-		for metric, weight := range weights.Weights {
+		// Check all weight fields
+		weightsToCheck := []struct{
+			name string
+			value float32
+		}{
+			{"DamageEnemy", weights.DamageEnemy},
+			{"FriendlyFire", weights.FriendlyFire},
+			{"KillPotential", weights.KillPotential},
+			{"SurvivalThreat", weights.SurvivalThreat},
+			{"EnemyProximity", weights.EnemyProximity},
+			{"MovementEfficiency", weights.MovementEfficiency},
+			{"ThreatPriority", weights.ThreatPriority},
+			{"LowHealthBonus", weights.LowHealthBonus},
+			{"TacticalValue", weights.TacticalValue},
+		}
+		
+		for _, w := range weightsToCheck {
 			// Weights should be positive (we use negative multipliers in metrics for penalties)
-			if weight <= 0 {
-				t.Errorf("%s archetype has non-positive weight for %s: %f", archetypeName, metric, weight)
+			if w.value <= 0 {
+				t.Errorf("%s archetype has non-positive weight for %s: %f", archetypeName, w.name, w.value)
 			}
 			
 			// Weights should be reasonable (not extreme values)
-			if weight > 10.0 {
-				t.Errorf("%s archetype has excessive weight for %s: %f", archetypeName, metric, weight)
+			if w.value > 10.0 {
+				t.Errorf("%s archetype has excessive weight for %s: %f", archetypeName, w.name, w.value)
 			}
 		}
 	}
@@ -101,107 +117,126 @@ func TestAI_SimulationBasedDesign(t *testing.T) {
 	weights := NewDefaultWeights()
 	
 	// The ActionTargetEvaluation structure should support simulation
+	rawScores := &Scores{}
+	weightedScores := &WeightedScores{}
 	evaluation := &ActionTargetEvaluation{
-		RawMetrics:     make(map[string]int),
-		WeightedScores: make(map[string]int),
+		RawScores:      rawScores,
+		WeightedScores: weightedScores,
 		FinalScore:     0,
 	}
 	
-	if evaluation.RawMetrics == nil {
+	if evaluation.RawScores == nil {
 		t.Error("ActionTargetEvaluation should support raw metrics for simulation")
 	}
 	if evaluation.WeightedScores == nil {
 		t.Error("ActionTargetEvaluation should support weighted scores for decision making")
 	}
 	
-	// Weights should be compatible with all metrics
-	requiredMetrics := []string{
-		"damage_enemy", "friendly_fire", "kill_potential",
-		"survival_threat", "enemy_proximity", "movement_efficiency", 
-		"threat_priority", "low_health_bonus", "tactical_value",
-	}
-	
-	for _, metric := range requiredMetrics {
-		if _, exists := weights.Weights[metric]; !exists {
-			t.Errorf("Weights missing required metric for simulation: %s", metric)
-		}
+	// With struct-based weights, all metrics are always present by design
+	if weights == nil {
+		t.Error("Weights should not be nil")
 	}
 }
 
 // Helper functions
 func validateMetricCount(t *testing.T, weights *Weights, archetype string) {
-	if len(weights.Weights) != 9 {
-		t.Errorf("%s archetype should have exactly 9 metrics, got %d", archetype, len(weights.Weights))
+	// AIWeights struct has exactly 9 fields by design, so just verify it's not nil
+	if weights == nil {
+		t.Errorf("%s archetype weights should not be nil", archetype)
 	}
 }
 
 func validateMetricExists(t *testing.T, weights *Weights, metric, category string) {
-	if _, exists := weights.Weights[metric]; !exists {
-		t.Errorf("Missing required metric '%s' in %s", metric, category)
+	// With struct-based weights, all metrics are always present by design
+	// This function is now mainly for API compatibility
+	if weights == nil {
+		t.Errorf("Weights should not be nil for %s", category)
 	}
 }
 
 func validateBerserkerPersonality(t *testing.T, berserker, defensive, defaultWeights *Weights) {
 	// Berserker should prioritize damage over safety
-	if berserker.Weights["damage_enemy"] <= defensive.Weights["damage_enemy"] {
+	if berserker.DamageEnemy <= defensive.DamageEnemy {
 		t.Error("Berserker should prioritize damage more than Defensive")
 	}
-	if berserker.Weights["survival_threat"] >= defensive.Weights["survival_threat"] {
+	if berserker.SurvivalThreat >= defensive.SurvivalThreat {
 		t.Error("Berserker should care less about survival than Defensive")
 	}
-	if berserker.Weights["kill_potential"] <= defaultWeights.Weights["kill_potential"] {
+	if berserker.KillPotential <= defaultWeights.KillPotential {
 		t.Error("Berserker should prioritize kills more than Default")
 	}
 }
 
 func validateDefensivePersonality(t *testing.T, berserker, defensive, defaultWeights *Weights) {
 	// Defensive should prioritize safety over damage
-	if defensive.Weights["survival_threat"] <= berserker.Weights["survival_threat"] {
+	if defensive.SurvivalThreat <= berserker.SurvivalThreat {
 		t.Error("Defensive should prioritize survival more than Berserker")
 	}
-	if defensive.Weights["friendly_fire"] <= berserker.Weights["friendly_fire"] {
+	if defensive.FriendlyFire <= berserker.FriendlyFire {
 		t.Error("Defensive should avoid friendly fire more than Berserker")
 	}
-	if defensive.Weights["enemy_proximity"] <= defaultWeights.Weights["enemy_proximity"] {
+	if defensive.EnemyProximity <= defaultWeights.EnemyProximity {
 		t.Error("Defensive should avoid enemy proximity more than Default")
 	}
 }
 
 func validateDefaultPersonality(t *testing.T, berserker, defensive, defaultWeights *Weights) {
 	// Default should be balanced - not extreme in any direction
-	damageWeight := defaultWeights.Weights["damage_enemy"]
-	survivalWeight := defaultWeights.Weights["survival_threat"]
+	damageWeight := defaultWeights.DamageEnemy
+	survivalWeight := defaultWeights.SurvivalThreat
 	
 	// Default should be between extremes for key metrics
-	if damageWeight >= berserker.Weights["damage_enemy"] {
+	if damageWeight >= berserker.DamageEnemy {
 		t.Error("Default damage priority should be less than Berserker")
 	}
-	if survivalWeight >= defensive.Weights["survival_threat"] {
+	if survivalWeight >= defensive.SurvivalThreat {
 		t.Error("Default survival priority should be less than Defensive")
 	}
 	
 	// Default should have moderate values (close to 1.0 for core metrics)
-	coreMetrics := []string{"damage_enemy", "survival_threat", "enemy_proximity", "tactical_value", "movement_efficiency"}
-	for _, metric := range coreMetrics {
-		weight := defaultWeights.Weights[metric]
+	weights := []float32{
+		defaultWeights.DamageEnemy,
+		defaultWeights.SurvivalThreat,
+		defaultWeights.EnemyProximity,
+		defaultWeights.TacticalValue,
+		defaultWeights.MovementEfficiency,
+	}
+	metricNames := []string{"DamageEnemy", "SurvivalThreat", "EnemyProximity", "TacticalValue", "MovementEfficiency"}
+	
+	for i, weight := range weights {
 		if weight < 0.5 || weight > 1.5 {
-			t.Errorf("Default archetype should have balanced weight for %s, got %f", metric, weight)
+			t.Errorf("Default archetype should have balanced weight for %s, got %f", metricNames[i], weight)
 		}
 	}
 }
 
 func countSignificantDifferences(weights1, weights2 *Weights, threshold float32) int {
 	count := 0
-	for metric, weight1 := range weights1.Weights {
-		if weight2, exists := weights2.Weights[metric]; exists {
-			diff := weight1 - weight2
-			if diff < 0 {
-				diff = -diff
-			}
-			if diff >= threshold {
-				count++
-			}
+	
+	// Compare all weight fields
+	diffs := []float32{
+		abs(weights1.DamageEnemy - weights2.DamageEnemy),
+		abs(weights1.FriendlyFire - weights2.FriendlyFire),
+		abs(weights1.KillPotential - weights2.KillPotential),
+		abs(weights1.SurvivalThreat - weights2.SurvivalThreat),
+		abs(weights1.EnemyProximity - weights2.EnemyProximity),
+		abs(weights1.MovementEfficiency - weights2.MovementEfficiency),
+		abs(weights1.ThreatPriority - weights2.ThreatPriority),
+		abs(weights1.LowHealthBonus - weights2.LowHealthBonus),
+		abs(weights1.TacticalValue - weights2.TacticalValue),
+	}
+	
+	for _, diff := range diffs {
+		if diff >= threshold {
+			count++
 		}
 	}
 	return count
+}
+
+func abs(x float32) float32 {
+	if x < 0 {
+		return -x
+	}
+	return x
 }

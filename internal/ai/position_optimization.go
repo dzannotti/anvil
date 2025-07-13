@@ -122,13 +122,10 @@ func evaluatePositionSafety(world *core.World, actor *core.Actor, action core.Ac
 	positioningMetric := metrics.PositioningMetric{}
 	safetyResults := positioningMetric.Evaluate(world, actor, action, target, affected)
 
-	totalScore := 0
-	for metricName, rawValue := range safetyResults {
-		if multiplier, exists := weights.Weights[metricName]; exists {
-			weightedScore := int(float32(rawValue) * multiplier)
-			totalScore += weightedScore
-		}
-	}
-
-	return totalScore
+	// Convert positioning metrics to structured scores and apply weights
+	rawScores := mapToScores(safetyResults)
+	weightedScores := rawScores.ApplyWeights(weights)
+	
+	// For position safety, we only care about positioning-related scores
+	return weightedScores.SurvivalThreat + weightedScores.EnemyProximity + weightedScores.MovementEfficiency
 }

@@ -70,7 +70,8 @@ func (r Resources) CanUse(t tag.Tag, v int) bool {
 func (r Resources) CanAfford(c map[tag.Tag]int) bool {
 	r.init()
 	for t, v := range c {
-		if r.Current[t] < v {
+		available := r.Remaining(t)
+		if available < v {
 			return false
 		}
 	}
@@ -95,7 +96,15 @@ func (r Resources) Remaining(t tag.Tag) int {
 
 func (r Resources) remainingSpeed(t tag.Tag) int {
 	r.init()
-	m := r.Max[t]
+	// Find the matching speed resource in Max (e.g., ResourceWalkSpeed for ResourceSpeed)
+	m := 0
+	for k, v := range r.Max {
+		if k.Match(t) {
+			if v > m {
+				m = v
+			}
+		}
+	}
 	total := r.maxSpeed() - r.Current[tags.ResourceUsedSpeed]
 	remaining := mathi.Min(m-r.Current[tags.ResourceUsedSpeed], total)
 	if remaining <= 0 {

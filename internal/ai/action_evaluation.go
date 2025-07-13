@@ -108,33 +108,27 @@ func simulateActionTarget(world *core.World, actor *core.Actor, action core.Acti
 	originalPosition := actor.Position
 	actor.Position = bestPosition
 
-	rawMetrics := make(map[string]int)
+	rawMetricsMap := make(map[string]int)
 	for _, metric := range metrics.Default {
 		metricResults := metric.Evaluate(world, actor, action, target, affected)
 		for key, value := range metricResults {
-			rawMetrics[key] = value
+			rawMetricsMap[key] = value
 		}
 	}
 
 	actor.Position = originalPosition
 
-	weightedScores := make(map[string]int)
-	totalScore := 0
-	for metricName, rawValue := range rawMetrics {
-		if multiplier, exists := weights.Weights[metricName]; exists {
-			weightedScore := int(float32(rawValue) * multiplier)
-			weightedScores[metricName] = weightedScore
-			totalScore += weightedScore
-		}
-	}
+	// Convert map-based metrics to struct-based scores
+	rawScores := mapToScores(rawMetricsMap)
+	weightedScores := rawScores.ApplyWeights(weights)
 
 	return &ActionTargetEvaluation{
 		Action:         action,
 		Target:         target,
 		Affected:       affected,
-		RawMetrics:     rawMetrics,
+		RawScores:      rawScores,
 		WeightedScores: weightedScores,
-		FinalScore:     totalScore,
+		FinalScore:     weightedScores.Total(),
 		Position:       bestPosition,
 		Movement:       movement,
 	}

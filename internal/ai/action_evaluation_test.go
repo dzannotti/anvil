@@ -103,12 +103,8 @@ func TestSimulateActionTarget_ScoreCalculation(t *testing.T) {
 	action := &mockScoredAction{name: "TestAction", score: 0}
 	target := grid.Position{X: 6, Y: 6}
 	
-	// Create simple weights that we can predict
-	weights := &Weights{
-		Weights: map[string]float32{
-			"test_metric": 2.0,
-		},
-	}
+	// Create default weights for testing
+	weights := NewDefaultWeights()
 	
 	// Mock the metrics to return predictable values
 	// Note: This test would need metric mocking for full functionality
@@ -213,11 +209,25 @@ func setupTestActionWorld() (*core.World, *core.Actor, *core.Encounter) {
 		Position:     grid.Position{X: 5, Y: 5},
 		HitPoints:    50,
 		MaxHitPoints: 50,
+		World:        world,
+	}
+	
+	// Add an enemy for targeting
+	enemy := &core.Actor{
+		Name:         "TestEnemy",
+		Team:         core.TeamID("enemies"),
+		Position:     grid.Position{X: 6, Y: 6},
+		HitPoints:    30,
+		MaxHitPoints: 30,
+		World:        world,
 	}
 	
 	encounter.Actors = append(encounter.Actors, actor)
+	encounter.Actors = append(encounter.Actors, enemy)
 	actor.Encounter = encounter
+	enemy.Encounter = encounter
 	world.AddOccupant(actor.Position, actor)
+	world.AddOccupant(enemy.Position, enemy)
 	
 	return world, actor, encounter
 }
@@ -232,7 +242,10 @@ func (m *mockScoredAction) Archetype() string { return "test" }
 func (m *mockScoredAction) ID() string { return "test-scored" }
 func (m *mockScoredAction) AverageDamage() int { return 8 }
 func (m *mockScoredAction) Perform([]grid.Position) {}
-func (m *mockScoredAction) Tags() *tag.Container { return &tag.Container{} }
+func (m *mockScoredAction) Tags() *tag.Container {
+	container := tag.ContainerFromTag(tags.Attack)
+	return &container
+}
 func (m *mockScoredAction) CanAfford() bool { return true }
 func (m *mockScoredAction) ValidPositions(grid.Position) []grid.Position {
 	return []grid.Position{{X: 6, Y: 6}}

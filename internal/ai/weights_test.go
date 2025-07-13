@@ -64,26 +64,26 @@ func TestWeightsArchetypeDistinction(t *testing.T) {
 	defaultW := NewDefaultWeights()
 	
 	// Berserker should be most aggressive
-	if berserker.Weights["damage_enemy"] <= defensive.Weights["damage_enemy"] {
+	if berserker.DamageEnemy <= defensive.DamageEnemy {
 		t.Error("Berserker should have higher damage priority than defensive")
 	}
-	if berserker.Weights["damage_enemy"] <= defaultW.Weights["damage_enemy"] {
+	if berserker.DamageEnemy <= defaultW.DamageEnemy {
 		t.Error("Berserker should have higher damage priority than default")
 	}
 	
 	// Defensive should be most cautious
-	if defensive.Weights["survival_threat"] <= berserker.Weights["survival_threat"] {
+	if defensive.SurvivalThreat <= berserker.SurvivalThreat {
 		t.Error("Defensive should have higher survival priority than berserker")
 	}
-	if defensive.Weights["friendly_fire"] <= berserker.Weights["friendly_fire"] {
+	if defensive.FriendlyFire <= berserker.FriendlyFire {
 		t.Error("Defensive should have higher friendly fire avoidance than berserker")
 	}
 	
 	// Default should be between the extremes for damage
 	damageRank := []float32{
-		berserker.Weights["damage_enemy"],
-		defaultW.Weights["damage_enemy"],
-		defensive.Weights["damage_enemy"],
+		berserker.DamageEnemy,
+		defaultW.DamageEnemy,
+		defensive.DamageEnemy,
 	}
 	if !isDescendingOrder(damageRank) {
 		t.Error("Damage priority should be: Berserker > Default > Defensive")
@@ -91,9 +91,9 @@ func TestWeightsArchetypeDistinction(t *testing.T) {
 	
 	// Default should be between the extremes for survival
 	survivalRank := []float32{
-		defensive.Weights["survival_threat"],
-		defaultW.Weights["survival_threat"],
-		berserker.Weights["survival_threat"],
+		defensive.SurvivalThreat,
+		defaultW.SurvivalThreat,
+		berserker.SurvivalThreat,
 	}
 	if !isDescendingOrder(survivalRank) {
 		t.Error("Survival priority should be: Defensive > Default > Berserker")
@@ -107,49 +107,54 @@ func TestWeightsStructure(t *testing.T) {
 		t.Fatal("Weights should not be nil")
 	}
 	
-	if weights.Weights == nil {
-		t.Fatal("Weights.Weights map should not be nil")
+	// With struct-based weights, all 9 fields are always present by design
+	// Test that the struct has reasonable values
+	if weights.DamageEnemy <= 0 || weights.DamageEnemy > 10 {
+		t.Errorf("DamageEnemy should be reasonable, got %f", weights.DamageEnemy)
 	}
-	
-	// Should contain exactly 9 metrics
-	if len(weights.Weights) != 9 {
-		t.Errorf("Expected 9 weight metrics, got %d", len(weights.Weights))
+	if weights.SurvivalThreat <= 0 || weights.SurvivalThreat > 10 {
+		t.Errorf("SurvivalThreat should be reasonable, got %f", weights.SurvivalThreat)
 	}
 }
 
 // Helper functions
 func assertWeight(t *testing.T, weights *Weights, metric string, expected float32, description string) {
-	actual, exists := weights.Weights[metric]
-	if !exists {
-		t.Errorf("Missing required metric: %s", metric)
+	var actual float32
+	
+	switch metric {
+	case "damage_enemy":
+		actual = weights.DamageEnemy
+	case "friendly_fire":
+		actual = weights.FriendlyFire
+	case "survival_threat":
+		actual = weights.SurvivalThreat
+	case "kill_potential":
+		actual = weights.KillPotential
+	case "enemy_proximity":
+		actual = weights.EnemyProximity
+	case "threat_priority":
+		actual = weights.ThreatPriority
+	case "low_health_bonus":
+		actual = weights.LowHealthBonus
+	case "tactical_value":
+		actual = weights.TacticalValue
+	case "movement_efficiency":
+		actual = weights.MovementEfficiency
+	default:
+		t.Errorf("Unknown metric: %s", metric)
 		return
 	}
+	
 	if actual != expected {
 		t.Errorf("%s: expected %s = %f, got %f", description, metric, expected, actual)
 	}
 }
 
 func assertAllMetricsPresent(t *testing.T, weights *Weights) {
-	requiredMetrics := []string{
-		"damage_enemy",
-		"friendly_fire", 
-		"survival_threat",
-		"kill_potential",
-		"enemy_proximity",
-		"threat_priority",
-		"low_health_bonus",
-		"tactical_value",
-		"movement_efficiency",
-	}
-	
-	for _, metric := range requiredMetrics {
-		if _, exists := weights.Weights[metric]; !exists {
-			t.Errorf("Missing required metric: %s", metric)
-		}
-	}
-	
-	if len(weights.Weights) != len(requiredMetrics) {
-		t.Errorf("Expected exactly %d metrics, got %d", len(requiredMetrics), len(weights.Weights))
+	// With struct-based weights, all metrics are always present by design
+	// This function is kept for API compatibility but just checks for nil
+	if weights == nil {
+		t.Error("Weights should not be nil")
 	}
 }
 

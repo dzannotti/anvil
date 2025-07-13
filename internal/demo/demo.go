@@ -81,7 +81,7 @@ func setupPlayer(registry *ruleset.Registry, dispatcher *eventbus.Dispatcher, wo
 		},
 	}
 
-	cedric := registry.CreateActorFromDefinition(dispatcher, world, grid.Position{X: 6, Y: 6}, definition)
+	cedric := registry.CreateActorFromDefinition(dispatcher, world, grid.Position{X: 2, Y: 2}, definition)
 	cedric.Equip(registry.NewItem("greataxe", nil))
 	cedric.Equip(registry.NewItem("chainmail", nil))
 	cedric.AddEffect(registry.NewEffect("fighting-style-defense", nil))
@@ -99,7 +99,7 @@ func setupEnemies(registry *ruleset.Registry, dispatcher *eventbus.Dispatcher, w
 	mob2 := registry.NewActor("zombie", map[string]interface{}{
 		"dispatcher": dispatcher,
 		"world":      world,
-		"position":   grid.Position{X: 5, Y: 6}, // Keep our positioning
+		"position":   grid.Position{X: 5, Y: 6},
 		"name":       "Zombie 2",
 	})
 
