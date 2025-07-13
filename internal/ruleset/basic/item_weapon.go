@@ -35,7 +35,7 @@ func NewWeapon(archetype, id, name string, damage expression.Expression, weaponT
 }
 
 func NewWeaponFromDefinition(def loader.WeaponDefinition) *Weapon {
-	damageExpr := expression.Expression{Rng: expression.DefaultRoller{}}
+	damageExpr := expression.Expression{Rng: expression.NewRngRoller()}
 	for _, dmg := range def.Damage {
 		if err := parseDamageFormula(dmg.Formula, def.Name, dmg.Kind, &damageExpr); err != nil {
 			panic(fmt.Sprintf("invalid damage formula '%s' for weapon '%s': %v", dmg.Formula, def.Archetype, err))
@@ -70,12 +70,12 @@ func parseDamageFormula(formula, weaponName, kind string, expr *expression.Expre
 			return fmt.Errorf("invalid number of sides: %s", matches[2])
 		}
 
-		expr.AddDamageDice(times, sides, weaponName, tag.NewContainer(tag.FromString(kind)))
+		expr.AddDamageDice(times, sides, tag.NewContainer(tag.FromString(kind)), weaponName)
 		return nil
 	}
 
 	if constant, err := strconv.Atoi(formula); err == nil {
-		expr.AddDamageConstant(constant, weaponName, tag.NewContainer(tag.FromString(kind)))
+		expr.AddDamageConstant(constant, tag.NewContainer(tag.FromString(kind)), weaponName)
 		return nil
 	}
 
@@ -106,5 +106,5 @@ func (w Weapon) OnEquip(a *core.Actor) {
 
 func (w Weapon) Damage() *expression.Expression {
 	dmg := w.damage.Clone()
-	return &dmg
+	return dmg
 }

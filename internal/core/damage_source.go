@@ -23,7 +23,7 @@ func (d *basicDamageSource) Name() string {
 
 func (d *basicDamageSource) Damage() *expression.Expression {
 	dmg := d.damage.Clone()
-	return &dmg
+	return dmg
 }
 
 func (d *basicDamageSource) Tags() *tag.Container {

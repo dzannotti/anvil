@@ -1,43 +1,45 @@
 package expression
 
-import (
-	"anvil/internal/tag"
+import "anvil/internal/tag"
+
+var Primary = tag.FromString("primary")
+
+var (
+	DamageAcid        = tag.FromString("damage.acid")
+	DamageBludgeoning = tag.FromString("damage.bludgeoning")
+	DamageCold        = tag.FromString("damage.cold")
+	DamageFire        = tag.FromString("damage.fire")
+	DamageForce       = tag.FromString("damage.force")
+	DamageLightning   = tag.FromString("damage.lightning")
+	DamageNecrotic    = tag.FromString("damage.necrotic")
+	DamagePiercing    = tag.FromString("damage.piercing")
+	DamagePoison      = tag.FromString("damage.poison")
+	DamagePsychic     = tag.FromString("damage.psychic")
+	DamageRadiant     = tag.FromString("damage.radiant")
+	DamageSlashing    = tag.FromString("damage.slashing")
+	DamageThunder     = tag.FromString("damage.thunder")
 )
 
 type Expression struct {
-	Components []Component
 	Value      int
-	Rng        DiceRoller
+	Components []Component
+	Rng        Roller
 }
 
-func (e *Expression) Clone() Expression {
-	components := make([]Component, len(e.Components))
-	for i := range e.Components {
-		components[i] = e.Components[i].Clone()
-	}
-	return Expression{
-		Value:      e.Value,
-		Components: components,
-		Rng:        e.Rng,
-	}
-}
-
-func (e *Expression) ExpectedValue() int {
-	total := 0
+func (e *Expression) Evaluate() *Expression {
+	e.Value = 0
+	ctx := &Context{Rng: e.Rng}
 	for _, component := range e.Components {
-		total += component.ExpectedValue()
+		e.Value += component.Evaluate(ctx)
 	}
-	return total
+	return e
 }
 
-func (e *Expression) primaryTags(inputTags tag.Container) tag.Container {
-	if len(e.Components) == 0 {
-		return inputTags
+func (e *Expression) Clone() *Expression {
+	clone := *e
+	clone.Components = make([]Component, len(e.Components))
+	for i, component := range e.Components {
+		clone.Components[i] = component.Clone()
 	}
-
-	if inputTags.IsEmpty() || inputTags.HasTag(tag.FromString("primary")) {
-		return e.Components[0].Tags
-	}
-
-	return inputTags
+	return &clone
 }

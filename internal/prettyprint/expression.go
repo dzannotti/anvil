@@ -23,25 +23,49 @@ func printValue(value int, first bool) string {
 }
 
 func formatDiceRolls(component expression.Component) string {
-	if len(component.Values) <= 1 {
+	var values []int
+	var times, sides int
+	
+	// Type assert to get dice-specific methods
+	switch c := component.(type) {
+	case interface{ Values() []int; Times() int; Sides() int }:
+		values = c.Values()
+		times = c.Times()
+		sides = c.Sides()
+	default:
+		return ""
+	}
+	
+	if len(values) <= 1 {
 		return ""
 	}
 
-	rolls := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(component.Values)), ", "), "[]")
-	formula := fmt.Sprintf("%dd%d", component.Times, component.Sides)
+	rolls := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(values)), ", "), "[]")
+	formula := fmt.Sprintf("%dd%d", times, sides)
 	return fmt.Sprintf(" (%s: %s)", formula, rolls)
 }
 
 func formatDice(component expression.Component) string {
-	if !component.Type.Match(expression.Dice) {
+	if component.Kind() != expression.ComponentKindDice && component.Kind() != expression.ComponentKindD20 {
 		return ""
 	}
 
-	if len(component.Values) <= 1 {
-		return fmt.Sprintf(" (%dd%d)", component.Times, component.Sides)
+	// Type assert to get dice-specific methods
+	switch c := component.(type) {
+	case interface{ Values() []int; Times() int; Sides() int }:
+		if len(c.Values()) <= 1 {
+			return fmt.Sprintf(" (%dd%d)", c.Times(), c.Sides())
+		}
+		return formatDiceRolls(component)
+	case interface{ Values() []int }:
+		// D20 component - just show d20
+		if len(c.Values()) <= 1 {
+			return " (1d20)"
+		}
+		return formatDiceRolls(component)
+	default:
+		return ""
 	}
-
-	return formatDiceRolls(component)
 }
 
 func formatBranch(indent string, last bool) string {
@@ -52,8 +76,15 @@ func formatBranch(indent string, last bool) string {
 }
 
 func formatAdvantageDisadvantage(component expression.Component, indent string, last bool) []string {
-	advantages := component.HasAdvantage
-	disadvantages := component.HasDisadvantage
+	var advantages, disadvantages []string
+	
+	// Type assert to get D20-specific methods
+	if d20, ok := component.(interface{ Advantage() []string; Disadvantage() []string }); ok {
+		advantages = d20.Advantage()
+		disadvantages = d20.Disadvantage()
+	} else {
+		return nil
+	}
 
 	if len(advantages) == 0 && len(disadvantages) == 0 {
 		return nil
@@ -87,11 +118,12 @@ func formatAdvantageDisadvantage(component expression.Component, indent string, 
 }
 
 func formatTags(component expression.Component) string {
-	if component.Tags.IsEmpty() {
+	compTags := component.Tags()
+	if compTags.IsEmpty() {
 		return ""
 	}
-	componentTags := make([]string, len(component.Tags.AsStrings()))
-	for i, t := range component.Tags.AsStrings() {
+	componentTags := make([]string, len(compTags.AsStrings()))
+	for i, t := range compTags.AsStrings() {
 		componentTags[i] = tags.ToReadable(tag.FromString(t))
 	}
 	return fmt.Sprintf(" (%s)", strings.Join(componentTags, ", "))
@@ -99,16 +131,17 @@ func formatTags(component expression.Component) string {
 
 func buildComponentSource(component expression.Component, indent string, last bool) string {
 	source := strings.Builder{}
-	source.WriteString(component.Source)
+	source.WriteString(component.Source())
 
-	if component.Type.Match(expression.Dice) {
+	if component.Kind() == expression.ComponentKindD20 {
 		advDisadv := formatAdvantageDisadvantage(component, indent, last)
 		if len(advDisadv) > 0 {
 			source.WriteString(strings.Join(advDisadv, ""))
 		}
 	}
 
-	if !component.Tags.IsEmpty() && len(indent) == 0 {
+	compTags := component.Tags()
+	if !compTags.IsEmpty() && len(indent) == 0 {
 		source.WriteString(formatTags(component))
 	}
 
@@ -129,16 +162,16 @@ func printComponent(component expression.Component, indent string, last, first b
 	}
 
 	result := make([]string, 0)
-	value := printValue(component.Value, first)
+	value := printValue(component.Value(), first)
 	source := buildComponentSource(component, indent, last)
 
 	// Build the main line
 	result = append(result, fmt.Sprintf("%s%s%s%s %s", indent, branch, value, formatDice(component), source))
 
 	// Add child components if any
-	if len(component.Components) > 0 {
+	if len(component.Components()) > 0 {
 		childIndent := getChildIndent(indent, last)
-		result = append(result, printComponents(component.Components, childIndent)...)
+		result = append(result, printComponents(component.Components(), childIndent)...)
 	}
 
 	return result

@@ -28,7 +28,7 @@ func newChainMailEffect() *core.Effect {
 			return
 		}
 
-		s.Expression.ReplaceWith(16, "Chain Mail")
+		s.Expression.ReplaceWith(16, "Chain Mail", tag.NewContainer())
 	})
 
 	return fx

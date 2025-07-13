@@ -52,10 +52,10 @@ func NewMeleeActionFromDefinition(owner *core.Actor, def loader.MeleeActionDefin
 	}
 
 	// For now, only support simple "1d6" format - will add parser later
-	damageExpr := expression.FromDamageDice(1, 6, def.Name, tag.NewContainer(tag.FromString(def.DamageType)))
+	damageExpr := expression.FromDamageDice(1, 6, tag.NewContainer(tag.FromString(def.DamageType)), def.Name)
 	
 	damageType := tag.FromString(def.DamageType)
-	damageSource := core.NewDamageSource(damageExpr, tag.NewContainer(damageType))
+	damageSource := core.NewDamageSource(*damageExpr, tag.NewContainer(damageType))
 
 	a := &MeleeAction{
 		owner:        owner,
@@ -172,5 +172,5 @@ func (a *MeleeAction) Tags() *tag.Container {
 }
 
 func (a *MeleeAction) AverageDamage() int {
-	return a.Damage().ExpectedValue()
+	return a.Damage().Expected()
 }

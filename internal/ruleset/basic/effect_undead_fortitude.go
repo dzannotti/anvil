@@ -3,6 +3,7 @@ package basic
 import (
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
+	"anvil/internal/expression"
 )
 
 func NewUndeadFortitudeEffect() *core.Effect {
@@ -10,7 +11,7 @@ func NewUndeadFortitudeEffect() *core.Effect {
 
 	fx.On(func(s *core.PostTakeDamage) {
 		wouldDie := s.Source.HitPoints == 0
-		radiant := s.Result.HasDamageType(tags.Radiant)
+		radiant := s.Result.HasDamageType(expression.DamageRadiant)
 		if !wouldDie || radiant || s.Result.IsCriticalSuccess() {
 			return
 		}
