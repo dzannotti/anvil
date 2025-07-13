@@ -26,7 +26,7 @@ func (m Movement) Evaluate(
 	}
 
 	lookAhead := 4
-	speed := actor.Resources.Remaining(tags.WalkSpeed)
+	speed := actor.Resources.Remaining(tags.ResourceWalkSpeed)
 	enemies := world.ActorsInRange(
 		pos,
 		speed*lookAhead,

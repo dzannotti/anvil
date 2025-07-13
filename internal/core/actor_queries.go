@@ -57,7 +57,7 @@ func (a Actor) BestWeaponAttack() Action {
 	var best Action
 	bestDamage := 0
 	for _, act := range a.Actions {
-		if !act.Tags().MatchAll(tag.NewContainer(tags.Attack, tags.Melee, tags.Weapon)) {
+		if !act.Tags().MatchAll(tag.ContainerFromTag(tags.Attack, tags.Melee, tags.Weapon)) {
 			continue
 		}
 

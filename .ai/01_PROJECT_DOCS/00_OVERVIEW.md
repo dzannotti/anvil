@@ -19,11 +19,9 @@ The core systems are documented in individual files:
 - [Tags System](02_TAGS_SYSTEM.md) - Hierarchical identification and categorization
 - [Expression System](03_EXPRESSION_SYSTEM.md) - Calculation engine with audit trails
 - [Event Bus](04_EVENT_BUS.md) - Hierarchical event communication system
-- [Effect System](05_EFFECT_SYSTEM.md) - Rule resolution callbacks _(future)_
-- [Action System](06_ACTION_SYSTEM.md) - Game actions with metadata _(future)_
-- [Entity System](07_ENTITY_SYSTEM.md) - Game objects with state _(future)_
-- [Encounter System](08_ENCOUNTER_SYSTEM.md) - Combat/scene management _(future)_
-- [AI System](09_AI_SYSTEM.md) - Decision making for NPCs _(future)_
+- [Effect System](05_EFFECT_SYSTEM.md) - Rule resolution callbacks
+- [Action System](06_ACTION_SYSTEM.md) - Game actions with metadata
+- [AI System](07_AI_SYSTEM.md) - Decision making for NPCs _(future)_
 
 ## Data Flow
 

@@ -4,6 +4,7 @@ import (
 	"maps"
 
 	"anvil/internal/core/tags"
+	"anvil/internal/loader"
 	"anvil/internal/mathi"
 	"anvil/internal/tag"
 )
@@ -11,6 +12,34 @@ import (
 type Resources struct {
 	Current map[tag.Tag]int
 	Max     map[tag.Tag]int
+}
+
+func NewResourcesFromDefinition(def loader.ResourcesDefinition) Resources {
+	resources := Resources{Max: map[tag.Tag]int{
+		tags.ResourceWalkSpeed: def.WalkSpeed,
+	}}
+
+	optionalResources := map[tag.Tag]int{
+		tags.ResourceFlySpeed:   def.FlySpeed,
+		tags.ResourceSwimSpeed:  def.SwimSpeed,
+		tags.ResourceSpellSlot1: def.SpellSlot1,
+		tags.ResourceSpellSlot2: def.SpellSlot2,
+		tags.ResourceSpellSlot3: def.SpellSlot3,
+		tags.ResourceSpellSlot4: def.SpellSlot4,
+		tags.ResourceSpellSlot5: def.SpellSlot5,
+		tags.ResourceSpellSlot6: def.SpellSlot6,
+		tags.ResourceSpellSlot7: def.SpellSlot7,
+		tags.ResourceSpellSlot8: def.SpellSlot8,
+		tags.ResourceSpellSlot9: def.SpellSlot9,
+	}
+
+	for resource, value := range optionalResources {
+		if value > 0 {
+			resources.Max[resource] = value
+		}
+	}
+
+	return resources
 }
 
 func (r *Resources) init() {
@@ -21,10 +50,10 @@ func (r *Resources) init() {
 
 func (r *Resources) Reset() {
 	r.init()
-	r.Current[tags.Action] = 1
-	r.Current[tags.BonusAction] = 1
-	r.Current[tags.Reaction] = 1
-	r.Current[tags.UsedSpeed] = 0
+	r.Current[tags.ResourceAction] = 1
+	r.Current[tags.ResourceBonusAction] = 1
+	r.Current[tags.ResourceReaction] = 1
+	r.Current[tags.ResourceUsedSpeed] = 0
 }
 
 func (r *Resources) LongRest() {
@@ -49,8 +78,8 @@ func (r Resources) CanAfford(c map[tag.Tag]int) bool {
 }
 
 func (r Resources) Consume(t tag.Tag, v int) {
-	if t.Match(tags.Speed) {
-		r.Current[tags.UsedSpeed] += v
+	if t.Match(tags.ResourceSpeed) {
+		r.Current[tags.ResourceUsedSpeed] += v
 		return
 	}
 	r.Current[t] -= v
@@ -58,7 +87,7 @@ func (r Resources) Consume(t tag.Tag, v int) {
 
 func (r Resources) Remaining(t tag.Tag) int {
 	r.init()
-	if t.Match(tags.Speed) {
+	if t.Match(tags.ResourceSpeed) {
 		return r.remainingSpeed(t)
 	}
 	return r.Current[t]
@@ -67,8 +96,8 @@ func (r Resources) Remaining(t tag.Tag) int {
 func (r Resources) remainingSpeed(t tag.Tag) int {
 	r.init()
 	m := r.Max[t]
-	total := r.maxSpeed() - r.Current[tags.UsedSpeed]
-	remaining := mathi.Min(m-r.Current[tags.UsedSpeed], total)
+	total := r.maxSpeed() - r.Current[tags.ResourceUsedSpeed]
+	remaining := mathi.Min(m-r.Current[tags.ResourceUsedSpeed], total)
 	if remaining <= 0 {
 		return 0
 	}
@@ -79,7 +108,7 @@ func (r Resources) maxSpeed() int {
 	r.init()
 	m := 0
 	for k, v := range r.Max {
-		if !k.Match(tags.Speed) {
+		if !k.Match(tags.ResourceSpeed) {
 			continue
 		}
 		if v > m {

@@ -3,7 +3,9 @@ package core
 import (
 	"anvil/internal/core/stats"
 	"anvil/internal/core/tags"
+	"anvil/internal/eventbus"
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 	"anvil/internal/tag"
 )
 
@@ -92,4 +94,46 @@ func (a *Actor) Die() {
 func (a *Actor) ConsumeResource(t tag.Tag, amount int) {
 	a.Resources.Consume(t, amount)
 	a.Dispatcher.Emit(SpendResourceEvent{Source: a, Resource: t, Amount: amount})
+}
+
+func NewActor(
+	dispatcher *eventbus.Dispatcher,
+	world *World,
+	position grid.Position,
+	definition loader.ActorDefinition,
+) *Actor {
+	attributes := stats.Attributes{
+		Strength:     definition.Attributes.Strength,
+		Dexterity:    definition.Attributes.Dexterity,
+		Constitution: definition.Attributes.Constitution,
+		Intelligence: definition.Attributes.Intelligence,
+		Wisdom:       definition.Attributes.Wisdom,
+		Charisma:     definition.Attributes.Charisma,
+	}
+
+	proficiencies := stats.NewProficienciesFromDefinition(definition.Proficiencies)
+	resources := NewResourcesFromDefinition(definition.Resources)
+
+	team := TeamFromString(definition.Team)
+
+	actor := &Actor{
+		Dispatcher:    dispatcher,
+		Position:      position,
+		World:         world,
+		Name:          definition.Name,
+		Team:          team,
+		HitPoints:     definition.HitPoints,
+		MaxHitPoints:  definition.MaxHitPoints,
+		Attributes:    attributes,
+		Proficiencies: proficiencies,
+		Resources:     resources,
+	}
+
+	if definition.SpellCastingSource != "" {
+		actor.SpellCastingSource = tag.FromString(definition.SpellCastingSource)
+	}
+
+	world.AddOccupant(position, actor)
+	actor.Resources.LongRest()
+	return actor
 }

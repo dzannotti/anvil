@@ -7,12 +7,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 )
 
 func TestWorldIntegration(t *testing.T) {
 	t.Run("World Components Work Together", func(t *testing.T) {
 		t.Run("should create world with all components", func(t *testing.T) {
-			world := NewWorld(10, 10)
+			world := NewWorld(loader.WorldDefinition{Width: 10, Height: 10})
 
 			assert.Equal(t, 10, world.Width())
 			assert.Equal(t, 10, world.Height())
@@ -21,7 +22,7 @@ func TestWorldIntegration(t *testing.T) {
 		})
 
 		t.Run("should handle spatial queries correctly", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			actor := &Actor{Name: "TestActor"}
 			pos := grid.Position{X: 2, Y: 2}
 
@@ -35,7 +36,7 @@ func TestWorldIntegration(t *testing.T) {
 		})
 
 		t.Run("should handle pathfinding correctly", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			start := grid.Position{X: 0, Y: 0}
 			end := grid.Position{X: 4, Y: 4}
 
@@ -47,7 +48,7 @@ func TestWorldIntegration(t *testing.T) {
 		})
 
 		t.Run("should handle line of sight correctly", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			from := grid.Position{X: 0, Y: 0}
 			to := grid.Position{X: 4, Y: 4}
 
@@ -59,7 +60,7 @@ func TestWorldIntegration(t *testing.T) {
 		})
 
 		t.Run("should handle flood fill correctly", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			start := grid.Position{X: 2, Y: 2}
 
 			positions := world.FloodFill(start, 1)
@@ -69,7 +70,7 @@ func TestWorldIntegration(t *testing.T) {
 		})
 
 		t.Run("should handle actors in range correctly", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			center := grid.Position{X: 2, Y: 2}
 
 			actors := world.ActorsInRange(center, 1, func(_ *Actor) bool { return true })
@@ -80,7 +81,7 @@ func TestWorldIntegration(t *testing.T) {
 
 	t.Run("Request Manager Integration", func(t *testing.T) {
 		t.Run("should access request manager through world", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 
 			assert.NotNil(t, world.RequestManager())
 			assert.False(t, world.RequestManager().HasPendingRequest())
@@ -90,7 +91,7 @@ func TestWorldIntegration(t *testing.T) {
 
 	t.Run("Error Handling", func(t *testing.T) {
 		t.Run("should handle invalid positions", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 
 			assert.False(t, world.IsValidPosition(grid.Position{X: -1, Y: 0}))
 			assert.False(t, world.IsValidPosition(grid.Position{X: 0, Y: -1}))
@@ -101,7 +102,7 @@ func TestWorldIntegration(t *testing.T) {
 		})
 
 		t.Run("should handle pathfinding to invalid positions", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			start := grid.Position{X: 0, Y: 0}
 			end := grid.Position{X: 10, Y: 10}
 
@@ -112,7 +113,7 @@ func TestWorldIntegration(t *testing.T) {
 		})
 
 		t.Run("should handle pathfinding through walls", func(t *testing.T) {
-			world := NewWorld(5, 5)
+			world := NewWorld(loader.WorldDefinition{Width: 5, Height: 5})
 			// Create a wall barrier
 			for x := 0; x < 5; x++ {
 				world.At(grid.Position{X: x, Y: 2}).Tile = Wall

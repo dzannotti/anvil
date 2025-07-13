@@ -17,12 +17,8 @@ var (
 	boundaryDot = regexp.MustCompile(`^\.+|\.+$`)
 )
 
-func New(val string) Tag {
-	return Tag{value: normalize(val)}
-}
-
 func FromString(val string) Tag {
-	return New(val)
+	return Tag{value: normalize(val)}
 }
 
 func (t Tag) AsString() string {
@@ -30,10 +26,6 @@ func (t Tag) AsString() string {
 }
 
 func (t Tag) AsStrings() []string {
-	if t.IsEmpty() {
-		return []string{}
-	}
-
 	return strings.Split(t.value, ".")
 }
 

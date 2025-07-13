@@ -2,21 +2,22 @@ package expression
 
 import (
 	"math/rand/v2"
-
-	"anvil/internal/mathi"
+	"time"
 )
 
-type DiceRoller interface {
+type Roller interface {
 	Roll(sides int) int
 }
 
-type DefaultRoller struct{}
+type RngRoller struct {
+	rng *rand.Rand
+}
 
-func (rng DefaultRoller) Roll(sides int) int {
-	sign := mathi.Sign(sides)
-	sides = mathi.Abs(sides)
-	if sides == 0 {
-		return 0
-	}
-	return (rand.IntN(sides) + 1) * sign
+func NewRngRoller() *RngRoller {
+	source := rand.NewPCG(uint64(time.Now().UnixNano()), uint64(time.Now().UnixNano()))
+	return &RngRoller{rng: rand.New(source)}
+}
+
+func (r *RngRoller) Roll(sides int) int {
+	return r.rng.IntN(sides) + 1
 }
