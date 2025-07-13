@@ -51,7 +51,7 @@ func (s *Dispatcher) End() {
 	}
 	last := s.stack.Pop()
 	event := Event{Kind: last.Kind, Data: last.Data}
-	event.Depth = s.stack.Size() + 1
+	event.Depth = s.stack.Size()
 	event.End = true
 	s.events = append(s.events, event)
 	s.emit(event)
