@@ -6,7 +6,7 @@ import (
 	"anvil/internal/core"
 )
 
-func DrawHeading(world *core.World, encounter *core.Encounter) {
+func DrawHeading(_ *core.World, encounter *core.Encounter) {
 	textRect := Rectangle{X: 600, Y: 10, Width: 650, Height: 20}
 	// TODO: Restore AI best action display in Step 2
 	// best, _ := ai.PickBestAction(world, encounter.ActiveActor())

@@ -94,7 +94,7 @@ func setupEnemies(registry *ruleset.Registry, dispatcher *eventbus.Dispatcher, w
 	mob2 := registry.NewCreature("zombie", map[string]interface{}{
 		"dispatcher": dispatcher,
 		"world":      world,
-		"position":   grid.Position{X: 5, Y: 6},  // Keep our positioning
+		"position":   grid.Position{X: 5, Y: 6}, // Keep our positioning
 		"name":       "Zombie 2",
 	})
 
