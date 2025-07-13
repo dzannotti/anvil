@@ -253,6 +253,7 @@ func (m *MockAction) Perform(_ []grid.Position)                           {}
 func (m *MockAction) ValidPositions(_ grid.Position) []grid.Position      { return nil }
 func (m *MockAction) AffectedPositions(_ []grid.Position) []grid.Position { return nil }
 func (m *MockAction) AverageDamage() int                                  { return 0 }
+func (m *MockAction) CanAfford() bool                                     { return true }
 
 type MockItem struct {
 	name string

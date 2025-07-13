@@ -25,14 +25,15 @@ type ActionTargetEvaluation struct {
 func NewBerserkerWeights() *AIWeights {
 	return &AIWeights{
 		Weights: map[string]float32{
-			"damage_enemy":      2.0,
-			"friendly_fire":     0.5,
-			"survival_threat":   0.3,
-			"kill_potential":    1.5,
-			"enemy_proximity":   0.2,
-			"threat_priority":   0.8,  // Berserkers care less about target selection
-			"low_health_bonus":  1.8,  // Focus fire on wounded enemies
-			"tactical_value":    0.6,
+			"damage_enemy":         2.0,
+			"friendly_fire":        0.5,
+			"survival_threat":      0.3,
+			"kill_potential":       1.5,
+			"enemy_proximity":      0.2,
+			"threat_priority":      0.8,  // Berserkers care less about target selection
+			"low_health_bonus":     1.8,  // Focus fire on wounded enemies
+			"tactical_value":       0.6,
+			"movement_efficiency":  0.4,  // Berserkers don't think much about efficient movement
 		},
 	}
 }
@@ -40,14 +41,15 @@ func NewBerserkerWeights() *AIWeights {
 func NewDefensiveWeights() *AIWeights {
 	return &AIWeights{
 		Weights: map[string]float32{
-			"damage_enemy":      1.0,
-			"friendly_fire":     2.0,
-			"survival_threat":   2.0,
-			"kill_potential":    0.8,
-			"enemy_proximity":   1.8,
-			"threat_priority":   1.5,  // Defensive AI prioritizes threats
-			"low_health_bonus":  1.0,  // Less focus fire, more threat management
-			"tactical_value":    1.3,
+			"damage_enemy":         1.0,
+			"friendly_fire":        2.0,
+			"survival_threat":      2.0,
+			"kill_potential":       0.8,
+			"enemy_proximity":      1.8,
+			"threat_priority":      1.5,  // Defensive AI prioritizes threats
+			"low_health_bonus":     1.0,  // Less focus fire, more threat management
+			"tactical_value":       1.3,
+			"movement_efficiency":  1.6,  // Defensive AI values efficient positioning
 		},
 	}
 }
@@ -55,14 +57,15 @@ func NewDefensiveWeights() *AIWeights {
 func NewDefaultWeights() *AIWeights {
 	return &AIWeights{
 		Weights: map[string]float32{
-			"damage_enemy":      1.0,
-			"friendly_fire":     1.5,
-			"survival_threat":   1.0,
-			"kill_potential":    1.2,
-			"enemy_proximity":   1.0,
-			"threat_priority":   1.2,  // Balanced threat assessment
-			"low_health_bonus":  1.4,  // Good focus fire
-			"tactical_value":    1.0,
+			"damage_enemy":         1.0,
+			"friendly_fire":        1.5,
+			"survival_threat":      1.0,
+			"kill_potential":       1.2,
+			"enemy_proximity":      1.0,
+			"threat_priority":      1.2,  // Balanced threat assessment
+			"low_health_bonus":     1.4,  // Good focus fire
+			"tactical_value":       1.0,
+			"movement_efficiency":  1.0,  // Default AI considers movement efficiency normally
 		},
 	}
 }
@@ -80,7 +83,7 @@ func Play(state *core.GameState, weights *AIWeights) {
 	
 	// Use new target-centric evaluation flow
 	bestEvaluation := findBestAction(state.World, actor, state.Encounter, weights)
-	if bestEvaluation != nil {
+	if bestEvaluation != nil && bestEvaluation.FinalScore > 0 {
 		// Move to optimal position if needed
 		if bestEvaluation.Position != actor.Position && len(bestEvaluation.Movement) > 0 {
 			// For now, just teleport to the position. Later we'll implement proper movement
@@ -102,7 +105,21 @@ func Play(state *core.GameState, weights *AIWeights) {
 		return
 	}
 	
-	// No valid actions, skip turn
+	// Step 9: Fallback behavior - no good actions available or all actions scored negatively
+	fallbackAction := findFallbackAction(state.World, actor, state.Encounter, weights)
+	if fallbackAction != nil {
+		// Execute fallback action (typically movement to a better position)
+		if fallbackAction.Position != actor.Position && len(fallbackAction.Movement) > 0 {
+			state.World.RemoveOccupant(actor.Position, actor)
+			actor.Position = fallbackAction.Position
+			state.World.AddOccupant(fallbackAction.Position, actor)
+		}
+		
+		fallbackAction.Action.Perform([]grid.Position{fallbackAction.Target})
+		return
+	}
+	
+	// Last resort: skip turn if no fallback available
 }
 
 func findBestAction(world *core.World, actor *core.Actor, encounter *core.Encounter, weights *AIWeights) *ActionTargetEvaluation {
@@ -132,6 +149,76 @@ func findBestAction(world *core.World, actor *core.Actor, encounter *core.Encoun
 	return bestEvaluation
 }
 
+func findFallbackAction(world *core.World, actor *core.Actor, encounter *core.Encounter, weights *AIWeights) *ActionTargetEvaluation {
+	// Step 9: Fallback behavior when no good actions are available
+	// Priority order:
+	// 1. Try to find a movement action that improves our position
+	// 2. If no movement available, look for any action with least negative score
+	// 3. Prefer defensive actions (Dodge, etc.) if available
+	
+	var fallbackEvaluation *ActionTargetEvaluation
+	var bestMovementEvaluation *ActionTargetEvaluation
+	var bestDefensiveEvaluation *ActionTargetEvaluation
+	bestScore := -9999 // Very low threshold for fallback
+	
+	for _, action := range actor.Actions {
+		if !checkActionFeasibility(action, actor) {
+			continue
+		}
+		
+		actionTags := action.Tags()
+		targets := findPotentialTargets(world, actor, action, encounter)
+		
+		// Skip if no targets (shouldn't happen for movement, but safety check)
+		if len(targets) == 0 {
+			continue
+		}
+		
+		// Evaluate each target for this action
+		for _, target := range targets {
+			evaluation := simulateActionTarget(world, actor, action, target, weights)
+			
+			// Prioritize movement actions for fallback
+			if actionTags.HasTag(tags.Move) || actionTags.HasTag(tags.Dash) {
+				if bestMovementEvaluation == nil || evaluation.FinalScore > bestMovementEvaluation.FinalScore {
+					bestMovementEvaluation = evaluation
+				}
+			}
+			
+			// Consider defensive actions
+			if actionTags.HasTag(tags.Dodge) {
+				if bestDefensiveEvaluation == nil || evaluation.FinalScore > bestDefensiveEvaluation.FinalScore {
+					bestDefensiveEvaluation = evaluation
+				}
+			}
+			
+			// Track overall best fallback option
+			if evaluation.FinalScore > bestScore {
+				bestScore = evaluation.FinalScore
+				fallbackEvaluation = evaluation
+			}
+		}
+	}
+	
+	// Priority logic for fallback:
+	// 1. If we have a decent movement option, use it (helps reposition)
+	// 2. If we have a defensive option, consider it
+	// 3. Otherwise, use the least bad option
+	
+	if bestMovementEvaluation != nil && bestMovementEvaluation.FinalScore > -50 {
+		// Movement is reasonably good - use it to reposition
+		return bestMovementEvaluation
+	}
+	
+	if bestDefensiveEvaluation != nil && bestDefensiveEvaluation.FinalScore > bestScore {
+		// Defensive action is better than other options
+		return bestDefensiveEvaluation
+	}
+	
+	// Return the least bad option (could be movement, attack, or other action)
+	return fallbackEvaluation
+}
+
 func checkActionFeasibility(action core.Action, actor *core.Actor) bool {
 	// Check if actor can act (not incapacitated, unconscious, dead, etc.)
 	if !actor.CanAct() || actor.IsDead() {
@@ -155,7 +242,14 @@ func checkActionFeasibility(action core.Action, actor *core.Actor) bool {
 }
 
 func findPotentialTargets(world *core.World, actor *core.Actor, action core.Action, encounter *core.Encounter) []grid.Position {
-	// Get all hostile actors in the encounter (like a human would see)
+	actionTags := action.Tags()
+	
+	// Handle movement actions differently - they target positions, not enemies
+	if actionTags.HasTag(tags.Move) || actionTags.HasTag(tags.Dash) {
+		return findMovementTargets(world, actor, action)
+	}
+	
+	// For other actions, target hostile actors
 	hostileActors := encounter.HostileActors(actor)
 	
 	var potentialTargets []grid.Position
@@ -169,6 +263,115 @@ func findPotentialTargets(world *core.World, actor *core.Actor, action core.Acti
 	}
 	
 	return potentialTargets
+}
+
+func findMovementTargets(world *core.World, actor *core.Actor, action core.Action) []grid.Position {
+	// Get all valid movement positions from the action
+	validPositions := action.ValidPositions(actor.Position)
+	
+	// For Step 9, we want to evaluate strategic movement positions
+	// Prioritize positions that:
+	// 1. Get us closer to enemies (if we want to engage)
+	// 2. Get us farther from enemies (if we want to retreat)
+	// 3. Provide tactical advantages (cover, height, flanking)
+	
+	if len(validPositions) == 0 {
+		return []grid.Position{}
+	}
+	
+	// Limit to a reasonable subset for performance
+	// For now, sample positions strategically rather than checking all
+	strategicPositions := selectStrategicMovementPositions(world, actor, validPositions)
+	
+	return strategicPositions
+}
+
+func selectStrategicMovementPositions(world *core.World, actor *core.Actor, validPositions []grid.Position) []grid.Position {
+	if len(validPositions) <= 8 {
+		// If few positions, evaluate them all
+		return validPositions
+	}
+	
+	// For many positions, select strategically:
+	// 1. Current position (staying put)
+	// 2. Positions closer to nearest enemy 
+	// 3. Positions farther from enemies
+	// 4. Positions that provide cover or tactical advantage
+	
+	var strategic []grid.Position
+	currentPos := actor.Position
+	
+	// Always consider staying put as an option
+	strategic = append(strategic, currentPos)
+	
+	// Find nearest enemy for reference
+	var nearestEnemy *core.Actor
+	minDistance := 999
+	if actor.Encounter != nil {
+		for _, enemy := range actor.Encounter.HostileActors(actor) {
+			if enemy.IsDead() {
+				continue
+			}
+			distance := calculateDistance(currentPos, enemy.Position)
+			if distance < minDistance {
+				minDistance = distance
+				nearestEnemy = enemy
+			}
+		}
+	}
+	
+	if nearestEnemy != nil {
+		enemyPos := nearestEnemy.Position
+		
+		// Find positions that move us closer to the enemy (advance)
+		closerPositions := make([]grid.Position, 0, 3)
+		// Find positions that move us farther from enemies (retreat) 
+		fartherPositions := make([]grid.Position, 0, 3)
+		
+		currentDistance := calculateDistance(currentPos, enemyPos)
+		
+		for _, pos := range validPositions {
+			if pos == currentPos {
+				continue // Already added
+			}
+			
+			newDistance := calculateDistance(pos, enemyPos)
+			
+			if newDistance < currentDistance && len(closerPositions) < 3 {
+				closerPositions = append(closerPositions, pos)
+			} else if newDistance > currentDistance && len(fartherPositions) < 3 {
+				fartherPositions = append(fartherPositions, pos)
+			}
+		}
+		
+		strategic = append(strategic, closerPositions...)
+		strategic = append(strategic, fartherPositions...)
+	}
+	
+	// Add a few random positions for variety if we have room
+	if len(strategic) < 8 && len(validPositions) > len(strategic) {
+		remainingSlots := 8 - len(strategic)
+		addedPositions := make(map[grid.Position]bool)
+		for _, pos := range strategic {
+			addedPositions[pos] = true
+		}
+		
+		for _, pos := range validPositions {
+			if len(strategic) >= 8 {
+				break
+			}
+			if !addedPositions[pos] {
+				strategic = append(strategic, pos)
+				addedPositions[pos] = true
+				remainingSlots--
+				if remainingSlots <= 0 {
+					break
+				}
+			}
+		}
+	}
+	
+	return strategic
 }
 
 func simulateActionTarget(world *core.World, actor *core.Actor, action core.Action, target grid.Position, weights *AIWeights) *ActionTargetEvaluation {
@@ -231,6 +434,15 @@ func canReachTargetFromAnyPosition(world *core.World, actor *core.Actor, action 
 }
 
 func findOptimalCastingPosition(world *core.World, actor *core.Actor, action core.Action, target grid.Position, weights *AIWeights) (grid.Position, []grid.Position) {
+	actionTags := action.Tags()
+	
+	// Handle movement actions differently - the target IS the position we want to move to
+	if actionTags.HasTag(tags.Move) || actionTags.HasTag(tags.Dash) {
+		// For movement actions, we're already evaluating moving TO the target position
+		// The "casting position" is our current position, and we move to the target
+		return actor.Position, []grid.Position{target}
+	}
+	
 	// Find all positions from which we can cast this action at the target
 	candidatePositions := findCastingPositions(world, actor, action, target)
 	
