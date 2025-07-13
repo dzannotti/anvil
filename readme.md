@@ -56,7 +56,7 @@ make ci     # Run full CI pipeline locally
 - [ ] make actions definition based like items
 - [ ] make creatures definition based like items and actions
 - [ ] leverage registry to replace demo package
-- [ ] rewrite ai
+- [x] rewrite ai ✅ COMPLETED - Advanced simulation-based AI system
 - [ ] finesse
 - [ ] unarmed strike
 - [ ] fire bolt
