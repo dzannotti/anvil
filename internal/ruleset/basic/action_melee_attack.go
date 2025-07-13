@@ -8,6 +8,7 @@ import (
 	"anvil/internal/core/tags"
 	"anvil/internal/expression"
 	"anvil/internal/grid"
+	"anvil/internal/loader"
 	"anvil/internal/tag"
 
 	"github.com/google/uuid"
@@ -33,6 +34,41 @@ func NewMeleeAction(owner *core.Actor, name string, damageSource core.DamageSour
 		tags:         actionTags,
 		cost:         cost,
 		reach:        reach,
+		damageSource: damageSource,
+	}
+	a.tags.Add(tag.NewContainer(tags.Attack))
+	return a
+}
+
+func NewMeleeActionFromDefinition(owner *core.Actor, def loader.ActionDefinition) *MeleeAction {
+	if def.MeleeConfig == nil {
+		panic("MeleeActionConfig required for melee action")
+	}
+
+	cost := make(map[tag.Tag]int)
+	for key, value := range def.Cost {
+		cost[tag.FromString(key)] = value
+	}
+
+	actionTags := tag.NewContainer()
+	for _, tagStr := range def.Tags {
+		actionTags.Add(tag.NewContainer(tag.FromString(tagStr)))
+	}
+
+	// For now, only support simple "1d6" format - will add parser later
+	damageExpr := expression.FromDamageDice(1, 6, def.Name, tag.NewContainer(tag.FromString(def.MeleeConfig.DamageType)))
+	
+	damageType := tag.FromString(def.MeleeConfig.DamageType)
+	damageSource := core.NewDamageSource(damageExpr, tag.NewContainer(damageType))
+
+	a := &MeleeAction{
+		owner:        owner,
+		archetype:    def.Archetype,
+		id:           uuid.New().String(),
+		name:         def.Name,
+		tags:         actionTags,
+		cost:         cost,
+		reach:        def.MeleeConfig.Reach,
 		damageSource: damageSource,
 	}
 	a.tags.Add(tag.NewContainer(tags.Attack))

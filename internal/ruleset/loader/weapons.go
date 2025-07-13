@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"anvil/internal/expression"
-	weapon "anvil/internal/ruleset/items/weapons"
+	"anvil/internal/ruleset/basic"
 	"anvil/internal/tag"
 
 	"github.com/google/uuid"
@@ -32,7 +32,7 @@ type WeaponsFile struct {
 	Weapons map[string]WeaponData `yaml:"weapons"`
 }
 
-func LoadWeapons(dataDir string) (map[string]func() *weapon.Weapon, error) {
+func LoadWeapons(dataDir string) (map[string]func() *basic.Weapon, error) {
 	weaponsDir := filepath.Join(dataDir, "ruleset", "weapons")
 
 	weaponDefs, err := loadWeaponFiles(weaponsDir)
@@ -74,14 +74,14 @@ func loadWeaponFiles(weaponsDir string) (map[string]WeaponData, error) {
 	return weaponDefs, nil
 }
 
-func createWeaponFactories(weaponDefs map[string]WeaponData) map[string]func() *weapon.Weapon {
-	weaponFactories := make(map[string]func() *weapon.Weapon)
+func createWeaponFactories(weaponDefs map[string]WeaponData) map[string]func() *basic.Weapon {
+	weaponFactories := make(map[string]func() *basic.Weapon)
 
 	for archetype, weaponData := range weaponDefs {
 		data := weaponData
 		arch := archetype
 
-		weaponFactories[arch] = func() *weapon.Weapon {
+		weaponFactories[arch] = func() *basic.Weapon {
 			return createWeapon(arch, data)
 		}
 	}
@@ -89,7 +89,7 @@ func createWeaponFactories(weaponDefs map[string]WeaponData) map[string]func() *
 	return weaponFactories
 }
 
-func createWeapon(archetype string, data WeaponData) *weapon.Weapon {
+func createWeapon(archetype string, data WeaponData) *basic.Weapon {
 	damageExpr := expression.Expression{Rng: expression.DefaultRoller{}}
 	for _, dmg := range data.Damage {
 		if err := parseDamageFormula(dmg.Formula, data.Name, dmg.Kind, &damageExpr); err != nil {
@@ -102,7 +102,7 @@ func createWeapon(archetype string, data WeaponData) *weapon.Weapon {
 		weaponTags[i] = tag.FromString(tagStr)
 	}
 
-	return weapon.NewWeapon(
+	return basic.NewWeapon(
 		archetype,
 		uuid.New().String(),
 		data.Name,

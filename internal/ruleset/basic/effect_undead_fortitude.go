@@ -1,4 +1,4 @@
-package shared
+package basic
 
 import (
 	"anvil/internal/core"

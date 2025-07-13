@@ -1,4 +1,4 @@
-package fighter
+package basic
 
 import (
 	"anvil/internal/core"

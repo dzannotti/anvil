@@ -8,13 +8,9 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
-	actionsBasic "anvil/internal/ruleset/actions/basic"
-	creaturesUndead "anvil/internal/ruleset/creatures/undead"
-	effectsBasic "anvil/internal/ruleset/effects/basic"
-	effectsFighter "anvil/internal/ruleset/effects/classes/fighter"
-	effectsShared "anvil/internal/ruleset/effects/shared"
-	itemsArmor "anvil/internal/ruleset/items/armor"
-	"anvil/internal/ruleset/loader"
+	"anvil/internal/loader"
+	"anvil/internal/ruleset/basic"
+	rulesetLoader "anvil/internal/ruleset/loader"
 )
 
 func SeedRegistry(registry *Registry) {
@@ -28,58 +24,66 @@ func SeedRegistry(registry *Registry) {
 
 func registerBasicActions(registry *Registry) {
 	registry.RegisterAction("move", func(owner *core.Actor, _ map[string]interface{}) core.Action {
-		return actionsBasic.NewMoveAction(owner)
+		return basic.NewMoveAction(owner)
+	})
+
+	registry.RegisterAction("melee", func(owner *core.Actor, options map[string]interface{}) core.Action {
+		def, ok := options["definition"].(loader.ActionDefinition)
+		if !ok {
+			panic("melee action requires ActionDefinition")
+		}
+		return basic.NewMeleeActionFromDefinition(owner, def)
 	})
 }
 
 func registerBasicEffects(registry *Registry) {
 	registry.RegisterEffect("critical", func(_ map[string]interface{}) *core.Effect {
-		return effectsBasic.NewCritEffect()
+		return basic.NewCritEffect()
 	})
 
 	registry.RegisterEffect("death", func(_ map[string]interface{}) *core.Effect {
-		return effectsBasic.NewDeathEffect()
+		return basic.NewDeathEffect()
 	})
 
 	registry.RegisterEffect("death-saving-throw", func(_ map[string]interface{}) *core.Effect {
-		return effectsBasic.NewDeathSavingThrowEffect()
+		return basic.NewDeathSavingThrowEffect()
 	})
 
 	registry.RegisterEffect("attack-of-opportunity", func(_ map[string]interface{}) *core.Effect {
-		return effectsBasic.NewAttackOfOpportunityEffect()
+		return basic.NewAttackOfOpportunityEffect()
 	})
 
 	registry.RegisterEffect("proficiency-modifier", func(_ map[string]interface{}) *core.Effect {
-		return effectsBasic.NewProficiencyModifierEffect()
+		return basic.NewProficiencyModifierEffect()
 	})
 
 	registry.RegisterEffect("attribute-modifier", func(_ map[string]interface{}) *core.Effect {
-		return effectsBasic.NewAttributeModifierEffect()
+		return basic.NewAttributeModifierEffect()
 	})
 }
 
 func registerSharedEffects(registry *Registry) {
 	registry.RegisterEffect("undead-fortitude", func(_ map[string]interface{}) *core.Effect {
-		return effectsShared.NewUndeadFortitudeEffect()
+		return basic.NewUndeadFortitudeEffect()
 	})
 }
 
 func registerClassEffects(registry *Registry) {
 	registry.RegisterEffect("fighting-style-defense", func(_ map[string]interface{}) *core.Effect {
-		return effectsFighter.NewFightingStyleDefense()
+		return basic.NewFightingStyleDefense()
 	})
 }
 
 func registerItems(registry *Registry) {
 	registry.RegisterItem("chainmail", func(_ map[string]interface{}) core.Item {
-		return itemsArmor.NewChainMail()
+		return basic.NewChainMail()
 	})
 
 	_, file, _, _ := runtime.Caller(0)
 	projectRoot := filepath.Dir(filepath.Dir(filepath.Dir(file)))
 	dataDir := filepath.Join(projectRoot, "data")
 
-	weaponFactories, err := loader.LoadWeapons(dataDir)
+	weaponFactories, err := rulesetLoader.LoadWeapons(dataDir)
 	if err != nil {
 		log.Fatalf("Failed to load weapons: %v", err)
 	}
@@ -90,6 +94,59 @@ func registerItems(registry *Registry) {
 			return f()
 		})
 	}
+}
+
+func zombieDefinition(name string) loader.ActorDefinition {
+	return loader.ActorDefinition{
+		Name:         name,
+		Team:         "enemies",
+		HitPoints:    22,
+		MaxHitPoints: 22,
+		Attributes: loader.AttributesDefinition{
+			Strength:     13,
+			Dexterity:    6,
+			Constitution: 16,
+			Intelligence: 3,
+			Wisdom:       6,
+			Charisma:     5,
+		},
+		Proficiencies: loader.ProficienciesDefinition{
+			Skills: []string{},
+			Bonus:  2,
+		},
+		Resources: loader.ResourcesDefinition{
+			WalkSpeed: 4,
+		},
+	}
+}
+
+func zombieSlamDefinition() loader.ActionDefinition {
+	return loader.ActionDefinition{
+		Name:      "Zombie Slam",
+		Archetype: "melee",
+		Cost:      map[string]int{"action": 1},
+		Tags:      []string{"attack", "natural"},
+		MeleeConfig: &loader.MeleeActionConfig{
+			Reach:         1,
+			DamageFormula: "1d6",
+			DamageType:    "bludgeoning",
+		},
+	}
+}
+
+func newZombie(registry *Registry, dispatcher *eventbus.Dispatcher, world *core.World, pos grid.Position, name string) *core.Actor {
+	definition := zombieDefinition(name)
+	npc := registry.CreateActorFromDefinition(dispatcher, world, pos, definition)
+	
+	// Create zombie slam action from definition
+	slamDef := zombieSlamDefinition()
+	slamAction := registry.NewAction("melee", npc, map[string]interface{}{
+		"definition": slamDef,
+	})
+	npc.AddAction(slamAction)
+	
+	npc.AddEffect(registry.NewEffect("undead-fortitude", nil))
+	return npc
 }
 
 func registerCreatures(registry *Registry) {
@@ -114,7 +171,7 @@ func registerCreatures(registry *Registry) {
 			name = "Zombie" // Default name
 		}
 
-		return creaturesUndead.New(registry, dispatcher, world, pos, name)
+		return newZombie(registry, dispatcher, world, pos, name)
 	})
 }
 

@@ -45,4 +45,37 @@ type WorldDefinition struct {
 	Height int `yaml:"height"`
 }
 
+type ActionDefinition struct {
+	Name      string         `yaml:"name"`
+	Archetype string         `yaml:"archetype"`
+	Cost      map[string]int `yaml:"cost"`
+	Tags      []string       `yaml:"tags"`
+	
+	MeleeConfig  *MeleeActionConfig  `yaml:"melee,omitempty"`
+	RangedConfig *RangedActionConfig `yaml:"ranged,omitempty"`
+	SpellConfig  *SpellActionConfig  `yaml:"spell,omitempty"`
+}
+
+type MeleeActionConfig struct {
+	Reach         int    `yaml:"reach"`
+	DamageFormula string `yaml:"damage_formula"`
+	DamageType    string `yaml:"damage_type"`
+}
+
+type RangedActionConfig struct {
+	Range         int    `yaml:"range"`
+	DamageFormula string `yaml:"damage_formula"`
+	DamageType    string `yaml:"damage_type"`
+}
+
+type SpellActionConfig struct {
+	Level         int    `yaml:"level"`
+	School        string `yaml:"school"`
+	CastingTime   string `yaml:"casting_time"`
+	Range         string `yaml:"range"`
+	Duration      string `yaml:"duration"`
+	DamageFormula string `yaml:"damage_formula,omitempty"`
+	DamageType    string `yaml:"damage_type,omitempty"`
+}
+
 // TODO: Add YAML loading functions like LoadActorFromFile, etc.

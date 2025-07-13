@@ -1,4 +1,4 @@
-package weapon
+package basic
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"anvil/internal/core"
 	"anvil/internal/core/tags"
 	"anvil/internal/expression"
-	"anvil/internal/ruleset/actions/basic"
 	"anvil/internal/tag"
 )
 
@@ -49,7 +48,7 @@ func (w Weapon) Tags() *tag.Container {
 
 func (w Weapon) OnEquip(a *core.Actor) {
 	cost := map[tag.Tag]int{tags.ResourceAction: 1}
-	a.AddAction(basic.NewMeleeAction(a, fmt.Sprintf("Attack with %s", w.name), &w, w.reach, w.tags, cost))
+	a.AddAction(NewMeleeAction(a, fmt.Sprintf("Attack with %s", w.name), &w, w.reach, w.tags, cost))
 }
 
 func (w Weapon) Damage() *expression.Expression {
