@@ -222,13 +222,13 @@ func printAttackRoll(e core.AttackRollEvent) string {
 
 func printAttributeCalculation(e core.AttributeCalculationEvent) string {
 	emoji := map[tag.Tag]string{
-		tags.ArmorClass:   "🛡️",
-		tags.Strength:     "💪",
-		tags.Dexterity:    "🏹",
-		tags.Constitution: "❤️",
-		tags.Intelligence: "🧠",
-		tags.Wisdom:       "🧘",
-		tags.Charisma:     "👑",
+		tags.ActorArmorClass:       "🛡️",
+		tags.AttributeStrength:     "💪",
+		tags.AttributeDexterity:    "🏹",
+		tags.AttributeConstitution: "❤️",
+		tags.AttributeIntelligence: "🧠",
+		tags.AttributeWisdom:       "🧘",
+		tags.AttributeCharisma:     "👑",
 	}
 	sb := strings.Builder{}
 	sb.WriteString(emoji[e.Attribute])

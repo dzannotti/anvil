@@ -1,4 +1,4 @@
-# Entity System
+# Actor System
 
 *Status: Future Implementation*
 

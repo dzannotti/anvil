@@ -7,12 +7,12 @@ import (
 )
 
 var saveMap = map[tag.Tag]tag.Tag{
-	tags.Strength:     tags.ProficiencySaveStrength,
-	tags.Dexterity:    tags.ProficiencySaveDexterity,
-	tags.Constitution: tags.ProficiencySaveConstitution,
-	tags.Intelligence: tags.ProficiencySaveIntelligence,
-	tags.Wisdom:       tags.ProficiencySaveWisdom,
-	tags.Charisma:     tags.ProficiencySaveCharisma,
+	tags.AttributeStrength:     tags.ProficiencySaveStrength,
+	tags.AttributeDexterity:    tags.ProficiencySaveDexterity,
+	tags.AttributeConstitution: tags.ProficiencySaveConstitution,
+	tags.AttributeIntelligence: tags.ProficiencySaveIntelligence,
+	tags.AttributeWisdom:       tags.ProficiencySaveWisdom,
+	tags.AttributeCharisma:     tags.ProficiencySaveCharisma,
 }
 
 func NewProficiencyModifierEffect() *core.Effect {

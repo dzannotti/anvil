@@ -80,9 +80,9 @@ func setupPlayer(registry *ruleset.Registry, dispatcher *eventbus.Dispatcher, wo
 			SpellSlot3: 1,
 		},
 	}
-	
+
 	cedric := registry.CreateActorFromDefinition(dispatcher, world, grid.Position{X: 6, Y: 6}, definition)
-	cedric.SpellCastingSource = tags.Intelligence
+	cedric.SpellCastingSource = tags.AttributeIntelligence
 	cedric.Equip(registry.NewItem("greataxe", nil))
 	cedric.Equip(registry.NewItem("chainmail", nil))
 	cedric.AddEffect(registry.NewEffect("fighting-style-defense", nil))

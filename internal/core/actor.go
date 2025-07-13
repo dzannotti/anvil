@@ -28,7 +28,6 @@ type Actor struct {
 	Conditions         Conditions
 }
 
-
 func (a *Actor) StartTurn() {
 	a.Resources.Reset()
 	a.Evaluate(&TurnStarted{Source: a})

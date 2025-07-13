@@ -33,7 +33,7 @@ func NewAttackOfOpportunityEffect() *core.Effect {
 				return
 			}
 
-			if !other.Resources.CanAfford(map[tag.Tag]int{tags.Reaction: 1}) {
+			if !other.Resources.CanAfford(map[tag.Tag]int{tags.ResourceReaction: 1}) {
 				continue
 			}
 
@@ -49,7 +49,7 @@ func NewAttackOfOpportunityEffect() *core.Effect {
 			}
 
 			s.Source.Dispatcher.Begin(core.EffectEvent{Source: s.Source, Effect: fx})
-			other.ConsumeResource(tags.Reaction, 1)
+			other.ConsumeResource(tags.ResourceReaction, 1)
 			// TODO: Create proper AOO action with Reaction cost instead of Action cost
 			baseAttack.Perform([]grid.Position{s.Source.Position})
 			s.Source.Dispatcher.End()

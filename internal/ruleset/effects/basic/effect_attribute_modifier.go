@@ -13,8 +13,8 @@ import (
 // nolint:funlen // TODO: refactor
 func NewAttributeModifierEffect() *core.Effect {
 	applyAttackModifier := func(src *core.Actor, e *expression.Expression, tc tag.Container) {
-		str := src.Attribute(tags.Strength)
-		dex := src.Attribute(tags.Dexterity)
+		str := src.Attribute(tags.AttributeStrength)
+		dex := src.Attribute(tags.AttributeDexterity)
 		strMod := stats.AttributeModifier(str.Value)
 		dexMod := stats.AttributeModifier(dex.Value)
 		if tc.MatchTag(tags.Finesse) || tc.MatchTag(tags.Ranged) {
@@ -54,7 +54,7 @@ func NewAttributeModifierEffect() *core.Effect {
 	})
 
 	fx.On(func(s *core.PreSavingThrow) {
-		if s.Attribute.MatchExact(tags.HitPoints) {
+		if s.Attribute.MatchExact(tags.ActorHitPoints) {
 			return
 		}
 

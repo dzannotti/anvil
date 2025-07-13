@@ -18,12 +18,12 @@ func TestAttribute_Value(t *testing.T) {
 		Wisdom:       14,
 		Charisma:     15,
 	}
-	assert.Equal(t, 10, attributes.Value(tags.Strength))
-	assert.Equal(t, 11, attributes.Value(tags.Dexterity))
-	assert.Equal(t, 12, attributes.Value(tags.Constitution))
-	assert.Equal(t, 13, attributes.Value(tags.Intelligence))
-	assert.Equal(t, 14, attributes.Value(tags.Wisdom))
-	assert.Equal(t, 15, attributes.Value(tags.Charisma))
+	assert.Equal(t, 10, attributes.Value(tags.AttributeStrength))
+	assert.Equal(t, 11, attributes.Value(tags.AttributeDexterity))
+	assert.Equal(t, 12, attributes.Value(tags.AttributeConstitution))
+	assert.Equal(t, 13, attributes.Value(tags.AttributeIntelligence))
+	assert.Equal(t, 14, attributes.Value(tags.AttributeWisdom))
+	assert.Equal(t, 15, attributes.Value(tags.AttributeCharisma))
 }
 
 func TestAttribute_Modifier(t *testing.T) {

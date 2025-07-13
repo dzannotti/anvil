@@ -26,7 +26,7 @@ func NewMoveAction(owner *core.Actor) *MoveAction {
 		id:        "",
 		name:      "Move",
 		tags:      tag.NewContainer(tags.Move),
-		cost:      map[tag.Tag]int{tags.Speed: 1},
+		cost:      map[tag.Tag]int{tags.ResourceSpeed: 1},
 		castRange: 0,
 		reach:     0,
 	}
@@ -95,7 +95,7 @@ func (a MoveAction) Perform(pos []grid.Position) {
 	defer src.Dispatcher.End()
 	positions := path.Positions()
 	for _, node := range positions[1:] {
-		src.ConsumeResource(tags.WalkSpeed, 1)
+		src.ConsumeResource(tags.ResourceWalkSpeed, 1)
 		src.Move(node, a)
 	}
 }
@@ -105,7 +105,7 @@ func (a MoveAction) AffectedPositions(tar []grid.Position) []grid.Position {
 }
 
 func (a MoveAction) ValidPositions(from grid.Position) []grid.Position {
-	speed := a.owner.Resources.Remaining(tags.WalkSpeed)
+	speed := a.owner.Resources.Remaining(tags.ResourceWalkSpeed)
 	shape := shapes.Circle(from, speed)
 	valid := make([]grid.Position, 0)
 	for _, pos := range shape {

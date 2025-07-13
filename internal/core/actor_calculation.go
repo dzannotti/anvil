@@ -13,12 +13,12 @@ import (
 
 func (a *Actor) ArmorClass() *expression.Expression {
 	expr := expression.FromConstant(10, "Base")
-	dex := a.Attribute(tags.Dexterity)
+	dex := a.Attribute(tags.AttributeDexterity)
 	expr.AddConstant(stats.AttributeModifier(dex.Value), "Attribute Modifier", dex.Components...)
 	s := AttributeCalculation{
 		Source:     a,
 		Expression: &expr,
-		Attribute:  tags.ArmorClass,
+		Attribute:  tags.ActorArmorClass,
 	}
 	a.Evaluate(&s)
 	s.Expression.Evaluate()
@@ -41,7 +41,7 @@ func (a *Actor) Proficiency(tags tag.Container) int {
 }
 
 func (a *Actor) ModifyAttribute(t tag.Tag, val int, reason string) {
-	if t.MatchExact(tags.HitPoints) {
+	if t.MatchExact(tags.ActorHitPoints) {
 		old := a.HitPoints
 		a.Dispatcher.Begin(AttributeChangeEvent{Source: a, Attribute: t, OldValue: old, Value: old + val, Reason: reason})
 		defer a.Dispatcher.End()
@@ -101,7 +101,7 @@ func (a *Actor) AttackRoll(target *Actor, tc tag.Container) CheckResult {
 	a.Dispatcher.Emit(ExpressionResultEvent{Expression: &expr})
 	value := after.Result.Value
 	targetAC := target.ArmorClass()
-	a.Dispatcher.Emit(AttributeCalculationEvent{Attribute: tags.ArmorClass, Expression: targetAC})
+	a.Dispatcher.Emit(AttributeCalculationEvent{Attribute: tags.ActorArmorClass, Expression: targetAC})
 	hit := value >= targetAC.Value
 	crit := false
 	if after.Result.IsCriticalSuccess() {

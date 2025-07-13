@@ -35,7 +35,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 	}
 
 	fx.On(func(s *core.AttributeChanged) {
-		if !s.Attribute.MatchExact(tags.HitPoints) {
+		if !s.Attribute.MatchExact(tags.ActorHitPoints) {
 			return
 		}
 		if s.Value != 0 {
@@ -82,7 +82,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 		}
 		s.Source.Dispatcher.Begin(core.DeathSavingThrowEvent{Source: s.Source})
 		defer s.Source.Dispatcher.End()
-		result := s.Source.SaveThrow(tags.HitPoints, 10)
+		result := s.Source.SaveThrow(tags.ActorHitPoints, 10)
 		if result.Success {
 			success++
 			if result.Critical {
@@ -90,7 +90,7 @@ func NewDeathSavingThrowEffect() *core.Effect {
 				s.Source.Dispatcher.Begin(core.DeathSavingThrowAutomaticEvent{Source: s.Source, Failure: false})
 				defer s.Source.Dispatcher.End()
 				s.Source.RemoveCondition(tags.Unconscious, nil)
-				s.Source.ModifyAttribute(tags.HitPoints, 1, "Death Saving Throw critical success")
+				s.Source.ModifyAttribute(tags.ActorHitPoints, 1, "Death Saving Throw critical success")
 				return
 			}
 		} else {

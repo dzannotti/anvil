@@ -15,18 +15,18 @@ type ProficienciesDefinition struct {
 }
 
 type ResourcesDefinition struct {
-	WalkSpeed   int `yaml:"walk_speed"`
-	FlySpeed    int `yaml:"fly_speed,omitempty"`
-	SwimSpeed   int `yaml:"swim_speed,omitempty"`
-	SpellSlot1  int `yaml:"spell_slot_1,omitempty"`
-	SpellSlot2  int `yaml:"spell_slot_2,omitempty"`
-	SpellSlot3  int `yaml:"spell_slot_3,omitempty"`
-	SpellSlot4  int `yaml:"spell_slot_4,omitempty"`
-	SpellSlot5  int `yaml:"spell_slot_5,omitempty"`
-	SpellSlot6  int `yaml:"spell_slot_6,omitempty"`
-	SpellSlot7  int `yaml:"spell_slot_7,omitempty"`
-	SpellSlot8  int `yaml:"spell_slot_8,omitempty"`
-	SpellSlot9  int `yaml:"spell_slot_9,omitempty"`
+	WalkSpeed  int `yaml:"walk_speed"`
+	FlySpeed   int `yaml:"fly_speed,omitempty"`
+	SwimSpeed  int `yaml:"swim_speed,omitempty"`
+	SpellSlot1 int `yaml:"spell_slot_1,omitempty"`
+	SpellSlot2 int `yaml:"spell_slot_2,omitempty"`
+	SpellSlot3 int `yaml:"spell_slot_3,omitempty"`
+	SpellSlot4 int `yaml:"spell_slot_4,omitempty"`
+	SpellSlot5 int `yaml:"spell_slot_5,omitempty"`
+	SpellSlot6 int `yaml:"spell_slot_6,omitempty"`
+	SpellSlot7 int `yaml:"spell_slot_7,omitempty"`
+	SpellSlot8 int `yaml:"spell_slot_8,omitempty"`
+	SpellSlot9 int `yaml:"spell_slot_9,omitempty"`
 }
 
 type ActorDefinition struct {

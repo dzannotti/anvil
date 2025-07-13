@@ -24,7 +24,7 @@ func newChainMailEffect() *core.Effect {
 	}
 
 	fx.On(func(s *core.AttributeCalculation) {
-		if !s.Attribute.MatchExact(tags.ArmorClass) {
+		if !s.Attribute.MatchExact(tags.ActorArmorClass) {
 			return
 		}
 

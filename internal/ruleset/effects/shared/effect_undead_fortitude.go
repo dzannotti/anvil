@@ -17,9 +17,9 @@ func NewUndeadFortitudeEffect() *core.Effect {
 		s.Source.Dispatcher.Begin(core.EffectEvent{Source: s.Source, Effect: fx})
 		defer s.Source.Dispatcher.End()
 		dc := 5 + s.Result.Value
-		st := s.Source.SaveThrow(tags.Constitution, dc)
+		st := s.Source.SaveThrow(tags.AttributeConstitution, dc)
 		if st.Success {
-			s.Source.ModifyAttribute(tags.HitPoints, 1, "Undead Fortitude")
+			s.Source.ModifyAttribute(tags.ActorHitPoints, 1, "Undead Fortitude")
 		}
 	})
 
