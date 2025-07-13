@@ -40,11 +40,7 @@ func NewMeleeAction(owner *core.Actor, name string, damageSource core.DamageSour
 	return a
 }
 
-func NewMeleeActionFromDefinition(owner *core.Actor, def loader.ActionDefinition) *MeleeAction {
-	if def.MeleeConfig == nil {
-		panic("MeleeActionConfig required for melee action")
-	}
-
+func NewMeleeActionFromDefinition(owner *core.Actor, def loader.MeleeActionDefinition) *MeleeAction {
 	cost := make(map[tag.Tag]int)
 	for key, value := range def.Cost {
 		cost[tag.FromString(key)] = value
@@ -56,19 +52,19 @@ func NewMeleeActionFromDefinition(owner *core.Actor, def loader.ActionDefinition
 	}
 
 	// For now, only support simple "1d6" format - will add parser later
-	damageExpr := expression.FromDamageDice(1, 6, def.Name, tag.NewContainer(tag.FromString(def.MeleeConfig.DamageType)))
+	damageExpr := expression.FromDamageDice(1, 6, def.Name, tag.NewContainer(tag.FromString(def.DamageType)))
 	
-	damageType := tag.FromString(def.MeleeConfig.DamageType)
+	damageType := tag.FromString(def.DamageType)
 	damageSource := core.NewDamageSource(damageExpr, tag.NewContainer(damageType))
 
 	a := &MeleeAction{
 		owner:        owner,
-		archetype:    def.Archetype,
+		archetype:    "attack",
 		id:           uuid.New().String(),
 		name:         def.Name,
 		tags:         actionTags,
 		cost:         cost,
-		reach:        def.MeleeConfig.Reach,
+		reach:        def.Reach,
 		damageSource: damageSource,
 	}
 	a.tags.Add(tag.NewContainer(tags.Attack))

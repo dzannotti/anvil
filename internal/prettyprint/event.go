@@ -257,7 +257,7 @@ func printAttributeChange(e core.AttributeChangeEvent) string {
 
 func printSavingThrow(e core.SavingThrowEvent) string {
 	return fmt.Sprintf(
-		"🍥 %s rolls a %s saving throw against DC %d",
+		"🍥 %s rolls a %s saving throw DC %d",
 		e.Source.Name,
 		tags.ToReadable(e.Attribute),
 		e.DifficultyClass,

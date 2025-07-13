@@ -1,16 +1,11 @@
 package ruleset
 
 import (
-	"log"
-	"path/filepath"
-	"runtime"
-
 	"anvil/internal/core"
 	"anvil/internal/eventbus"
 	"anvil/internal/grid"
 	"anvil/internal/loader"
 	"anvil/internal/ruleset/basic"
-	rulesetLoader "anvil/internal/ruleset/loader"
 )
 
 func SeedRegistry(registry *Registry) {
@@ -28,9 +23,9 @@ func registerBasicActions(registry *Registry) {
 	})
 
 	registry.RegisterAction("melee", func(owner *core.Actor, options map[string]interface{}) core.Action {
-		def, ok := options["definition"].(loader.ActionDefinition)
+		def, ok := options["definition"].(loader.MeleeActionDefinition)
 		if !ok {
-			panic("melee action requires ActionDefinition")
+			panic("melee action requires MeleeActionDefinition")
 		}
 		return basic.NewMeleeActionFromDefinition(owner, def)
 	})
@@ -79,19 +74,11 @@ func registerItems(registry *Registry) {
 		return basic.NewChainMail()
 	})
 
-	_, file, _, _ := runtime.Caller(0)
-	projectRoot := filepath.Dir(filepath.Dir(filepath.Dir(file)))
-	dataDir := filepath.Join(projectRoot, "data")
-
-	weaponFactories, err := rulesetLoader.LoadWeapons(dataDir)
-	if err != nil {
-		log.Fatalf("Failed to load weapons: %v", err)
-	}
-
-	for archetype, factory := range weaponFactories {
-		f := factory
+	weaponDefs := weaponDefinitions()
+	for archetype, weaponDef := range weaponDefs {
+		def := weaponDef
 		registry.RegisterItem(archetype, func(_ map[string]interface{}) core.Item {
-			return f()
+			return basic.NewWeaponFromDefinition(def)
 		})
 	}
 }
@@ -120,17 +107,14 @@ func zombieDefinition(name string) loader.ActorDefinition {
 	}
 }
 
-func zombieSlamDefinition() loader.ActionDefinition {
-	return loader.ActionDefinition{
-		Name:      "Zombie Slam",
-		Archetype: "melee",
-		Cost:      map[string]int{"action": 1},
-		Tags:      []string{"attack", "natural"},
-		MeleeConfig: &loader.MeleeActionConfig{
-			Reach:         1,
-			DamageFormula: "1d6",
-			DamageType:    "bludgeoning",
-		},
+func zombieSlamDefinition() loader.MeleeActionDefinition {
+	return loader.MeleeActionDefinition{
+		Name:          "Zombie Slam",
+		Cost:          map[string]int{"action": 1},
+		Tags:          []string{"attack", "natural"},
+		Reach:         1,
+		DamageFormula: "1d6",
+		DamageType:    "bludgeoning",
 	}
 }
 
